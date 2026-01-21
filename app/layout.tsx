@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from '@/components/shared'
+import { AppSidebar } from '@/components/shared'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -16,7 +16,7 @@ export default function RootLayout({
     <html lang="en" className={cn(inter.variable, "dark")}>
       <body className="antialiased flex">
         <nav>
-          <Sidebar />
+          <AppSidebar />
         </nav>
         {children}
       </body>
