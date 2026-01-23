@@ -24,6 +24,8 @@ export const users = table("users", {
   updatedAt: t.timestamp().notNull().defaultNow(),
 })
 
+export type User = typeof users.$inferSelect
+
 // Conversations
 export const conversations = table("conversations", {
   id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -31,6 +33,8 @@ export const conversations = table("conversations", {
   isGroup: t.boolean("is_group").default(false).notNull(),
   createdAt: t.timestamp().notNull().defaultNow(),
 })
+
+export type Conversation = typeof conversations.$inferSelect
 
 // Conversation Members
 export const conversationMembers = table("conversation_members", {
@@ -43,6 +47,8 @@ export const conversationMembers = table("conversation_members", {
     .references(() => users.id),
   joinedAt: t.timestamp().notNull().defaultNow(),
 })
+
+export type ConversationMember = typeof conversationMembers.$inferSelect
 
 // Messages
 export const messages = table("messages", {
@@ -59,6 +65,8 @@ export const messages = table("messages", {
   updatedAt: t.timestamp().notNull().defaultNow(),
 })
 
+export type Message = typeof messages.$inferSelect
+
 // Message Reactions
 export const messageReactions = table("message_reactions", {
   id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -71,3 +79,5 @@ export const messageReactions = table("message_reactions", {
   reaction: t.varchar({ length: 30 }).notNull(), 
   createdAt: t.timestamp().notNull().defaultNow(),
 })
+
+export type MessageReaction = typeof messageReactions.$inferSelect

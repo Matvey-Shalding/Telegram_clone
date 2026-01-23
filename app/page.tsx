@@ -1,5 +1,8 @@
-import { ComponentExample } from "@/components/component-example";
+import { ChatList } from "@/components/shared/ChatList";
 
 export default function Page() {
-  return <main></main>
+  return (
+    <main>
+    </main>
+  );
 }
