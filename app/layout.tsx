@@ -1,35 +1,23 @@
-"use client";
+'use client'
 
-import { AppSidebar } from "@/components/shared";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { cn } from '@/lib/utils'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Inter } from 'next/font/google'
+import './globals.css'
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const queryClient = new QueryClient();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	const queryClient = new QueryClient()
 
-  return (
-    <html lang="en" className={cn(inter.variable, "dark")}>
-      <QueryClientProvider client={queryClient}>
-        <body className="antialiased min-h-full">
-          <SidebarProvider>
-            <AppSidebar />
-
-            <main className="bg-red-950">
-              {children}
-              <SidebarTrigger />
-            </main>
-          </SidebarProvider>
-        </body>
-      </QueryClientProvider>
-    </html>
-  );
+	return (
+		<html
+			lang="en"
+			className={cn(inter.variable, 'dark')}
+		>
+			<QueryClientProvider client={queryClient}>
+				<body className="antialiased min-h-full">{children}</body>
+			</QueryClientProvider>
+		</html>
+	)
 }

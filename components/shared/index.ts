@@ -1,1 +1,3 @@
-export {AppSidebar} from "./Sidebar"
+export {AvatarWithBadge} from './AvatarWithBadge'
+
+export * from "./sidebar"
