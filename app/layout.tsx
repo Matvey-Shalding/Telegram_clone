@@ -1,5 +1,7 @@
 'use client'
 
+import { MainSidebar } from '@/components/shared'
+import { SidebarProvider } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Inter } from 'next/font/google'
@@ -16,7 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 			className={cn(inter.variable, 'dark')}
 		>
 			<QueryClientProvider client={queryClient}>
-				<body className="antialiased min-h-full">{children}</body>
+				<body className="antialiased min-h-full">
+					<SidebarProvider>
+						<MainSidebar />
+
+						{children}
+					</SidebarProvider>
+				</body>
 			</QueryClientProvider>
 		</html>
 	)
