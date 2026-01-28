@@ -6,6 +6,7 @@ import { ChevronsUpDown, LogOut } from 'lucide-react'
 
 import { SidebarFooter as Footer } from '@/components/ui/sidebar'
 
+import { authClient } from '@/auth-client'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -15,11 +16,26 @@ import {
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 interface Props {
 	className?: string
 }
 export const SidebarFooter: React.FC<Props> = ({ className }) => {
 	const { isMobile } = useSidebar()
+
+	const router = useRouter()
+
+	const handleLogout = async () => {
+		try {
+			await authClient.signOut()
+
+			router.push('auth/sign-up')
+		} catch (error) {
+			console.log(error)
+			toast.error('Something went wrong')
+		}
+	}
 
 	return (
 		<Footer>
@@ -56,7 +72,7 @@ export const SidebarFooter: React.FC<Props> = ({ className }) => {
 							</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={handleLogout}>
 								<LogOut />
 								Log out
 							</DropdownMenuItem>
