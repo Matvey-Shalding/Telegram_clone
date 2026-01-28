@@ -1,10 +1,9 @@
 'use client'
 
-import { MainSidebar } from '@/components/shared'
-import { SidebarProvider } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Inter } from 'next/font/google'
+import { Toaster } from 'react-hot-toast'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -19,11 +18,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		>
 			<QueryClientProvider client={queryClient}>
 				<body className="antialiased min-h-full">
-					<SidebarProvider>
-						<MainSidebar />
-
-						{children}
-					</SidebarProvider>
+					<Toaster />
+					{children}
 				</body>
 			</QueryClientProvider>
 		</html>
