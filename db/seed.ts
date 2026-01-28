@@ -1,121 +1,194 @@
-import { db } from "@/db";
-import { InferInsertModel } from "drizzle-orm";
-import {
-  conversationMembers,
-  conversations,
-  messageReactions,
-  messages,
-  users,
-} from "./schema";
-
-// Utility for random picks
-function randomItem<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// Types inferred from schema
-type NewUser = InferInsertModel<typeof users>;
-type NewConversation = InferInsertModel<typeof conversations>;
-type NewConversationMember = InferInsertModel<typeof conversationMembers>;
-type NewMessage = InferInsertModel<typeof messages>;
-type NewReaction = InferInsertModel<typeof messageReactions>;
+// seed.ts
+import { db } from '@/db'
+import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
+import { account, conversationMembers, conversations, messageReactions, messages, session, user, verification } from './schema'
 
 async function main() {
-  // --- Users ---
-  const userData: NewUser[] = [
-    { email: "alice@example.com", username: "alice", password: "hash1" },
-    { email: "bob@example.com", username: "bob", password: "hash2" },
-    { email: "charlie@example.com", username: "charlie", password: "hash3" },
-    { email: "diana@example.com", username: "diana", password: "hash4" },
-    { email: "eve@example.com", username: "eve", password: "hash5" },
-    { email: "frank@example.com", username: "frank", password: "hash6" },
-    { email: "grace@example.com", username: "grace", password: "hash7" },
-    { email: "heidi@example.com", username: "heidi", password: "hash8" },
-    { email: "ivan@example.com", username: "ivan", password: "hash9" },
-    { email: "judy@example.com", username: "judy", password: "hash10" },
-  ];
+	// -----------------------------
+	// CLEAR ALL EXISTING DATA
+	// -----------------------------
+	await db.delete(messageReactions)
+	await db.delete(messages)
+	await db.delete(conversationMembers)
+	await db.delete(conversations)
 
-  const insertedUsers = await db.insert(users).values(userData).returning();
+	await db.delete(session)
+	await db.delete(account)
+	await db.delete(verification)
 
-  // --- Conversations ---
-  const conversationData: NewConversation[] = [
-    { title: "General Chat", isGroup: true },
-    { title: "Project Alpha", isGroup: true },
-    { title: "Random Banter", isGroup: true },
-    { title: "Alice & Bob", isGroup: false },
-    { title: "Charlie & Diana", isGroup: false },
-  ];
+	await db.delete(user)
 
-  const insertedConversations = await db
-    .insert(conversations)
-    .values(conversationData)
-    .returning();
+	console.log('🧹 All tables cleared')
 
-  // --- Conversation Members ---
-  const memberData: NewConversationMember[] = [];
-  for (const conv of insertedConversations) {
-    const randomUsers = insertedUsers
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
-    for (const u of randomUsers) {
-      memberData.push({
-        conversationId: conv.id,
-        userId: u.id,
-      });
-    }
-  }
-  await db.insert(conversationMembers).values(memberData);
+	console.log('🌱 Seeding database...')
 
-  // --- Messages ---
-  const messageTexts = [
-    "Hey everyone!",
-    "How’s the project going?",
-    "Did you see the latest update?",
-    "Let’s meet tomorrow.",
-    "I’ll push the code tonight.",
-    "Haha that’s funny 😂",
-    "Can you review my PR?",
-    "Good morning!",
-    "What’s the plan for the weekend?",
-    "Congrats on the release!",
-  ];
+	// -----------------------------
+	// USERS
+	// -----------------------------
+	const passwordHash = await bcrypt.hash('password123', 10)
 
-  const messageData: NewMessage[] = [];
-  for (let i = 0; i < 50; i++) {
-    const conv = randomItem(insertedConversations);
-    const sender = randomItem(insertedUsers);
-    messageData.push({
-      conversationId: conv.id,
-      senderId: sender.id,
-      content: randomItem(messageTexts),
-      status: "sent", // ✅ literal type matches enum
-    });
-  }
-  const insertedMessages = await db
-    .insert(messages)
-    .values(messageData)
-    .returning();
+	const [alice, bob, charlie] = await db
+		.insert(user)
+		.values([
+			{
+				name: 'Alice Johnson',
+				email: 'alice@example.com',
+				emailVerified: true,
+				image: 'https://i.pravatar.cc/150?img=1'
+			},
+			{
+				name: 'Bob Smith',
+				email: 'bob@example.com',
+				emailVerified: true,
+				image: 'https://i.pravatar.cc/150?img=2'
+			},
+			{
+				name: 'Charlie Brown',
+				email: 'charlie@example.com',
+				emailVerified: false,
+				image: 'https://i.pravatar.cc/150?img=3'
+			}
+		])
+		.returning()
 
-  // --- Reactions ---
-  const reactions = ["👍", "❤️", "😂", "🔥", "😮"];
-  const reactionData: NewReaction[] = [];
-  for (let i = 0; i < 30; i++) {
-    const msg = randomItem(insertedMessages);
-    const user = randomItem(insertedUsers);
-    reactionData.push({
-      messageId: msg.id,
-      userId: user.id,
-      reaction: randomItem(reactions),
-    });
-  }
-  await db.insert(messageReactions).values(reactionData);
+	console.log('Users created')
 
-  console.log(
-    "✅ Seed complete: users, conversations, members, messages, reactions",
-  );
+	// -----------------------------
+	// ACCOUNTS (BetterAuth)
+	// -----------------------------
+	await db.insert(account).values([
+		{
+			providerId: 'email',
+			accountId: alice.email,
+			userId: alice.id,
+			password: passwordHash
+		},
+		{
+			providerId: 'email',
+			accountId: bob.email,
+			userId: bob.id,
+			password: passwordHash
+		},
+		{
+			providerId: 'email',
+			accountId: charlie.email,
+			userId: charlie.id,
+			password: passwordHash
+		}
+	])
+
+	console.log('Accounts created')
+
+	// -----------------------------
+	// SESSIONS (BetterAuth)
+	// -----------------------------
+	const createSession = (userId: number) => ({
+		userId,
+		token: crypto.randomUUID(),
+		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 days
+		ipAddress: '127.0.0.1',
+		userAgent: 'seed-script'
+	})
+
+	await db.insert(session).values([createSession(alice.id), createSession(bob.id), createSession(charlie.id)])
+
+	console.log('Sessions created')
+
+	// -----------------------------
+	// CONVERSATIONS
+	// -----------------------------
+	const [directConversation] = await db
+		.insert(conversations)
+		.values({
+			title: null,
+			isGroup: false
+		})
+		.returning()
+
+	const [groupConversation] = await db
+		.insert(conversations)
+		.values({
+			title: 'Project Alpha',
+			isGroup: true
+		})
+		.returning()
+
+	console.log('Conversations created')
+
+	// -----------------------------
+	// MEMBERS
+	// -----------------------------
+	await db.insert(conversationMembers).values([
+		{ conversationId: directConversation.id, userId: alice.id },
+		{ conversationId: directConversation.id, userId: bob.id },
+
+		{ conversationId: groupConversation.id, userId: alice.id },
+		{ conversationId: groupConversation.id, userId: bob.id },
+		{ conversationId: groupConversation.id, userId: charlie.id }
+	])
+
+	console.log('Members added')
+
+	// -----------------------------
+	// MESSAGES
+	// -----------------------------
+	const insertedMessages = await db
+		.insert(messages)
+		.values([
+			{
+				conversationId: directConversation.id,
+				senderId: alice.id,
+				content: 'Hey Bob, how’s everything?',
+				status: 'sent'
+			},
+			{
+				conversationId: directConversation.id,
+				senderId: bob.id,
+				content: 'All good! You?',
+				status: 'delivered'
+			},
+			{
+				conversationId: groupConversation.id,
+				senderId: charlie.id,
+				content: 'Morning team! Ready for the meeting?',
+				status: 'read'
+			},
+			{
+				conversationId: groupConversation.id,
+				senderId: alice.id,
+				content: "Yep, let's do it.",
+				status: 'sent'
+			}
+		])
+		.returning()
+
+	console.log('Messages created')
+
+	// -----------------------------
+	// REACTIONS
+	// -----------------------------
+	await db.insert(messageReactions).values([
+		{
+			messageId: insertedMessages[2].id,
+			userId: bob.id,
+			reaction: '👍'
+		},
+		{
+			messageId: insertedMessages[2].id,
+			userId: alice.id,
+			reaction: '🔥'
+		}
+	])
+
+	console.log('Reactions added')
+
+	console.log('🌱 Seed completed successfully!')
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main()
+	.catch(err => {
+		console.error('❌ Seed failed:', err)
+		process.exit(1)
+	})
+	.finally(() => process.exit(0))
