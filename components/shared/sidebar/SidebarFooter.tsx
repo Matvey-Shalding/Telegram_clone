@@ -16,6 +16,7 @@ import {
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 interface Props {
@@ -25,6 +26,8 @@ export const SidebarFooter: React.FC<Props> = ({ className }) => {
 	const { isMobile } = useSidebar()
 
 	const router = useRouter()
+
+	const session = useCurrentSession()
 
 	const handleLogout = async () => {
 		try {
@@ -49,8 +52,8 @@ export const SidebarFooter: React.FC<Props> = ({ className }) => {
 							>
 								<div className="h-8 w-8 rounded-full bg-red-400" />
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-medium">John Doe</span>
-									<span className="truncate text-xs">johndoe@gmail.com</span>
+									<span className="truncate font-medium">{session?.user.name ?? 'Loading...'}</span>
+									<span className="truncate text-xs">{session?.user.email ?? 'Loading...'}</span>
 								</div>
 								<ChevronsUpDown className="ml-auto size-4" />
 							</SidebarMenuButton>

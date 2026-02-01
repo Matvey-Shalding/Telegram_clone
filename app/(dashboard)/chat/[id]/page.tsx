@@ -1,7 +1,12 @@
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui'
 import { Mic, Paperclip, Smile } from 'lucide-react'
 
-export default function ChatPage() {
+export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
+	
+	const { id } = await params
+
+	
+	
 	return (
 		<div className="h-screen relative w-full flex flex-col">
 			{/* header */}

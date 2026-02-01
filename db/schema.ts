@@ -40,6 +40,8 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
+export type User = typeof user.$inferSelect;
+
 // ----------------------
 // SESSION
 // ----------------------
@@ -61,6 +63,8 @@ export const session = pgTable(
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );
+
+export type Session = typeof session.$inferSelect;
 
 // ----------------------
 // ACCOUNT
@@ -89,6 +93,8 @@ export const account = pgTable(
   (table) => [index("account_userId_idx").on(table.userId)],
 );
 
+export type Account = typeof account.$inferSelect;
+
 // ----------------------
 // VERIFICATION
 // ----------------------
@@ -107,6 +113,8 @@ export const verification = pgTable(
   },
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
+
+export type Verification = typeof verification.$inferSelect;
 
 // ----------------------
 // RELATIONS FOR AUTH TABLES
@@ -140,6 +148,8 @@ export const conversations = pgTable("conversations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export type Conversation = typeof conversations.$inferSelect;
+
 // ----------------------
 // CONVERSATION MEMBERS
 // ----------------------
@@ -153,6 +163,8 @@ export const conversationMembers = pgTable("conversation_members", {
     .references(() => user.id),
   joinedAt: timestamp("joined_at").defaultNow().notNull(),
 });
+
+export type ConversationMember = typeof conversationMembers.$inferSelect;
 
 // ----------------------
 // MESSAGES
@@ -174,6 +186,8 @@ export const messages = pgTable("messages", {
     .notNull(),
 });
 
+export type Message = typeof messages.$inferSelect;
+
 // ----------------------
 // MESSAGE REACTIONS
 // ----------------------
@@ -188,3 +202,5 @@ export const messageReactions = pgTable("message_reactions", {
   reaction: varchar("reaction", { length: 30 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export type MessageReaction = typeof messageReactions.$inferSelect;
