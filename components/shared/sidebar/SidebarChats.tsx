@@ -16,7 +16,7 @@ interface Props {
 export const SidebarChats: React.FC<Props> = ({ className, searchValue }) => {
 	const { data = [], isLoading } = useQuery({
 		queryKey: ['chats'],
-		queryFn: () => Api.conversation.get()
+		queryFn: () => Api.conversation.getAll()
 	})
 
 	const chats = useMemo(() => {

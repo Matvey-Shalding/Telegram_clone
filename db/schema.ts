@@ -10,29 +10,14 @@ import {
 	pgEnum,
 } from "drizzle-orm/pg-core";
 
-// ----------------------
-// ENUMS
-// ----------------------
-export const messageStatus = pgEnum("message_status", [
-  "sent",
-  "delivered",
-  "read",
-  "failed",
-  "draft",
-  "deleted",
-]);
+// User model
 
-export const userRole = pgEnum("user_role", ["user", "admin"]);
-
-// ----------------------
-// USER (Better Auth compatible)
-// ----------------------
 export const user = pgTable("user", {
   id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
+  avatar: text("avatar"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -40,11 +25,22 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
+const userToConversations = relations(user,({many}) => ({
+  conversations: many(conversations)
+}))
+
+const userToMessages = relations(user,({many}) => ({
+  messages: many(messages)
+}))
+
+const userToSeenMessages = relations(user,({many}) => ({
+  seenMessages: many(messages)
+}))
+
 export type User = typeof user.$inferSelect;
 
-// ----------------------
-// SESSION
-// ----------------------
+// Session model(better auth only)
+
 export const session = pgTable(
   "session",
   {
@@ -66,9 +62,8 @@ export const session = pgTable(
 
 export type Session = typeof session.$inferSelect;
 
-// ----------------------
-// ACCOUNT
-// ----------------------
+// Account model(better auth only)
+
 export const account = pgTable(
   "account",
   {
@@ -95,9 +90,8 @@ export const account = pgTable(
 
 export type Account = typeof account.$inferSelect;
 
-// ----------------------
-// VERIFICATION
-// ----------------------
+// Verification model(better auth only)
+
 export const verification = pgTable(
   "verification",
   {
@@ -116,9 +110,8 @@ export const verification = pgTable(
 
 export type Verification = typeof verification.$inferSelect;
 
-// ----------------------
-// RELATIONS FOR AUTH TABLES
-// ----------------------
+// Better auth relations
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
@@ -138,9 +131,9 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-// ----------------------
-// CONVERSATIONS
-// ----------------------
+
+// Conversations
+
 export const conversations = pgTable("conversations", {
   id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
   title: text("title"),
@@ -150,21 +143,21 @@ export const conversations = pgTable("conversations", {
 
 export type Conversation = typeof conversations.$inferSelect;
 
-// ----------------------
-// CONVERSATION MEMBERS
-// ----------------------
-export const conversationMembers = pgTable("conversation_members", {
-  id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
-  conversationId: integer("conversation_id")
-    .notNull()
-    .references(() => conversations.id),
-  userId: integer("user_id")
-    .notNull()
-    .references(() => user.id),
-  joinedAt: timestamp("joined_at").defaultNow().notNull(),
-});
+// // ----------------------
+// // CONVERSATION MEMBERS
+// // ----------------------
+// export const conversationMembers = pgTable("conversation_members", {
+//   id: integer("id").generatedByDefaultAsIdentity().primaryKey(),
+//   conversationId: integer("conversation_id")
+//     .notNull()
+//     .references(() => conversations.id),
+//   userId: integer("user_id")
+//     .notNull()
+//     .references(() => user.id),
+//   joinedAt: timestamp("joined_at").defaultNow().notNull(),
+// });
 
-export type ConversationMember = typeof conversationMembers.$inferSelect;
+// export type ConversationMember = typeof conversationMembers.$inferSelect;
 
 // ----------------------
 // MESSAGES
@@ -177,7 +170,6 @@ export const messages = pgTable("messages", {
   senderId: integer("sender_id")
     .notNull()
     .references(() => user.id),
-  status: messageStatus("status").default("sent").notNull(),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
