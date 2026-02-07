@@ -1,18 +1,18 @@
+import { prisma } from '@/db/prisma'
 import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
-import { db } from './db'
 
 export const auth = betterAuth({
-	database: drizzleAdapter(db, {
-		provider: 'pg'
+	database: prismaAdapter(prisma, {
+		provider: 'postgresql',
 	}),
 	emailAndPassword: {
 		enabled: true
 	},
 	advanced: {
 		database: {
-			generateId: 'serial'
+			generateId: 'uuid',
 		}
 	},
 	socialProviders: {

@@ -1,24 +1,19 @@
 import { ChatFooter } from '@/components/shared/chat/ChatFooter'
 import { ChatHeader } from '@/components/shared/chat/ChatHeader'
-import { db } from '@/db'
-import { conversationMembers, conversations } from '@/db/schema'
+import { prisma } from '@/db/prisma'
 import { getConversationDetails } from '@/lib/getConversationDetails'
-import { eq } from 'drizzle-orm'
 
 export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params
 
-	const conversation = (
-		await db
-			.select()
-			.from(conversations)
-			.where(eq(conversations.id, Number(id)))
-	).at(0)
+	const conversation = await prisma.conversation.findFirst({
+		where: { id: id }
+	})
 
-	const members = await db
-		.select()
-		.from(conversationMembers)
-		.where(eq(conversationMembers.conversationId, Number(id)))
+	const members = await prisma.conversationMember.findMany({
+		where: { conversationId: id }
+	})
+
 
 	const isGroup = members.length > 2
 

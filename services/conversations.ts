@@ -1,6 +1,6 @@
 import { API_ROUTES } from '@/config/routes'
-import { Conversation, Message } from '@/db/schema'
 import { axiosInstance } from './instance'
+import { Conversation, Message } from '@/generated/prisma/client'
 
 export const getAll = async (): Promise<Conversation[]> => {
 	return (await axiosInstance.get(API_ROUTES.CONVERSATIONS)).data

@@ -1,7 +1,5 @@
 import { auth } from '@/auth'
-import { db } from '@/db'
-import { conversationMembers, conversations } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { prisma } from '@/db/prisma'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -15,18 +13,17 @@ export async function GET() {
 	try {
 		const userId = session.user.id
 
-		const result = await db
-			.select({
-				conversation: conversations
-			})
-			.from(conversations)
-			.innerJoin(conversationMembers, eq(conversationMembers.conversationId, conversations.id))
-			.where(eq(conversationMembers.userId, Number(userId)))
+		const conversations = await prisma.conversation.findMany({
+			where: {
+				members: {
+					some: {
+						userId: userId
+					}
+				}
+			}
+		})
 
-		// result is an array of { conversation: {...} }
-		const conversationsList = result.map(r => r.conversation)
-
-		return NextResponse.json(conversationsList)
+		return NextResponse.json(conversations)
 	} catch (error) {
 		console.error('[CONVERSATIONS_GET]', error)
 		return new NextResponse('Internal Error', { status: 500 })

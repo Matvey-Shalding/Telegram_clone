@@ -1,6 +1,4 @@
-import { db } from '@/db'
-import { messages } from '@/db/schema'
-import { desc, eq } from 'drizzle-orm'
+import { prisma } from '@/db/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
@@ -8,12 +6,15 @@ export async function GET(req: NextRequest) {
 
 	if (!chatId) return NextResponse.json({})
 
-	const lastMessage = await db
-		.select()
-		.from(messages)
-		.where(eq(messages.conversationId, +chatId))
-		.orderBy(desc(messages.createdAt))
-		.limit(1)
+	const lastMessage = prisma.message.findMany({
+		where: {
+			conversationId: chatId
+		},
+		orderBy: {
+			createdAt: 'desc'
+		},
+		take: 1
+	})
 
-	return NextResponse.json(lastMessage[0] || {})
+	return NextResponse.json(lastMessage)
 }
