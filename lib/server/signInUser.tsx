@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/auth'
-import { LogInSchema } from '@/schemas/logInSchema'
+import { LogInSchema } from '@/components/shared/auth/schemas/logInSchema'
 
 export const signInUser = async (data: LogInSchema) => {
 	await auth.api.signInEmail({

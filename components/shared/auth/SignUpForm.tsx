@@ -1,6 +1,6 @@
 'use client'
 
-import { logInSchema } from '@/schemas/logInSchema'
+import { signUpSchema } from '@/components/shared/auth/schemas/signUpSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
@@ -10,34 +10,38 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { signInUser } from '@/lib/server/signInUser'
+import { createUser } from '@/lib/server/createUser'
 import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
-type LogInSchema = z.infer<typeof logInSchema>
+type SignUpSchema = z.infer<typeof signUpSchema>
 
-export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
+export function SignupForm({ className, ...props }: React.ComponentProps<'div'>) {
 	const {
 		register,
 		handleSubmit,
 		reset,
 		formState: { errors, isSubmitting }
-	} = useForm<LogInSchema>({
-		resolver: zodResolver(logInSchema),
+	} = useForm<SignUpSchema>({
+		resolver: zodResolver(signUpSchema),
 		mode: 'onSubmit'
 	})
 
-	const onSubmit = async (data: LogInSchema) => {
+	const onSubmit = async (data: SignUpSchema) => {
 		try {
-			await signInUser(data)
+			await createUser(data)
 
-			toast.success('Logged in successfully')
+			toast.success('User created successfully')
 
 			reset()
-		} catch (error) {
-			toast.error('Invalid email or password')
+		} catch (error: any) {
+			if (error.message.includes('email')) {
+				toast.error('Such email is already registered')
+			} else {
+				toast.error('Something went wrong')
+			}
 		}
 	}
 
@@ -53,9 +57,21 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 				>
 					<FieldGroup>
 						<div className="flex flex-col items-center gap-2 text-center">
-							<h1 className="text-2xl font-bold">Welcome back</h1>
-							<p className="text-muted-foreground text-balance">Login to your Acme Inc account</p>
+							<h1 className="text-2xl font-bold">Create your account</h1>
+							<p className="text-muted-foreground text-sm text-balance">Enter your email below to create your account</p>
 						</div>
+
+						{/* Full Name */}
+						<Field>
+							<FieldLabel htmlFor="fullName">Full Name</FieldLabel>
+							<Input
+								id="fullName"
+								type="text"
+								placeholder="John Doe"
+								{...register('fullName')}
+							/>
+							<FieldError>{errors.fullName?.message}</FieldError>
+						</Field>
 
 						{/* Email */}
 						<Field>
@@ -66,21 +82,37 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 								placeholder="m@example.com"
 								{...register('email')}
 							/>
+							<FieldDescription>We&apos;ll use this to contact you. We will not share your email with anyone else.</FieldDescription>
 							<FieldError>{errors.email?.message}</FieldError>
 						</Field>
 
-						{/* Password */}
+						{/* Password + Confirm Password */}
 						<Field>
-							<FieldLabel htmlFor="password">Password</FieldLabel>
-							<Input
-								id="password"
-								type="password"
-								{...register('password')}
-							/>
-							<FieldError>{errors.password?.message}</FieldError>
+							<Field className="grid grid-cols-2 gap-4">
+								<Field>
+									<FieldLabel htmlFor="password">Password</FieldLabel>
+									<Input
+										id="password"
+										type="password"
+										{...register('password')}
+									/>
+									<FieldError>{errors.password?.message}</FieldError>
+								</Field>
+
+								<Field>
+									<FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+									<Input
+										id="confirmPassword"
+										type="password"
+										{...register('confirmPassword')}
+									/>
+									<FieldError>{errors.confirmPassword?.message}</FieldError>
+								</Field>
+							</Field>
+
+							<FieldDescription>Must be at least 8 characters long.</FieldDescription>
 						</Field>
 
-						{/* Submit */}
 						<Field>
 							<Button
 								type="submit"
@@ -88,7 +120,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 							>
 								<span className="flex items-center gap-2">
 									{isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-									<span>{isSubmitting ? 'Logging in…' : 'Log in'}</span>
+									<span>{isSubmitting ? 'Creating account…' : 'Create an account'}</span>
 								</span>
 							</Button>
 						</Field>
@@ -114,7 +146,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 										fill="currentColor"
 									/>
 								</svg>
-								<span className="sr-only">Sign in with Google</span>
+								<span className="sr-only">Sign up with Google</span>
 							</Button>
 
 							{/* GitHub */}
@@ -138,7 +170,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 						</Field>
 
 						<FieldDescription className="text-center">
-							Don&apos;t have an account? <Link href="/auth/sign-up">Sign up</Link>
+							Already have an account? <Link href="/auth/log-in">Log in</Link>
 						</FieldDescription>
 					</FieldGroup>
 				</form>

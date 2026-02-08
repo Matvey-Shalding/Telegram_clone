@@ -20,8 +20,21 @@ export async function GET() {
 						userId: userId
 					}
 				}
+			},
+			orderBy: {
+				lastMessageAt: 'desc'
+			},
+			include: {
+				messages: true,
+				members: {
+					include: {
+						user: true
+					}
+				}
 			}
 		})
+
+		// console.log('conversations', conversations)
 
 		return NextResponse.json(conversations)
 	} catch (error) {

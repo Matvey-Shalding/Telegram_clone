@@ -1,35 +1,48 @@
-import { ChatFooter } from '@/components/shared/chat/ChatFooter'
-import { ChatHeader } from '@/components/shared/chat/ChatHeader'
+import { auth } from '@/auth'
+import { Provider } from '@/components/shared/chat/Temp'
 import { prisma } from '@/db/prisma'
-import { getConversationDetails } from '@/lib/getConversationDetails'
+import { Conversation } from '@/lib/conversation'
+import { headers } from 'next/headers'
 
 export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params
 
 	const conversation = await prisma.conversation.findFirst({
-		where: { id: id }
+		where: { id: id },
+		include: {
+			members: {
+				include: {
+					user: true
+				}
+			},
+			messages: true
+		}
 	})
 
-	const members = await prisma.conversationMember.findMany({
-		where: { conversationId: id }
+	const session = await auth.api.getSession({
+		headers: await headers() // you need to pass the headers object.
 	})
 
+	const service = new Conversation(conversation)
 
-	const isGroup = members.length > 2
+	const title = service.getTitle(conversation?.members ?? null, session?.user.id)
 
-	const { title, details } = await getConversationDetails(isGroup, conversation, members, Number(id))
+	const details = service.getDetails(conversation?.members ?? null)
 
 	return (
-		<div className="h-screen relative w-full flex flex-col">
-			<ChatHeader
-				title={title}
-				details={details}
-			/>
-
-			{/* Scrollable messages */}
-			<div className="flex-1 overflow-y-auto">{/* messages go here */}</div>
-
-			<ChatFooter />
-		</div>
+		<Provider
+			title={title}
+			details={details}
+			conversation={conversation}
+		/>
 	)
+
+	// return (
+	// 	<div className="h-screen relative w-full flex flex-col">
+
+	// 		<ChatContent messages={conversation?.messages ?? null} />
+
+	// 		<ChatFooter />
+	// 	</div>
+	// )
 }

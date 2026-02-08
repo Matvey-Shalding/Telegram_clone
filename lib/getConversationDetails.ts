@@ -1,18 +1,17 @@
-import { db } from '@/db'
-import { Conversation, ConversationMember, user } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { prisma } from '@/db/prisma'
+import { Conversation, ConversationMember } from '@/generated/prisma/client'
 
 export interface ReturnProps {
-	title:string,
-	details:string
+	title: string
+	details: string
 }
 
 export const getConversationDetails = async (
 	isGroup: boolean,
-	conversation: Conversation | undefined,
 	members: ConversationMember[],
-	userId: number
-):Promise<ReturnProps> => {
+	userId: string,
+	conversation: Conversation | null,
+): Promise<ReturnProps> => {
 	const details = isGroup ? `${members.length} members` : 'last seen recently'
 
 	let title = ''
@@ -22,10 +21,14 @@ export const getConversationDetails = async (
 	} else {
 		const otherMember = members.find(member => member.userId !== userId)
 		if (otherMember) {
-			const memberName = await db.select().from(user).where(eq(user.id, otherMember.userId))
-			title = memberName[0]?.name ?? ''
+			const memberName = await prisma.user.findFirst({
+				where: {
+					id: otherMember.userId
+				}
+			})
+			title = memberName?.name ?? ''
 		}
 	}
 
-	return {title,details}
+	return { title, details }
 }

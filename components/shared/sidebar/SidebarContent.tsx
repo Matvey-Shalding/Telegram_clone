@@ -1,23 +1,24 @@
 'use client'
 
-import { SidebarContent, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
-import { Api } from '@/services/clientApi'
-import { useQuery } from '@tanstack/react-query'
+import { SidebarContent as Sidebar, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo } from 'react'
-import { SidebarChatItem } from './SidebarChatItem'
-import { SidebarChatItemSkeleton } from './SidebarChatItemSkeleton'
+import { SidebarItemSkeleton } from './SidebarItemSkeleton'
+import { Api } from '@/services/clientApi'
+import { useQuery } from '@tanstack/react-query'
+import { SidebarItem } from '.'
 
 interface Props {
 	className?: string
 	searchValue: string
 }
 
-export const SidebarChats: React.FC<Props> = ({ className, searchValue }) => {
+export const SidebarContent: React.FC<Props> = ({ className, searchValue }) => {
 	const { data = [], isLoading } = useQuery({
 		queryKey: ['chats'],
 		queryFn: () => Api.conversation.getAll()
 	})
+
 
 	const chats = useMemo(() => {
 		const q = searchValue.toLowerCase()
@@ -25,10 +26,10 @@ export const SidebarChats: React.FC<Props> = ({ className, searchValue }) => {
 	}, [searchValue, data])
 
 	return (
-		<SidebarContent>
+		<Sidebar>
 			<SidebarGroup className="px-0">
 				<SidebarMenu>
-					{isLoading && Array.from({ length: 12 }).map((_, i) => <SidebarChatItemSkeleton key={i} />)}
+					{isLoading && Array.from({ length: 12 }).map((_, i) => <SidebarItemSkeleton key={i} />)}
 
 					{!isLoading && (
 						<AnimatePresence mode="popLayout">
@@ -41,13 +42,13 @@ export const SidebarChats: React.FC<Props> = ({ className, searchValue }) => {
 									exit={{ opacity: 0, height: 0 }}
 									transition={{ duration: 0.22, ease: 'easeInOut' }}
 								>
-									<SidebarChatItem {...chat} />
+									<SidebarItem {...chat} />
 								</motion.div>
 							))}
 						</AnimatePresence>
 					)}
 				</SidebarMenu>
 			</SidebarGroup>
-		</SidebarContent>
+		</Sidebar>
 	)
 }

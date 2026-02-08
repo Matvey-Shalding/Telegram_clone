@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
 
 	if (!chatId) return NextResponse.json({})
 
-	const lastMessage = prisma.message.findMany({
+	const lastMessage = await prisma.message.findMany({
 		where: {
 			conversationId: chatId
 		},
@@ -16,5 +16,5 @@ export async function GET(req: NextRequest) {
 		take: 1
 	})
 
-	return NextResponse.json(lastMessage)
+	return NextResponse.json(lastMessage[0])
 }

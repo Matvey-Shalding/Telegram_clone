@@ -2,7 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const SidebarChatItemSkeleton = () => {
+export const SidebarItemSkeleton = () => {
   return (
     <div className="flex items-center gap-x-2 min-h-14 px-2">
       <div className="h-8 w-8 shrink-0" data-sidebar="icon">
