@@ -116,16 +116,6 @@
 	--sidebar-ring: oklch(0.556 0 0);
 }
 
-/* SimpleBar vertical track */
-.simplebar-track.simplebar-vertical {
-	width: 8px;
-}
-
-/* SimpleBar thumb */
-.simplebar-scrollbar:before {
-	background-color: red;
-	border-radius: 9999px;
-}
 
 @layer base {
 	* {
