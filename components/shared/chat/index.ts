@@ -1,0 +1,7 @@
+export { Chat } from './Chat'
+export { ChatContent } from './ChatContent'
+export { ChatFooter } from './ChatFooter'
+export { ChatHeader } from './ChatHeader'
+export { ChatMessage } from './ChatMessage'
+export { DateBadge } from './DateBadge'
+export { MessagesScrollbar } from './MessagesScrollbar'

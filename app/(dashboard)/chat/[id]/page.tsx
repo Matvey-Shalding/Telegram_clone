@@ -1,5 +1,5 @@
 import { auth } from '@/auth'
-import { Provider } from '@/components/shared/chat/Temp'
+import { Chat } from '@/components/shared/chat/Chat'
 import { prisma } from '@/db/prisma'
 import { Conversation } from '@/lib/conversation'
 import { headers } from 'next/headers'
@@ -15,7 +15,9 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
 					user: true
 				}
 			},
-			messages: true
+			messages: {
+				orderBy: {createdAt: 'asc'}
+			},
 		}
 	})
 
@@ -30,19 +32,10 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
 	const details = service.getDetails(conversation?.members ?? null)
 
 	return (
-		<Provider
+		<Chat
 			title={title}
 			details={details}
 			conversation={conversation}
 		/>
 	)
-
-	// return (
-	// 	<div className="h-screen relative w-full flex flex-col">
-
-	// 		<ChatContent messages={conversation?.messages ?? null} />
-
-	// 		<ChatFooter />
-	// 	</div>
-	// )
 }

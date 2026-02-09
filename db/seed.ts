@@ -4,152 +4,162 @@ import { auth } from '@/auth'
 import { prisma } from './prisma'
 
 async function main() {
-  console.log('🧹 Clearing database...')
+	console.log('🧹 Clearing database...')
 
-  // Order matters because of FK constraints
-  await prisma.messageReaction.deleteMany()
-  await prisma.message.deleteMany()
-  await prisma.conversationMember.deleteMany()
-  await prisma.conversation.deleteMany()
+	// Order matters because of FK constraints
+	await prisma.messageReaction.deleteMany()
+	await prisma.message.deleteMany()
+	await prisma.conversationMember.deleteMany()
+	await prisma.conversation.deleteMany()
 
-  // BetterAuth tables
-  await prisma.verification.deleteMany()
-  await prisma.account.deleteMany()
-  await prisma.session.deleteMany()
-  await prisma.user.deleteMany()
+	// BetterAuth tables
+	await prisma.verification.deleteMany()
+	await prisma.account.deleteMany()
+	await prisma.session.deleteMany()
+	await prisma.user.deleteMany()
 
-  console.log('✔ Database cleared')
+	console.log('✔ Database cleared')
 
-  console.log('🌱 Seeding database...')
+	console.log('🌱 Seeding database...')
 
-  // -----------------------------
-  // 1. Create 10 BetterAuth users
-  // -----------------------------
-  const users = []
+	// -----------------------------
+	// 1. Create 10 BetterAuth users
+	// -----------------------------
+	const users = []
 
-  for (let i = 1; i <= 10; i++) {
-    const email = `user${i}@example.com`
-    const password = 'password123'
+	for (let i = 1; i <= 10; i++) {
+		const email = `user${i}@example.com`
+		const password = 'password123'
 
-    const result = await auth.api.signUpEmail({
-      body: {
-        email,
-        password,
-        name: `User ${i}`
-      }
-    })
+		const result = await auth.api.signUpEmail({
+			body: {
+				email,
+				password,
+				name: `User ${i}`
+			}
+		})
 
-    users.push(result.user)
-  }
+		users.push(result.user)
+	}
 
-  console.log('✔ Created users')
+	console.log('✔ Created users')
 
-  // -----------------------------
-  // 2. Create 10 conversations
-  // -----------------------------
-  const createdConversations = await Promise.all(
-    Array.from({ length: 10 }).map((_, i) =>
-      prisma.conversation.create({
-        data: {
-          title: `Conversation ${i + 1}`,
-          isGroup: i !== 0
-        }
-      })
-    )
-  )
+	// -----------------------------
+	// 2. Create 10 conversations
+	// -----------------------------
+	const createdConversations = await Promise.all(
+		Array.from({ length: 10 }).map((_, i) =>
+			prisma.conversation.create({
+				data: {
+					title: `Conversation ${i + 1}`,
+					isGroup: i !== 0
+				}
+			})
+		)
+	)
 
-  console.log('✔ Created conversations')
+	console.log('✔ Created conversations')
 
-  // -----------------------------
-  // 3. Add members to conversations
-  // -----------------------------
-  for (const convo of createdConversations) {
-    const memberCount = convo.id === createdConversations[0].id ? 2 : 4
-    const selectedUsers = users.slice(0, memberCount)
+	// -----------------------------
+	// 3. Add members to conversations
+	// -----------------------------
+	for (const convo of createdConversations) {
+		const memberCount = convo.id === createdConversations[0].id ? 2 : 4
+		const selectedUsers = users.slice(0, memberCount)
 
-    await prisma.conversationMember.createMany({
-      data: selectedUsers.map(u => ({
-        conversationId: convo.id,
-        userId: u.id,
-        joinedAt: new Date()
-      }))
-    })
-  }
+		await prisma.conversationMember.createMany({
+			data: selectedUsers.map(u => ({
+				conversationId: convo.id,
+				userId: u.id,
+				joinedAt: new Date()
+			}))
+		})
+	}
 
-  console.log('✔ Added conversation members')
+	console.log('✔ Added conversation members')
 
-  // -----------------------------
-  // 4. Create messages
-  // -----------------------------
-  const allMessages = []
+	// -----------------------------
+	// 4. Create messages
+	// -----------------------------
+	const allMessages = []
 
-  // 60 messages in conversation 1
-  const convo1 = createdConversations[0]
+	// Utility: random date within last N months
+	function randomDateWithinMonths(monthsBack: number) {
+		const now = new Date()
+		const past = new Date()
+		past.setMonth(now.getMonth() - monthsBack)
 
-  for (let i = 0; i < 60; i++) {
-    const sender = users[i % 2]
-    const date = new Date()
-    date.setDate(date.getDate() - (60 - i))
+		const timestamp = past.getTime() + Math.random() * (now.getTime() - past.getTime())
 
-    const msg = await prisma.message.create({
-      data: {
-        conversationId: convo1.id,
-        senderId: sender.id,
-        content: `Message ${i + 1} in conversation 1`,
-        createdAt: date
-      }
-    })
+		return new Date(timestamp)
+	}
 
-    allMessages.push(msg)
-  }
+	// 100 messages in conversation 1
+	const convo1 = createdConversations[0]
 
-  // 40 messages across other conversations
-  for (let i = 1; i < createdConversations.length; i++) {
-    const convo = createdConversations[i]
+	for (let i = 0; i < 100; i++) {
+		const sender = users[Math.floor(Math.random() * users.length)]
 
-    for (let j = 0; j < 4; j++) {
-      const sender = users[(i + j) % users.length]
+		const msg = await prisma.message.create({
+			data: {
+				conversationId: convo1.id,
+				senderId: sender.id,
+				content: `Message ${i + 1} in conversation 1`,
+				createdAt: randomDateWithinMonths(6) // last 6 months
+			}
+		})
 
-      const msg = await prisma.message.create({
-        data: {
-          conversationId: convo.id,
-          senderId: sender.id,
-          content: `Message ${j + 1} in conversation ${convo.id}`
-        }
-      })
+		allMessages.push(msg)
+	}
 
-      allMessages.push(msg)
-    }
-  }
+	// 40 messages across other conversations
+	for (let i = 1; i < createdConversations.length; i++) {
+		const convo = createdConversations[i]
 
-  console.log('✔ Created messages')
+		for (let j = 0; j < 4; j++) {
+			const sender = users[(i + j) % users.length]
 
-  // -----------------------------
-  // 5. Add reactions
-  // -----------------------------
-  const reactions = ['👍', '❤️', '😂', '🔥']
+			const msg = await prisma.message.create({
+				data: {
+					conversationId: convo.id,
+					senderId: sender.id,
+					content: `Message ${j + 1} in conversation ${convo.id}`,
+					createdAt: randomDateWithinMonths(3)
+				}
+			})
 
-  for (let i = 0; i < 20; i++) {
-    const msg = allMessages[i]
-    const user = users[i % users.length]
+			allMessages.push(msg)
+		}
+	}
 
-    await prisma.messageReaction.create({
-      data: {
-        messageId: msg.id,
-        userId: user.id,
-        reaction: reactions[i % reactions.length]
-      }
-    })
-  }
+	console.log('✔ Created messages')
 
-  console.log('✔ Added reactions')
+	// -----------------------------
+	// 5. Add reactions
+	// -----------------------------
+	const reactions = ['👍', '❤️', '😂', '🔥']
 
-  console.log('🌱 Seeding complete!')
+	for (let i = 0; i < 20; i++) {
+		const msg = allMessages[i]
+		const user = users[i % users.length]
+
+		await prisma.messageReaction.create({
+			data: {
+				messageId: msg.id,
+				userId: user.id,
+				reaction: reactions[i % reactions.length]
+			}
+		})
+	}
+
+	console.log('✔ Added reactions')
+
+	console.log('🌱 Seeding complete!')
 }
 
 main()
-  .then(() => process.exit(0))
-  .catch(err => {
-    console.error(err)
-    process.exit(1)
-  })
+	.then(() => process.exit(0))
+	.catch(err => {
+		console.error(err)
+		process.exit(1)
+	})
