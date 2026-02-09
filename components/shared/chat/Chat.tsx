@@ -1,6 +1,7 @@
 'use client'
 
 import { Chat as Conversation } from '@/@types/Chat'
+import { useState } from 'react'
 import { ChatContent } from './ChatContent'
 import { ChatFooter } from './ChatFooter'
 import { ChatHeader } from './ChatHeader'
@@ -12,16 +13,31 @@ interface Props {
 }
 
 export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
+	const [mode, setMode] = useState<'default' | 'search'>('default')
+
+	const [searchValue, setSearchValue] = useState('')
+
 	return (
 		<div className="h-screen w-full flex flex-col">
 			<ChatHeader
+				setSearchValue={setSearchValue}
+				setMode={setMode}
+				mode={mode}
 				title={title}
 				details={details}
 			/>
 
-			<ChatContent messages={conversation?.messages ?? []} />
+			<ChatContent
+				mode={mode}
+				searchValue={searchValue}
+				messages={conversation?.messages ?? []}
+			/>
 
-			<ChatFooter />
+			<ChatFooter
+				mode={mode}
+				searchValue={searchValue}
+				setSearchValue={setSearchValue}
+			/>
 		</div>
 	)
 }

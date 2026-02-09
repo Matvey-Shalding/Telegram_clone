@@ -2,6 +2,7 @@
 
 import { AvatarWithBadge } from '@/components/shared/AvatarWithBadge'
 import { Card } from '@/components/ui'
+import { Highlight } from '@/components/ui/Highlighted'
 import { Message } from '@/generated/prisma/client'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { cn } from '@/lib/utils'
@@ -11,9 +12,11 @@ import React, { memo } from 'react'
 interface Props {
 	className?: string
 	message: Message
+	searchValue: string
+	isActiveMatch?: boolean
 }
 
-export const ChatMessage: React.FC<Props> = memo(({ className, message }) => {
+export const ChatMessage: React.FC<Props> = memo(({ className, message, searchValue, isActiveMatch }) => {
 	const session = useCurrentSession()
 	const isMine = session?.user.id === message.senderId
 
@@ -31,7 +34,12 @@ export const ChatMessage: React.FC<Props> = memo(({ className, message }) => {
 			>
 				{/* Message + inline footer */}
 				<div className="flex items-end gap-2">
-					<span>{message.content}</span>
+					<Highlight
+						text={message.content ?? ''}
+						query={searchValue}
+						isActive={isActiveMatch}
+						invertColors={!isMine}
+					/>
 
 					<span
 						className={cn(
