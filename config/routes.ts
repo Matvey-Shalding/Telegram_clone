@@ -1,3 +1,4 @@
 export const API_ROUTES = {
-	CONVERSATIONS: 'conversations'
+	CONVERSATIONS: 'conversations',
+	MESSAGES: 'messages'
 } as const

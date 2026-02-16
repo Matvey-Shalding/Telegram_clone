@@ -4,7 +4,7 @@ import { sessionAtom } from '@/store/sessionAtom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import React, { useEffect } from 'react'
-import { Toaster } from 'react-hot-toast'
+import { Toaster } from '../ui/sonner'
 interface Props {
 	className?: string
 	children: React.ReactNode

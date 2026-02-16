@@ -14,15 +14,12 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
 				include: {
 					user: true
 				}
-			},
-			messages: {
-				orderBy: {createdAt: 'asc'}
-			},
+			}
 		}
 	})
 
 	const session = await auth.api.getSession({
-		headers: await headers() // you need to pass the headers object.
+		headers: await headers()
 	})
 
 	const service = new Conversation(conversation)

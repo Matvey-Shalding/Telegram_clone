@@ -1,91 +1,148 @@
 'use client'
 
-import { Calendar } from '@/components/ui/calendar'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { ChatMode } from '@/@types/ChatMode'
+import { authClient } from '@/auth-client'
 import { Message } from '@/generated/prisma/client'
-import { useChatController } from '@/hooks/useChatControllers'
+import { useMessages } from '@/hooks'
+import { useCalendar } from '@/hooks/messages/useCalendar'
+import { useSearch } from '@/hooks/messages/useSearch'
+import { useVirtuoso } from '@/hooks/messages/useVirtuoso'
+import { Chat } from '@/lib/chat'
 import { cn } from '@/lib/utils'
-import { ArrowDown, ArrowUp } from 'lucide-react'
-import React from 'react'
+import { Api } from '@/services/clientApi'
+import { useMutationState, useQuery } from '@tanstack/react-query'
+import React, { useEffect, useMemo } from 'react'
 import { Virtuoso } from 'react-virtuoso'
+import { ChatCalendar } from './ChatCalendar'
 import { ChatMessage } from './ChatMessage'
-import { DateBadge } from './DateBadge'
+import { ChatSearch } from './ChatSearch'
 import { MessagesScrollbar } from './MessagesScrollbar'
 
 interface Props {
 	className?: string
-	messages: Message[] | null
 	searchValue: string
-	mode: 'default' | 'search'
+	mode: ChatMode
+	conversationId: string | undefined
 }
 
-export const ChatContent: React.FC<Props> = ({ className, mode, messages, searchValue }) => {
-	if (!messages || messages.length === 0) {
-		return <div className="p-4 text-muted-foreground">Chat is empty</div>
+export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, searchValue }) => {
+	/**
+	 * 1️⃣ Fetch real messages
+	 */
+	const { data, isLoading } = useQuery<Message[]>({
+		queryKey: ['messages', conversationId],
+		queryFn: () => Api.messages.getAll(conversationId ?? ''),
+		enabled: !!conversationId
+	})
+
+	/**
+	 * 2️⃣ Read pending sendMessage mutations (optimistic source)
+	 */
+	const pendingVariables = useMutationState({
+		filters: {
+			mutationKey: ['sendMessage'],
+			status: 'pending'
+		},
+		select: mutation =>
+			mutation.state.variables as {
+				conversationId: string
+				content: string
+				optimisticId: string
+			}
+	})
+
+	useEffect(() => {
+		console.log('fetched messages:', data)
+	}, [data])
+
+	const id = authClient.useSession().data?.user.id
+
+	/**
+	 * 3️⃣ Convert pending mutations → optimistic messages
+	 */
+	const optimisticMessages: Message[] = useMemo(() => {
+		if (!pendingVariables?.length || !conversationId) return []
+
+		return pendingVariables
+			.filter(v => v.conversationId === conversationId)
+			.map((v, index) => ({
+				id: v.optimisticId,
+				conversationId: v.conversationId,
+				senderId: id!, // IMPORTANT: must exist in schema
+				content: v.content ?? null,
+				image: null,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				seenBy: [],
+				messageReactions: [],
+				optimisticId: v.optimisticId as any
+			}))
+	}, [pendingVariables, conversationId])
+
+	/**
+	 * 4️⃣ Merge real + optimistic messages
+	 */
+	const allMessages = useMemo(() => {
+		if (!data) return optimisticMessages
+
+		// Collect optimisticIds that already have a real message
+		const realOptimisticIds = new Set(data.map(m => m.optimisticId).filter(Boolean))
+
+		// Keep only optimistic messages that do NOT have a real counterpart
+		const stillPending = optimisticMessages.filter(om => !realOptimisticIds.has(om.id))
+
+		return [...data, ...stillPending]
+	}, [data, optimisticMessages])
+
+	/**
+	 * 5️⃣ Message processing (windowing, metadata, etc.)
+	 */
+	const { messages, loadOlderMessages } = useMessages(allMessages)
+
+	const chat = useMemo(() => {
+		return new Chat(messages as any)
+	}, [messages])
+
+	const { virtuosoRef } = useVirtuoso(messages.length, mode)
+
+	const { isCalendarOpen, setIsCalendarOpen, selectedDate, handleDateSelect } = useCalendar(messages, virtuosoRef)
+
+	const { matchedMessageIndexes, currentMatchCursor, scrollToMatch } = useSearch(chat, messages, searchValue, mode, virtuosoRef)
+
+	/**
+	 * 6️⃣ Guard states
+	 */
+	if (isLoading && !messages.length) {
+		return <div>Loading messages...</div>
 	}
 
-	const {
-		virtuosoRef,
-		enhancedMessages,
-		loadOlderMessages,
-		isCalendarOpen,
-		setIsCalendarOpen,
-		selectedDate,
-		handleDateSelect,
-		matchedMessageIndexes,
-		currentMatchCursor,
-		scrollToMatch
-	} = useChatController(messages, searchValue,mode)
+	if (!conversationId) {
+		return <div>Conversation not found</div>
+	}
 
-	const today = new Date()
-
+	/**
+	 * 7️⃣ Render
+	 */
 	return (
-		<div className={cn('h-full w-full p-6 pr-0 relative', className)}>
-			<Dialog
-				open={isCalendarOpen}
-				onOpenChange={setIsCalendarOpen}
-			>
-				<DialogContent
-					className="w-70 p-2"
-					showCloseButton={false}
-				>
-					<Calendar
-						disabled={d => d > today}
-						fixedWeeks
-						weekStartsOn={1}
-						selected={selectedDate}
-						onSelect={handleDateSelect}
-						mode="single"
-						className="w-full"
-					/>
-				</DialogContent>
-			</Dialog>
+		<div className={cn('h-full w-full relative', className)}>
+			<ChatCalendar
+				isCalendarOpen={isCalendarOpen}
+				setIsCalendarOpen={setIsCalendarOpen}
+				selectedDate={selectedDate}
+				handleDateSelect={handleDateSelect}
+			/>
 
-			{matchedMessageIndexes.length > 0 && mode === 'search' && (
-				<div className="absolute right-4 bottom-4 z-10 flex gap-2">
-					<button
-						onClick={() => scrollToMatch('prev')}
-						disabled={currentMatchCursor === 0}
-						className="rounded-full size-8 grid place-items-center border text-sm disabled:opacity-50"
-					>
-						<ArrowDown className="size-4" />
-					</button>
-
-					<button
-						onClick={() => scrollToMatch('next')}
-						disabled={currentMatchCursor === matchedMessageIndexes.length - 1}
-						className="rounded-full size-8 grid place-items-center border text-sm disabled:opacity-50"
-					>
-						<ArrowUp className="size-4" />
-					</button>
-				</div>
-			)}
+			<ChatSearch
+				mode={mode}
+				matchedMessageIndexes={matchedMessageIndexes}
+				currentMatchCursor={currentMatchCursor}
+				scrollToMatch={scrollToMatch}
+			/>
 
 			<Virtuoso
 				ref={virtuosoRef}
-				data={enhancedMessages}
-				initialTopMostItemIndex={enhancedMessages.length - 1}
-				computeItemKey={(_, item) => item.id}
+				data={messages}
+				computeItemKey={(_, item) => item.optimisticId ?? item.id}
 				startReached={loadOlderMessages}
 				components={{ Scroller: MessagesScrollbar }}
 				style={{ height: '100%', width: '100%' }}
@@ -93,19 +150,12 @@ export const ChatContent: React.FC<Props> = ({ className, mode, messages, search
 					const isActive = matchedMessageIndexes[currentMatchCursor] === index
 
 					return (
-						<div className={cn('flex flex-col', message.isSameSender ? 'mt-1' : 'mt-3')}>
-							{message.showDateBadge && (
-								<DateBadge
-									setOpen={setIsCalendarOpen}
-									date={new Date(message.createdAt)}
-								/>
-							)}
-							<ChatMessage
-								message={message}
-								searchValue={searchValue}
-								isActiveMatch={isActive}
-							/>
-						</div>
+						<ChatMessage
+							message={message}
+							searchValue={searchValue}
+							isActiveMatch={isActive}
+							setIsCalendarOpen={setIsCalendarOpen}
+						/>
 					)
 				}}
 			/>

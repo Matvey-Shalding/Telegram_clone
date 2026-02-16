@@ -9,7 +9,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 			id: id
 		},
 		include: {
-			messages: true,
 			members: {
 				include: {
 					user: true

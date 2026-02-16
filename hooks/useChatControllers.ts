@@ -2,27 +2,39 @@
 
 import { Message } from '@/generated/prisma/client'
 import { Chat } from '@/lib/chat'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useMessages } from './useMessages'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useMessages } from './messages/useMessages'
 
-export function useChatController(messages: Message[] | null, searchValue: string, mode: 'default' | 'search') {
+export function useChatController(messages: Message[] | undefined, searchValue: string, mode: 'default' | 'search') {
+	// ---- SAFETY NORMALIZATION ----
+	// const messages = useMemo(() => {
+	// 	return messages ? messages : []
+	// }, [messages])
+
+	// ---- REFS ----
 	const virtuosoRef = useRef<any>(null)
 
+	// ---- DERIVED DATA ----
 	const { enhancedMessages, loadOlderMessages } = useMessages(messages)
 
-	const chat = useMemo(() => new Chat(messages ?? []), [messages])
+	const chat = useMemo(() => {
+		return new Chat(messages ?? [])
+	}, [messages])
 
-	useEffect(() => {
-		if (mode === 'default') {
-			virtuosoRef.current.scrollToIndex({
-				index: enhancedMessages.length - 1,
-				align: 'start',
-				behavior: 'smooth'
-			})
+	// ---- AUTO SCROLL TO BOTTOM (DEFAULT MODE) ----
+	useLayoutEffect(() => {
+		if (mode !== 'default' || !virtuosoRef.current || enhancedMessages.length === 0) {
+			return
 		}
-	}, [mode])
 
-	// Calendar
+		virtuosoRef.current.scrollToIndex({
+			index: enhancedMessages.length - 1,
+			align: 'end',
+			behavior: 'auto'
+		})
+	}, [mode, enhancedMessages.length])
+
+	// ---- CALENDAR STATE ----
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false)
 	const [selectedDate, setSelectedDate] = useState<Date | undefined>()
 
@@ -41,15 +53,18 @@ export function useChatController(messages: Message[] | null, searchValue: strin
 		})
 	}
 
-	// Search
+	// ---- SEARCH ----
 	const matchedMessageIndexes = useMemo(() => {
+		if (!searchValue) return []
 		return chat.findSearchMatches(searchValue, enhancedMessages)
-	}, [searchValue, enhancedMessages])
+	}, [searchValue, enhancedMessages, chat])
 
 	const [currentMatchCursor, setCurrentMatchCursor] = useState(0)
 
-	useEffect(() => {
-		if (!matchedMessageIndexes.length || !virtuosoRef.current) return
+	useLayoutEffect(() => {
+		if (mode !== 'search' || !virtuosoRef.current || matchedMessageIndexes.length === 0) {
+			return
+		}
 
 		setCurrentMatchCursor(0)
 
@@ -58,10 +73,10 @@ export function useChatController(messages: Message[] | null, searchValue: strin
 			align: 'start',
 			behavior: 'smooth'
 		})
-	}, [matchedMessageIndexes])
+	}, [mode, matchedMessageIndexes])
 
 	const scrollToMatch = (direction: 'next' | 'prev') => {
-		if (!matchedMessageIndexes.length || !virtuosoRef.current) return
+		if (!virtuosoRef.current || matchedMessageIndexes.length === 0) return
 
 		setCurrentMatchCursor(prev => {
 			const next = direction === 'next' ? Math.min(prev + 1, matchedMessageIndexes.length - 1) : Math.max(prev - 1, 0)
@@ -76,6 +91,7 @@ export function useChatController(messages: Message[] | null, searchValue: strin
 		})
 	}
 
+	// ---- RETURN API ----
 	return {
 		virtuosoRef,
 		enhancedMessages,

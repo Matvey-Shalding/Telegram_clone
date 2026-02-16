@@ -1,10 +1,14 @@
 'use client'
 
 import { Chat as Conversation } from '@/@types/Chat'
-import { useState } from 'react'
+import { currentConversationId } from '@/store/conversationAtom'
+import { useAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 import { ChatContent } from './ChatContent'
 import { ChatFooter } from './ChatFooter'
 import { ChatHeader } from './ChatHeader'
+import { useMutation, useMutationState, useQueryClient } from '@tanstack/react-query'
+import { Api } from '@/services/clientApi'
 
 interface Props {
 	title: string
@@ -17,6 +21,18 @@ export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
 
 	const [searchValue, setSearchValue] = useState('')
 
+	const [_, setCurrentConversationId] = useAtom(currentConversationId)
+
+	useEffect(() => {
+		if (conversation?.id) {
+			setCurrentConversationId(conversation.id)
+		}
+	}, [conversation?.id, setCurrentConversationId])
+
+
+
+
+
 	return (
 		<div className="h-screen w-full flex flex-col">
 			<ChatHeader
@@ -28,9 +44,9 @@ export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
 			/>
 
 			<ChatContent
+				conversationId={conversation?.id}
 				mode={mode}
 				searchValue={searchValue}
-				messages={conversation?.messages ?? []}
 			/>
 
 			<ChatFooter
