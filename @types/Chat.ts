@@ -1,4 +1,4 @@
-import { Conversation, ConversationMember, Message, User } from '@/generated/prisma/client'
+import { Conversation, ConversationMember, User } from '@/generated/prisma/client'
 
 export interface Chat extends Conversation {
 	members: (ConversationMember & { user: User })[]

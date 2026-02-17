@@ -1,12 +1,13 @@
 'use client'
 
+import { Chat } from '@/@types/Chat'
 import { SidebarContent as Sidebar, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
-import { AnimatePresence, motion } from 'framer-motion'
-import { useMemo } from 'react'
-import { SidebarItemSkeleton } from './SidebarItemSkeleton'
 import { Api } from '@/services/clientApi'
 import { useQuery } from '@tanstack/react-query'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useMemo } from 'react'
 import { SidebarItem } from '.'
+import { SidebarItemSkeleton } from './SidebarItemSkeleton'
 
 interface Props {
 	className?: string
@@ -14,11 +15,10 @@ interface Props {
 }
 
 export const SidebarContent: React.FC<Props> = ({ className, searchValue }) => {
-	const { data = [], isLoading } = useQuery({
+	const { data = [], isLoading } = useQuery<Chat[]>({
 		queryKey: ['chats'],
 		queryFn: () => Api.conversation.getAll()
 	})
-
 
 	const chats = useMemo(() => {
 		const q = searchValue.toLowerCase()

@@ -104,11 +104,12 @@ model ConversationMember {
 }
 
 model Conversation {
-  id            String   @id @default(uuid())
-  title         String?
-  isGroup       Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  lastMessageAt DateTime @default(now())
+  id                 String    @id @default(uuid())
+  title              String?
+  isGroup            Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  lastMessageAt      DateTime?
+  lastMessagePreview String?
 
   members  ConversationMember[]
   messages Message[]

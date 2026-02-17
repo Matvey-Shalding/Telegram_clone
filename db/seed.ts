@@ -6,7 +6,7 @@ import { prisma } from './prisma'
 async function main() {
 	console.log('🧹 Clearing database...')
 
-	// Order matters because of FK constraints
+	// Order matters
 	await prisma.messageReaction.deleteMany()
 	await prisma.message.deleteMany()
 	await prisma.conversationMember.deleteMany()
@@ -19,35 +19,31 @@ async function main() {
 	await prisma.user.deleteMany()
 
 	console.log('✔ Database cleared')
-
 	console.log('🌱 Seeding database...')
 
 	// -----------------------------
-	// 1. Create 10 BetterAuth users
+	// 1. Create users (BetterAuth)
 	// -----------------------------
-	const users = []
+	const users: { id: string }[] = []
 
 	for (let i = 1; i <= 10; i++) {
-		const email = `user${i}@example.com`
-		const password = 'password123'
-
 		const result = await auth.api.signUpEmail({
 			body: {
-				email,
-				password,
+				email: `user${i}@example.com`,
+				password: 'password123',
 				name: `User ${i}`
 			}
 		})
 
-		users.push(result.user)
+		users.push({ id: result.user.id })
 	}
 
 	console.log('✔ Created users')
 
 	// -----------------------------
-	// 2. Create 10 conversations
+	// 2. Create conversations
 	// -----------------------------
-	const createdConversations = await Promise.all(
+	const conversations = await Promise.all(
 		Array.from({ length: 10 }).map((_, i) =>
 			prisma.conversation.create({
 				data: {
@@ -61,17 +57,15 @@ async function main() {
 	console.log('✔ Created conversations')
 
 	// -----------------------------
-	// 3. Add members to conversations
+	// 3. Add members
 	// -----------------------------
-	for (const convo of createdConversations) {
-		const memberCount = convo.id === createdConversations[0].id ? 2 : 4
-		const selectedUsers = users.slice(0, memberCount)
+	for (const convo of conversations) {
+		const memberCount = convo.id === conversations[0].id ? 2 : 4
 
 		await prisma.conversationMember.createMany({
-			data: selectedUsers.map(u => ({
+			data: users.slice(0, memberCount).map(u => ({
 				conversationId: convo.id,
-				userId: u.id,
-				joinedAt: new Date()
+				userId: u.id
 			}))
 		})
 	}
@@ -79,81 +73,76 @@ async function main() {
 	console.log('✔ Added conversation members')
 
 	// -----------------------------
-	// 4. Create messages
+	// Utility: random date
 	// -----------------------------
-	const allMessages = []
-
-	// Utility: random date within last N months
 	function randomDateWithinMonths(monthsBack: number) {
 		const now = new Date()
 		const past = new Date()
 		past.setMonth(now.getMonth() - monthsBack)
 
-		const timestamp = past.getTime() + Math.random() * (now.getTime() - past.getTime())
-
-		return new Date(timestamp)
+		return new Date(past.getTime() + Math.random() * (now.getTime() - past.getTime()))
 	}
 
-	// 100 messages in conversation 1
-	const convo1 = createdConversations[0]
+	// -----------------------------
+	// 4. Create messages + update conversation summary
+	// -----------------------------
+	for (const convo of conversations) {
+		const messageCount = convo === conversations[0] ? 100 : 4
 
-	for (let i = 0; i < 100; i++) {
-		const sender = users[Math.floor(Math.random() * users.length)]
+		let lastMessageAt: Date | null = null
+		let lastMessagePreview: string | null = null
 
-		const msg = await prisma.message.create({
-			data: {
-				conversationId: convo1.id,
-				senderId: sender.id,
-				content: `Message ${i + 1} in conversation 1`,
-				createdAt: randomDateWithinMonths(6) // last 6 months
-			}
-		})
+		for (let i = 0; i < messageCount; i++) {
+			const sender = users[(i + Math.floor(Math.random() * users.length)) % users.length]
+			const createdAt = randomDateWithinMonths(convo === conversations[0] ? 6 : 3)
 
-		allMessages.push(msg)
-	}
+			const content = `Message ${i + 1} in ${convo.title ?? convo.id}`
 
-	// 40 messages across other conversations
-	for (let i = 1; i < createdConversations.length; i++) {
-		const convo = createdConversations[i]
-
-		for (let j = 0; j < 4; j++) {
-			const sender = users[(i + j) % users.length]
-
-			const msg = await prisma.message.create({
+			await prisma.message.create({
 				data: {
 					conversationId: convo.id,
 					senderId: sender.id,
-					content: `Message ${j + 1} in conversation ${convo.id}`,
-					createdAt: randomDateWithinMonths(3)
+					content,
+					createdAt
 				}
 			})
 
-			allMessages.push(msg)
+			// Track last message
+			if (!lastMessageAt || createdAt > lastMessageAt) {
+				lastMessageAt = createdAt
+				lastMessagePreview = content.slice(0, 100)
+			}
 		}
+
+		// ✅ Update conversation summary ONCE
+		await prisma.conversation.update({
+			where: { id: convo.id },
+			data: {
+				lastMessageAt,
+				lastMessagePreview
+			}
+		})
 	}
 
-	console.log('✔ Created messages')
+	console.log('✔ Created messages and updated conversation summaries')
 
 	// -----------------------------
 	// 5. Add reactions
 	// -----------------------------
 	const reactions = ['👍', '❤️', '😂', '🔥']
+	const messages = await prisma.message.findMany({ take: 20 })
 
-	for (let i = 0; i < 20; i++) {
-		const msg = allMessages[i]
-		const user = users[i % users.length]
-
+	for (let i = 0; i < messages.length; i++) {
 		await prisma.messageReaction.create({
 			data: {
-				messageId: msg.id,
-				userId: user.id,
+				messageId: messages[i].id,
+				userId: users[i % users.length].id,
 				reaction: reactions[i % reactions.length]
 			}
 		})
 	}
 
 	console.log('✔ Added reactions')
-
 	console.log('🌱 Seeding complete!')
 }
 

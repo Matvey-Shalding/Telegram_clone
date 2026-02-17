@@ -1,5 +1,6 @@
 'use client'
 
+import { Conversation } from '@/lib/conversation'
 import React, { Dispatch, SetStateAction } from 'react'
 
 interface Props {
@@ -9,11 +10,7 @@ interface Props {
 }
 
 export const DateBadge: React.FC<Props> = ({ date, setOpen }) => {
-	const label = date.toLocaleDateString(undefined, {
-		weekday: 'short',
-		day: 'numeric',
-		month: 'short'
-	})
+	const label = new Conversation(null).formatDate(date)
 
 	return (
 		<div

@@ -25,7 +25,6 @@ export async function GET() {
 				lastMessageAt: 'desc'
 			},
 			include: {
-				messages: true,
 				members: {
 					include: {
 						user: true

@@ -4,8 +4,8 @@ import * as React from 'react'
 
 import { Separator } from '@/components/ui/separator'
 import { Sidebar as CoreSidebar, SidebarRail } from '@/components/ui/sidebar'
-import { SidebarContent } from './SidebarContent'
 import { SidebarFooter, SidebarHeader } from '.'
+import { SidebarContent } from './SidebarContent'
 
 export function Sidebar({ ...props }: React.ComponentProps<typeof CoreSidebar>) {
 	const [searchValue, setSearchValue] = React.useState('')

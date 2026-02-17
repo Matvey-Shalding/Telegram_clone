@@ -1,4 +1,3 @@
-
 import { ConversationMember, Conversation as ConversationType, Message, User } from '@/generated/prisma/client'
 
 export class Conversation {
@@ -29,5 +28,38 @@ export class Conversation {
 	getLastMessageContent(messages: Message[] | null) {
 		if (!messages || messages.length === 0) return ''
 		return messages[messages.length - 1].content
+	}
+	formatDate(date: Date | string | null | undefined): string {
+		if (!date) return ''
+
+		const parsed = typeof date === 'string' ? new Date(date) : date
+
+		if (isNaN(parsed.getTime())) return ''
+
+		const now = new Date()
+
+		const isToday = parsed.getDate() === now.getDate() && parsed.getMonth() === now.getMonth() && parsed.getFullYear() === now.getFullYear()
+
+		if (isToday) {
+			return parsed.toLocaleTimeString([], {
+				hour: '2-digit',
+				minute: '2-digit'
+			})
+		}
+
+		// Monday as start of week
+		const nowDay = now.getDay() === 0 ? 7 : now.getDay()
+		const monday = new Date(now)
+		monday.setHours(0, 0, 0, 0)
+		monday.setDate(now.getDate() - (nowDay - 1))
+
+		if (parsed >= monday) {
+			return parsed.toLocaleDateString('en-US', { weekday: 'short' })
+		}
+
+		return parsed.toLocaleDateString('en-US', {
+			day: '2-digit',
+			month: 'short'
+		})
 	}
 }

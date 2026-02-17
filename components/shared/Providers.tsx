@@ -1,7 +1,6 @@
 import { authClient } from '@/auth-client'
-import { queryClient } from '@/lib/reactQuery'
-import { sessionAtom } from '@/store/sessionAtom'
-import { QueryClientProvider } from '@tanstack/react-query'
+import { currentSession } from '@/store'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import React, { useEffect } from 'react'
 import { Toaster } from '../ui/sonner'
@@ -12,7 +11,9 @@ interface Props {
 export const Providers: React.FC<Props> = ({ className, children }) => {
 	const { data } = authClient.useSession()
 
-	const [_, setSession] = useAtom(sessionAtom)
+	const [_, setSession] = useAtom(currentSession)
+
+	const queryClient = new QueryClient()
 
 	useEffect(() => {
 		setSession(data)

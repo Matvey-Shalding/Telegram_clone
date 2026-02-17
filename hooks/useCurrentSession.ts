@@ -1,6 +1,6 @@
-import { sessionAtom } from '@/store/sessionAtom'
+import { currentSession } from '@/store'
 import { useAtomValue } from 'jotai'
 
 export function useCurrentSession() {
-	return useAtomValue(sessionAtom)
+	return useAtomValue(currentSession)
 }

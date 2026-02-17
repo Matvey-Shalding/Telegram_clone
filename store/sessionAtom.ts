@@ -3,4 +3,4 @@ import { atom } from 'jotai'
 
 export type Session = ReturnType<typeof authClient.useSession>['data']
 
-export const sessionAtom = atom<Session>(null)
+export const currentSession = atom<Session>(null)
