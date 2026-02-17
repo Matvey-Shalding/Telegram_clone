@@ -1,20 +1,16 @@
 import { API_ROUTES } from '@/config/routes'
 import { axiosInstance } from './instance'
 
-export const send = async ({
-	content,
-	conversationId,
-	optimisticId
-}: {
+export interface SendMessageRequest {
 	content: string
-	conversationId: string
-	optimisticId: string
-}) => {
+	conversationId: string | undefined
+}
+
+export const send = async ({ content, conversationId }: SendMessageRequest) => {
 	return (
 		await axiosInstance.post(API_ROUTES.MESSAGES + '/send', {
 			content,
-			conversationId,
-			optimisticId
+			conversationId
 		})
 	).data
 }

@@ -6,7 +6,7 @@ import { Card } from '@/components/ui'
 import { Highlight } from '@/components/ui/Highlighted'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { cn } from '@/lib/utils'
-import { CheckCheck } from 'lucide-react'
+import { CheckCheck, Clock } from 'lucide-react'
 import React, { Dispatch, SetStateAction, memo } from 'react'
 import { DateBadge } from './DateBadge'
 
@@ -16,11 +16,13 @@ interface Props {
 	searchValue: string
 	isActiveMatch?: boolean
 	setIsCalendarOpen: Dispatch<SetStateAction<boolean>>
+	isLastMessage?: boolean
 }
 
-export const ChatMessage: React.FC<Props> = memo(({ className, setIsCalendarOpen, message, searchValue, isActiveMatch }) => {
+export const ChatMessage: React.FC<Props> = memo(({ className, setIsCalendarOpen, message, searchValue, isActiveMatch, isLastMessage }) => {
 	const session = useCurrentSession()
 	const isMine = session?.user.id === message.senderId
+	const isOptimistic = message.optimistic === true
 
 	return (
 		<div className={cn('flex flex-col', message.isSameSender ? 'mt-1' : 'mt-3')}>
@@ -30,18 +32,22 @@ export const ChatMessage: React.FC<Props> = memo(({ className, setIsCalendarOpen
 					date={new Date(message.createdAt)}
 				/>
 			)}
-			<div className={cn('w-full flex items-end gap-2 px-2', isMine ? 'justify-end' : 'justify-start', className)}>
+
+			<div className={cn('w-full flex items-end gap-2 px-2', isMine ? 'justify-end' : 'justify-start', className, isLastMessage && 'mb-20')}>
 				{/* Avatar (left) */}
 				{!isMine && <AvatarWithBadge className="size-7 shrink-0" />}
 
 				<Card
 					className={cn(
 						'relative max-w-[70%] px-3 py-1.75 mt-1 text-sm shadow-none border',
-						'whitespace-pre-wrap break-words leading-tight',
-						isMine ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-muted rounded-bl-sm'
+						'whitespace-pre-wrap break-words leading-tight transition-all',
+
+						isMine ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-muted rounded-bl-sm',
+
+						isOptimistic && ['opacity-70', 'border-dashed', 'animate-pulse']
 					)}
 				>
-					{/* Message + inline footer */}
+					{/* Message + footer */}
 					<div className="flex items-end gap-2">
 						<Highlight
 							text={message.content ?? ''}
@@ -61,8 +67,8 @@ export const ChatMessage: React.FC<Props> = memo(({ className, setIsCalendarOpen
 								minute: '2-digit'
 							})}
 
-							{/* message status (Telegram-like) */}
-							{isMine && <CheckCheck className="size-3" />}
+							{/* Status icon */}
+							{isMine && (isOptimistic ? <Clock className="size-3 animate-spin-slow" /> : <CheckCheck className="size-3" />)}
 						</span>
 					</div>
 				</Card>
@@ -73,3 +79,5 @@ export const ChatMessage: React.FC<Props> = memo(({ className, setIsCalendarOpen
 		</div>
 	)
 })
+
+ChatMessage.displayName = 'ChatMessage'

@@ -122,7 +122,8 @@ model Message {
   image          String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now())
-  optimisticId    String?  @unique
+
+  optimistic Boolean? @default(false) // For client-side optimistic updates
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation("WrittenMessages", fields: [senderId], references: [id], onDelete: Cascade)

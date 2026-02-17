@@ -1,7 +1,7 @@
 'use client'
 
+import { ChatMessage as ChatMessageType } from '@/@types/ChatMessage'
 import { ChatMode } from '@/@types/ChatMode'
-import { authClient } from '@/auth-client'
 import { Message } from '@/generated/prisma/client'
 import { useMessages } from '@/hooks'
 import { useCalendar } from '@/hooks/messages/useCalendar'
@@ -10,7 +10,7 @@ import { useVirtuoso } from '@/hooks/messages/useVirtuoso'
 import { Chat } from '@/lib/chat'
 import { cn } from '@/lib/utils'
 import { Api } from '@/services/clientApi'
-import { useMutationState, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import React, { useEffect, useMemo } from 'react'
 import { Virtuoso } from 'react-virtuoso'
 import { ChatCalendar } from './ChatCalendar'
@@ -26,78 +26,17 @@ interface Props {
 }
 
 export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, searchValue }) => {
-	/**
-	 * 1️⃣ Fetch real messages
-	 */
-	const { data, isLoading } = useQuery<Message[]>({
+	const { data, isLoading, isError } = useQuery<Message[]>({
 		queryKey: ['messages', conversationId],
 		queryFn: () => Api.messages.getAll(conversationId ?? ''),
 		enabled: !!conversationId
 	})
 
-	/**
-	 * 2️⃣ Read pending sendMessage mutations (optimistic source)
-	 */
-	const pendingVariables = useMutationState({
-		filters: {
-			mutationKey: ['sendMessage'],
-			status: 'pending'
-		},
-		select: mutation =>
-			mutation.state.variables as {
-				conversationId: string
-				content: string
-				optimisticId: string
-			}
-	})
-
 	useEffect(() => {
-		console.log('fetched messages:', data)
+		console.log('fetched messages:', data?.at(-1))
 	}, [data])
 
-	const id = authClient.useSession().data?.user.id
-
-	/**
-	 * 3️⃣ Convert pending mutations → optimistic messages
-	 */
-	const optimisticMessages: Message[] = useMemo(() => {
-		if (!pendingVariables?.length || !conversationId) return []
-
-		return pendingVariables
-			.filter(v => v.conversationId === conversationId)
-			.map((v, index) => ({
-				id: v.optimisticId,
-				conversationId: v.conversationId,
-				senderId: id!, // IMPORTANT: must exist in schema
-				content: v.content ?? null,
-				image: null,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				seenBy: [],
-				messageReactions: [],
-				optimisticId: v.optimisticId as any
-			}))
-	}, [pendingVariables, conversationId])
-
-	/**
-	 * 4️⃣ Merge real + optimistic messages
-	 */
-	const allMessages = useMemo(() => {
-		if (!data) return optimisticMessages
-
-		// Collect optimisticIds that already have a real message
-		const realOptimisticIds = new Set(data.map(m => m.optimisticId).filter(Boolean))
-
-		// Keep only optimistic messages that do NOT have a real counterpart
-		const stillPending = optimisticMessages.filter(om => !realOptimisticIds.has(om.id))
-
-		return [...data, ...stillPending]
-	}, [data, optimisticMessages])
-
-	/**
-	 * 5️⃣ Message processing (windowing, metadata, etc.)
-	 */
-	const { messages, loadOlderMessages } = useMessages(allMessages)
+	const { messages, loadOlderMessages } = useMessages(data)
 
 	const chat = useMemo(() => {
 		return new Chat(messages as any)
@@ -112,8 +51,12 @@ export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, 
 	/**
 	 * 6️⃣ Guard states
 	 */
-	if (isLoading && !messages.length) {
+	if (isLoading) {
 		return <div>Loading messages...</div>
+	}
+
+	if (isError) {
+		return <div>Error loading messages</div>
 	}
 
 	if (!conversationId) {
@@ -142,15 +85,19 @@ export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, 
 			<Virtuoso
 				ref={virtuosoRef}
 				data={messages}
-				computeItemKey={(_, item) => item.optimisticId ?? item.id}
+				computeItemKey={(_, item) => item.id}
 				startReached={loadOlderMessages}
 				components={{ Scroller: MessagesScrollbar }}
 				style={{ height: '100%', width: '100%' }}
-				itemContent={(index, message: any) => {
+				itemContent={(index, message: ChatMessageType) => {
 					const isActive = matchedMessageIndexes[currentMatchCursor] === index
+
+					const isLastMessage = index === messages.length - 1
 
 					return (
 						<ChatMessage
+							key={message.id}
+							isLastMessage={isLastMessage}
 							message={message}
 							searchValue={searchValue}
 							isActiveMatch={isActive}
