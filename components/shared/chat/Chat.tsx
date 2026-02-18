@@ -7,8 +7,6 @@ import { useEffect, useState } from 'react'
 import { ChatContent } from './ChatContent'
 import { ChatFooter } from './ChatFooter'
 import { ChatHeader } from './ChatHeader'
-import { useMutation, useMutationState, useQueryClient } from '@tanstack/react-query'
-import { Api } from '@/services/clientApi'
 
 interface Props {
 	title: string
@@ -28,10 +26,6 @@ export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
 			setCurrentConversationId(conversation.id)
 		}
 	}, [conversation?.id, setCurrentConversationId])
-
-
-
-
 
 	return (
 		<div className="h-screen w-full flex flex-col">

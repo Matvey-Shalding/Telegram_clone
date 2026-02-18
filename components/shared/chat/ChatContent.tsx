@@ -1,22 +1,15 @@
 'use client'
 
-import { ChatMessage as ChatMessageType } from '@/@types/ChatMessage'
 import { ChatMode } from '@/@types/ChatMode'
-import { Message } from '@/generated/prisma/client'
-import { useMessages } from '@/hooks'
-import { useCalendar } from '@/hooks/messages/useCalendar'
-import { useSearch } from '@/hooks/messages/useSearch'
-import { useVirtuoso } from '@/hooks/messages/useVirtuoso'
-import { Chat } from '@/lib/chat'
 import { cn } from '@/lib/utils'
-import { Api } from '@/services/clientApi'
-import { useQuery } from '@tanstack/react-query'
-import React, { useEffect, useMemo } from 'react'
-import { Virtuoso } from 'react-virtuoso'
+import React from 'react'
+
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Button } from '@/components/ui/button'
+import { useChatController } from '@/hooks'
 import { ChatCalendar } from './ChatCalendar'
-import { ChatMessage } from './ChatMessage'
 import { ChatSearch } from './ChatSearch'
-import { MessagesScrollbar } from './MessagesScrollbar'
+import { ChatVirtuoso } from './ChatVirtuoso'
 
 interface Props {
 	className?: string
@@ -26,85 +19,79 @@ interface Props {
 }
 
 export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, searchValue }) => {
-	const { data, isLoading, isError } = useQuery<Message[]>({
-		queryKey: ['messages', conversationId],
-		queryFn: () => Api.messages.getAll(conversationId ?? ''),
-		enabled: !!conversationId
-	})
-
-	useEffect(() => {
-		console.log('fetched messages:', data?.at(-1))
-	}, [data])
-
-	const { messages, loadOlderMessages } = useMessages(data)
-
-	const chat = useMemo(() => {
-		return new Chat(messages as any)
-	}, [messages])
-
-	const { virtuosoRef } = useVirtuoso(messages.length, mode)
-
-	const { isCalendarOpen, setIsCalendarOpen, selectedDate, handleDateSelect } = useCalendar(messages, virtuosoRef)
-
-	const { matchedMessageIndexes, currentMatchCursor, scrollToMatch } = useSearch(chat, messages, searchValue, mode, virtuosoRef)
+	const { isLoading, isError, hasConversation, messages, virtuosoData, virtuosoRef, loadOlderMessages, search, calendar } =
+		useChatController({
+			conversationId,
+			mode,
+			searchValue
+		})
 
 	/**
-	 * 6️⃣ Guard states
+	 * Guards
 	 */
-	if (isLoading) {
-		return <div>Loading messages...</div>
+	if (!hasConversation) {
+		return (
+			<div className="h-full w-full grid place-content-center">
+				<EmptyState
+					title="Something went wrong"
+					description="Such conversation does not exist"
+					action={
+						<Button
+							onClick={() => window.location.reload()}
+							variant="outline"
+						>
+							Retry
+						</Button>
+					}
+				/>
+			</div>
+		)
 	}
 
 	if (isError) {
-		return <div>Error loading messages</div>
+		return (
+			<div className="h-full w-full grid place-content-center">
+				<EmptyState
+					title="Something went wrong"
+					description="Failed to load data"
+					action={
+						<Button
+							onClick={() => window.location.reload()}
+							variant="outline"
+						>
+							Retry
+						</Button>
+					}
+				/>
+			</div>
+		)
 	}
 
-	if (!conversationId) {
-		return <div>Conversation not found</div>
-	}
-
-	/**
-	 * 7️⃣ Render
-	 */
 	return (
 		<div className={cn('h-full w-full relative', className)}>
 			<ChatCalendar
-				isCalendarOpen={isCalendarOpen}
-				setIsCalendarOpen={setIsCalendarOpen}
-				selectedDate={selectedDate}
-				handleDateSelect={handleDateSelect}
+				isCalendarOpen={calendar.isOpen}
+				setIsCalendarOpen={calendar.setOpen}
+				selectedDate={calendar.selectedDate}
+				handleDateSelect={calendar.selectDate}
 			/>
 
 			<ChatSearch
 				mode={mode}
-				matchedMessageIndexes={matchedMessageIndexes}
-				currentMatchCursor={currentMatchCursor}
-				scrollToMatch={scrollToMatch}
+				matchedMessageIndexes={search.matchedMessageIndexes}
+				currentMatchCursor={search.currentMatchCursor}
+				scrollToMatch={search.scrollToMatch}
 			/>
 
-			<Virtuoso
-				ref={virtuosoRef}
-				data={messages}
-				computeItemKey={(_, item) => item.id}
-				startReached={loadOlderMessages}
-				components={{ Scroller: MessagesScrollbar }}
-				style={{ height: '100%', width: '100%' }}
-				itemContent={(index, message: ChatMessageType) => {
-					const isActive = matchedMessageIndexes[currentMatchCursor] === index
-
-					const isLastMessage = index === messages.length - 1
-
-					return (
-						<ChatMessage
-							key={message.id}
-							isLastMessage={isLastMessage}
-							message={message}
-							searchValue={searchValue}
-							isActiveMatch={isActive}
-							setIsCalendarOpen={setIsCalendarOpen}
-						/>
-					)
-				}}
+			<ChatVirtuoso
+				isLoading={isLoading}
+				messages={messages}
+				data={virtuosoData}
+				virtuosoRef={virtuosoRef}
+				loadOlderMessages={loadOlderMessages}
+				searchValue={searchValue}
+				activeMatchIndex={search.matchedMessageIndexes[search.currentMatchCursor]}
+				setIsCalendarOpen={calendar.setOpen}
 			/>
 		</div>
 	)

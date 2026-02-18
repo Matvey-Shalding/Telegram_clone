@@ -26,7 +26,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 		orderBy: { createdAt: 'asc' }
 	})
 
-	console.log(`Found ${messages.length} messages for conversationId: ${conversationId}`)
 
 	return NextResponse.json(messages)
 }
