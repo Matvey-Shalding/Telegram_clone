@@ -1,7 +1,9 @@
 'use client'
 
 import { Chat } from '@/@types/Chat'
+import { authClient } from '@/auth-client'
 import { SidebarContent as Sidebar, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
+import { Conversation } from '@/lib'
 import { Api } from '@/services/clientApi'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -20,9 +22,17 @@ export const SidebarContent: React.FC<Props> = ({ className, searchValue }) => {
 		queryFn: () => Api.conversation.getAll()
 	})
 
+	const userId = authClient.useSession().data?.user.id
+
 	const chats = useMemo(() => {
 		const q = searchValue.toLowerCase()
-		return data.filter(chat => chat.title?.toLowerCase().includes(q))
+
+		return data.filter(chat => {
+			const conversationService = new Conversation(chat)
+
+			const title = conversationService.getTitle(chat.members, userId)
+			return title.toLowerCase().includes(q)
+		})
 	}, [searchValue, data])
 
 	return (

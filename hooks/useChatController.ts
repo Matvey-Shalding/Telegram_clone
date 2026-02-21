@@ -1,80 +1,66 @@
+// hooks/chat/useChatContent.ts
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { ChatMessageSkeleton, VirtuosoMessage } from '@/@types/ChatMessage'
+import { ChatMode } from '@/@types/ChatMode'
+import { useCalendar, useMessages, useSearch, useVirtuoso } from '@/hooks'
+import { useChatMessages } from '@/hooks/messages/useChatMessage'
+import { Chat } from '@/lib'
 import { useMemo } from 'react'
 
-import { ChatMessageSkeleton, ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/ChatMessage'
-import { ChatMode } from '@/@types/ChatMode'
-import { Message } from '@/generated/prisma/client'
+export function useChatController(mode: ChatMode, searchValue: string) {
+	// 1️⃣ fetch
+	const { data, isLoading, isError } = useChatMessages()
 
-import { useMessages } from '@/hooks'
-import { useCalendar } from '@/hooks/messages/useCalendar'
-import { useSearch } from '@/hooks/messages/useSearch'
-import { useVirtuoso } from '@/hooks/messages/useVirtuoso'
-import { Chat } from '@/lib/chat'
-import { Api } from '@/services/clientApi'
-
-/**
- * Skeleton data for Virtuoso
- */
-
-const SKELETON_MESSAGES: ChatMessageSkeleton[] = Array.from({ length: 10 }, (_, i) => ({
-	id: `skeleton-${i}`,
-	isMine: i % 2 === 0,
-	type: 'skeleton'
-}))
-
-interface UseChatControllerParams {
-	conversationId: string | undefined
-	mode: ChatMode
-	searchValue: string
-}
-
-export function useChatController({ conversationId, mode, searchValue }: UseChatControllerParams) {
-	// Fetch messages
-	const { data, isLoading, isError } = useQuery<Message[]>({
-		queryKey: ['messages', conversationId],
-		queryFn: () => Api.messages.getAll(conversationId ?? ''),
-		enabled: !!conversationId
-	})
-
-	// Client DTO
+	// 2️⃣ DTO + windowing
 	const { messages, loadOlderMessages } = useMessages(data)
 
-	const chat = useMemo(() => {
-		return new Chat(messages as ChatMessageType[])
-	}, [messages])
-
-	// Virtualization logic
+	// 3️⃣ virtuoso
 	const { virtuosoRef } = useVirtuoso(messages.length, mode)
 
-	// Calendar logic
+	// 4️⃣ calendar
 	const { isCalendarOpen, setIsCalendarOpen, selectedDate, handleDateSelect } = useCalendar(messages, virtuosoRef)
 
-	// Search logic
+	// 5️⃣ search
+	const chat = useMemo(() => new Chat(messages as any), [messages])
+
 	const { matchedMessageIndexes, currentMatchCursor, scrollToMatch } = useSearch(chat, messages, searchValue, mode, virtuosoRef)
 
-	// Virtuoso data source (show skeletons when loading)
-	const virtuosoData: VirtuosoMessage[] = isLoading ? SKELETON_MESSAGES : messages
+	// 6️⃣ skeletons
+	const skeletons: ChatMessageSkeleton[] = useMemo(
+		() =>
+			Array.from({ length: 10 }, (_, i) => ({
+				id: `skeleton-${i}`,
+				isMine: i % 2 === 0,
+				type: 'skeleton'
+			})),
+		[]
+	)
+
+	const virtuosoData: VirtuosoMessage[] = useMemo(() => (isLoading ? skeletons : messages), [isLoading, skeletons, messages])
 
 	return {
+		// state
 		isLoading,
 		isError,
-		hasConversation: !!conversationId,
+
+		// messages
 		messages,
 		virtuosoData,
-		virtuosoRef,
 		loadOlderMessages,
-		search: {
-			matchedMessageIndexes,
-			currentMatchCursor,
-			scrollToMatch
-		},
-		calendar: {
-			isOpen: isCalendarOpen,
-			setOpen: setIsCalendarOpen,
-			selectedDate,
-			selectDate: handleDateSelect
-		}
+
+		// virtuoso
+		virtuosoRef,
+
+		// calendar
+		isCalendarOpen,
+		setIsCalendarOpen,
+		selectedDate,
+		handleDateSelect,
+
+		// search
+		matchedMessageIndexes,
+		currentMatchCursor,
+		scrollToMatch
 	}
 }

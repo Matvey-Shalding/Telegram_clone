@@ -6,7 +6,7 @@ import React from 'react'
 
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/button'
-import { useChatController } from '@/hooks'
+import { useChatController } from '@/hooks/useChatController'
 import { ChatCalendar } from './ChatCalendar'
 import { ChatSearch } from './ChatSearch'
 import { ChatVirtuoso } from './ChatVirtuoso'
@@ -18,35 +18,25 @@ interface Props {
 	conversationId: string | undefined
 }
 
-export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, searchValue }) => {
-	const { isLoading, isError, hasConversation, messages, virtuosoData, virtuosoRef, loadOlderMessages, search, calendar } =
-		useChatController({
-			conversationId,
-			mode,
-			searchValue
-		})
+export const ChatContent: React.FC<Props> = ({ className, mode, searchValue }) => {
+	const {
+		isLoading,
+		isError,
 
-	/**
-	 * Guards
-	 */
-	if (!hasConversation) {
-		return (
-			<div className="h-full w-full grid place-content-center">
-				<EmptyState
-					title="Something went wrong"
-					description="Such conversation does not exist"
-					action={
-						<Button
-							onClick={() => window.location.reload()}
-							variant="outline"
-						>
-							Retry
-						</Button>
-					}
-				/>
-			</div>
-		)
-	}
+		messages,
+		virtuosoData,
+		loadOlderMessages,
+		virtuosoRef,
+
+		isCalendarOpen,
+		setIsCalendarOpen,
+		selectedDate,
+		handleDateSelect,
+
+		matchedMessageIndexes,
+		currentMatchCursor,
+		scrollToMatch
+	} = useChatController(mode, searchValue)
 
 	if (isError) {
 		return (
@@ -70,17 +60,17 @@ export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, 
 	return (
 		<div className={cn('h-full w-full relative', className)}>
 			<ChatCalendar
-				isCalendarOpen={calendar.isOpen}
-				setIsCalendarOpen={calendar.setOpen}
-				selectedDate={calendar.selectedDate}
-				handleDateSelect={calendar.selectDate}
+				isCalendarOpen={isCalendarOpen}
+				setIsCalendarOpen={setIsCalendarOpen}
+				selectedDate={selectedDate}
+				handleDateSelect={handleDateSelect}
 			/>
 
 			<ChatSearch
 				mode={mode}
-				matchedMessageIndexes={search.matchedMessageIndexes}
-				currentMatchCursor={search.currentMatchCursor}
-				scrollToMatch={search.scrollToMatch}
+				matchedMessageIndexes={matchedMessageIndexes}
+				currentMatchCursor={currentMatchCursor}
+				scrollToMatch={scrollToMatch}
 			/>
 
 			<ChatVirtuoso
@@ -90,8 +80,8 @@ export const ChatContent: React.FC<Props> = ({ className, mode, conversationId, 
 				virtuosoRef={virtuosoRef}
 				loadOlderMessages={loadOlderMessages}
 				searchValue={searchValue}
-				activeMatchIndex={search.matchedMessageIndexes[search.currentMatchCursor]}
-				setIsCalendarOpen={calendar.setOpen}
+				activeMatchIndex={matchedMessageIndexes[currentMatchCursor]}
+				setIsCalendarOpen={setIsCalendarOpen}
 			/>
 		</div>
 	)

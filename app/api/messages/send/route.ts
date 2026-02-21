@@ -43,15 +43,14 @@ export async function POST(req: NextRequest) {
 			data: {
 				conversationId,
 				senderId: userId,
-				content,
-				optimisticId
+				content
 			},
 			include: {
 				sender: true
 			}
 		})
 
-		return NextResponse.json({ message, optimisticId }, { status: 201 })
+		return NextResponse.json({ message }, { status: 201 })
 	} catch (error) {
 		console.error('[SEND_MESSAGE_ERROR]', error)
 		return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

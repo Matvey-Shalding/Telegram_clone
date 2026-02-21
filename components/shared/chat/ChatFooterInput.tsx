@@ -1,19 +1,30 @@
 'use client'
 
+import { authClient } from '@/auth-client'
 import { InputGroupAddon, InputGroupInput } from '@/components/ui'
 import { useSendMessage } from '@/hooks/messages/useSendMessage'
 import { Mic, Paperclip, Send, Smile } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
+import { toast } from 'sonner'
 
-export const ChatFooterInput: React.FC = () => {
-	const { messageInput, setMessageInput, sendMessage, isSending } = useSendMessage()
+export const ChatFooterInput = ({ conversationId }: { conversationId: string }) => {
+	const [messageInput, setMessageInput] = useState('')
+	const userId = authClient.useSession()?.data?.user.id
 
-	const handleSubmit = () => {
-		if (!messageInput.trim() || isSending) return
-		sendMessage()
+	const { sendMessage, isPending } = useSendMessage(conversationId, userId)
+
+	const handleSubmit = async () => {
+		if (!messageInput.trim() || isPending) return
+
+		try {
+			await sendMessage(messageInput)
+			setMessageInput('') // ✅ clear immediately
+		} catch (e) {
+			toast.error('Something went wrong')
+		}
 	}
 
-	const handleKeyDown = (e: React.KeyboardEvent) => {
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault()
 			handleSubmit()
@@ -28,10 +39,11 @@ export const ChatFooterInput: React.FC = () => {
 				onKeyDown={handleKeyDown}
 				placeholder="Write a message..."
 				className="outline-none!"
+				disabled={isPending}
 			/>
 
-			<InputGroupAddon>
-				<Paperclip className="text-muted-foreground size-6 -translate-x-1" />
+			<InputGroupAddon className="p-0">
+				<Paperclip className="text-muted-foreground size-5.5" />
 			</InputGroupAddon>
 
 			<InputGroupAddon
@@ -41,12 +53,12 @@ export const ChatFooterInput: React.FC = () => {
 				{messageInput.length > 0 ? (
 					<Send
 						onClick={handleSubmit}
-						className="text-muted-foreground size-6 cursor-pointer"
+						className="text-muted-foreground size-5 cursor-pointer hover:text-foreground transition"
 					/>
 				) : (
 					<>
-						<Smile className="text-muted-foreground size-6" />
-						<Mic className="text-muted-foreground size-6" />
+						<Smile className="text-muted-foreground size-5.5" />
+						<Mic className="text-muted-foreground size-5.5" />
 					</>
 				)}
 			</InputGroupAddon>

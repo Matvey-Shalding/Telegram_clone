@@ -1,124 +1,94 @@
 'use client'
 
-import { authClient } from '@/auth-client'
-import { Message } from '@/generated/prisma/browser'
+import { Message } from '@/generated/prisma/client'
 import { generateId } from '@/lib/generateId'
 import { Api } from '@/services/clientApi'
-import { SendMessageRequest } from '@/services/messages'
-import { currentConversationId as conversationAtom } from '@/store/conversationAtom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAtom } from 'jotai'
-import { useState } from 'react'
 
-interface SendMessageContext {
-	previousMessages: Message[] | undefined
+interface SendResponse {
+	message: Message
 }
 
-interface UseSendMessageResult {
-	messageInput: string
-	setMessageInput: React.Dispatch<React.SetStateAction<string>>
-	sendMessage: () => void
-	isSending: boolean
-	error: Error | null
-}
-
-export const useSendMessage = (): UseSendMessageResult => {
-	const [messageInput, setMessageInput] = useState('')
-	const [error, setError] = useState<Error | null>(null)
-
-	const [currentConversationId] = useAtom(conversationAtom)
+export function useSendMessage(conversationId: string | null, userId?: string) {
 	const queryClient = useQueryClient()
 
-	const session = authClient.useSession()
-	const userId = session.data?.user.id
+	const mutation = useMutation({
+		mutationFn: async (content: string): Promise<Message> => {
+			if (!conversationId) throw new Error('No conversationId provided')
 
-	const mutation = useMutation<
-		Message, // ✅ server response
-		Error, // ✅ error type
-		SendMessageRequest, // ✅ variables
-		SendMessageContext // ✅ context
-	>({
-		mutationFn: Api.messages.send,
+			const res: SendResponse = await Api.messages.send({ conversationId, content })
+			return res.message
+		},
 
-		onMutate: async ({ content, conversationId }) => {
-			setError(null)
+		onMutate: async (content: string) => {
+			if (!conversationId) return
 
-			if (!userId) {
-				throw new Error('User is not authenticated')
-			}
+			// Identifier of optimistic message
 
-			if (!conversationId) {
-				throw new Error('Conversation ID is required')
-			}
+			const clientId = generateId()
 
-			await queryClient.cancelQueries({
-				queryKey: ['messages', conversationId]
-			})
-
-			const previousMessages = queryClient.getQueryData<Message[]>(['messages', conversationId])
-
-			const optimisticMessage: Message = {
-				id: generateId(),
+			const optimisticMessage: Message & { clientId: string } = {
+				id: `temp:${clientId}`,
+				clientId,
 				content,
 				conversationId,
-				senderId: userId,
+				senderId: userId ?? '',
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				image: null,
-				optimistic: true
+				image: null
 			}
 
-			queryClient.setQueryData<Message[]>(['messages', conversationId], (old = []) => [...old, optimisticMessage])
+			// stop ongoing refetch
 
-			setMessageInput('')
+			await queryClient.cancelQueries({ queryKey: ['messages', conversationId] })
 
-			return { previousMessages }
+			// get previous messages
+
+			const previousMessages = queryClient.getQueryData<Message[]>(['messages', conversationId]) ?? []
+
+			// add optimistic message
+
+			queryClient.setQueryData<Message[]>(['messages', conversationId], old => [...(old ?? []), optimisticMessage])
+
+			return { clientId, previousMessages }
 		},
 
-		onError: (err, _vars, ctx) => {
-			setError(err)
+		onError: (_err, _content, ctx) => {
+			if (!conversationId || !ctx) return
 
-			if (!ctx?.previousMessages || !currentConversationId) return
+			// rollback on error
 
-			queryClient.setQueryData(['messages', currentConversationId], ctx.previousMessages)
+			queryClient.setQueryData(['messages', conversationId], ctx.previousMessages)
 		},
 
-		onSuccess: (serverMessage, vars) => {
-			/**
-			 * Optional but type-safe improvement:
-			 * Replace optimistic message instead of full refetch
-			 */
-			queryClient.setQueryData<Message[]>(['messages', vars.conversationId], old =>
-				old?.map(msg => (msg.optimistic && msg.content === vars.content ? serverMessage : msg))
-			)
-		},
+		onSuccess: (serverMessage, _content, ctx) => {
+			if (!conversationId || !ctx) return
 
-		onSettled: (_res, _err, vars) => {
-			queryClient.invalidateQueries({
-				queryKey: ['messages', vars.conversationId]
+			queryClient.setQueryData<Message[]>(['messages', conversationId], old => {
+				const list = old ?? []
+
+				// remove optimistic message
+
+				const cleaned = list.filter(m => {
+					const clientId = (m as any).clientId ?? (typeof m.id === 'string' && m.id.startsWith('temp:') ? m.id.slice(5) : null)
+
+					return clientId !== ctx.clientId
+				})
+
+				// prevent duplicates
+
+				if (cleaned.some(m => m.id === serverMessage.id)) {
+					return cleaned
+				}
+
+				// append real server message
+				return [...cleaned, serverMessage].sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt))
 			})
 		}
 	})
 
-	const sendMessage = () => {
-		if (!currentConversationId) {
-			setError(new Error('No active conversation'))
-			return
-		}
-
-		if (!messageInput.trim()) return
-
-		mutation.mutate({
-			content: messageInput,
-			conversationId: currentConversationId
-		})
-	}
-
 	return {
-		messageInput,
-		setMessageInput,
-		sendMessage,
-		isSending: mutation.isPending,
-		error
+		sendMessage: mutation.mutateAsync,
+		isPending: mutation.isPending
 	}
 }

@@ -2,58 +2,78 @@
 
 import { ChatMessage } from '@/@types/ChatMessage'
 import { Message } from '@/generated/prisma/client'
-import { isSameDay as sameDay } from '@/lib/isSameDay'
+import { isSameDay } from '@/lib'
 import { useEffect, useMemo, useState } from 'react'
 
 const WINDOW_SIZE = 200
 const WINDOW_INCREMENT = 200
 
-export function useMessages(data: Message[] = []) {
+type MessageLike = Message & {
+	clientId?: string
+	optimistic?: boolean
+}
+
+function normalize(msg: MessageLike): MessageLike {
+	return {
+		...msg,
+		createdAt: new Date(msg.createdAt),
+		updatedAt: new Date(msg.updatedAt)
+	}
+}
+
+export function useMessages(data: MessageLike[] = []) {
 	const [visibleCount, setVisibleCount] = useState(0)
 
+	/**
+	 * 1️⃣ Normalize + stable sort
+	 * Important: optimistic messages must participate in ordering
+	 */
+	const normalized = useMemo(() => {
+		return data.map(normalize).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+	}, [data])
+
+	/**
+	 * 2️⃣ Auto-expand window when new messages arrive
+	 */
 	useEffect(() => {
-		if (data.length === 0) return
+		if (!normalized.length) return
 
-		setVisibleCount(prev => {
-			if (prev === 0) {
-				return Math.min(WINDOW_SIZE, data.length)
-			}
+		setVisibleCount(prev => (prev === 0 ? Math.min(WINDOW_SIZE, normalized.length) : Math.min(normalized.length, prev + 1)))
+	}, [normalized.length])
 
-			if (data.length > prev) {
-				return Math.min(data.length, prev + 1)
-			}
+	/**
+	 * 3️⃣ Visible slice
+	 */
+	const visible = useMemo(() => {
+		return normalized.slice(Math.max(0, normalized.length - visibleCount))
+	}, [normalized, visibleCount])
 
-			return prev
-		})
-	}, [data.length])
-
-	const visibleMessages = useMemo(() => {
-		return data.slice(Math.max(0, data.length - visibleCount))
-	}, [data, visibleCount])
-
+	/**
+	 * 4️⃣ DTO mapping → ChatMessage
+	 */
 	const messages: ChatMessage[] = useMemo(() => {
-		return visibleMessages.map((msg, i) => {
-			const prev = visibleMessages[i - 1]
-
-			const isSameSender = !!prev && prev.senderId === msg.senderId
-			const isSameDay = !!prev && sameDay(new Date(prev.createdAt), new Date(msg.createdAt))
+		return visible.map((msg, i) => {
+			const prev = visible[i - 1]
 
 			return {
 				...msg,
-				isSameSender,
-				showDateBadge: !prev || !isSameDay
+
+				// 👇 UI flags
+				optimistic: msg.optimistic === true || (typeof msg.id === 'string' && msg.id.startsWith('temp:')),
+
+				isSameSender: !!prev && prev.senderId === msg.senderId,
+
+				showDateBadge: !prev || !isSameDay(prev.createdAt, msg.createdAt)
 			}
 		})
-	}, [visibleMessages])
+	}, [visible])
 
+	/**
+	 * 5️⃣ Pagination
+	 */
 	const loadOlderMessages = () => {
-		if (visibleCount >= data.length) return
-
-		setVisibleCount(prev => Math.min(data.length, prev + WINDOW_INCREMENT))
+		setVisibleCount(v => Math.min(normalized.length, v + WINDOW_INCREMENT))
 	}
 
-	return {
-		messages,
-		loadOlderMessages
-	}
+	return { messages, loadOlderMessages }
 }

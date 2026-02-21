@@ -1,11 +1,5 @@
 'use client'
 
-import React from 'react'
-
-import { ChevronsUpDown, LogOut } from 'lucide-react'
-
-import { SidebarFooter as Footer } from '@/components/ui/sidebar'
-
 import { authClient } from '@/auth-client'
 import {
 	DropdownMenu,
@@ -15,74 +9,97 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
+import { SidebarFooter as Footer, useSidebar } from '@/components/ui/sidebar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
+import { ChevronsUpDown, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import React from 'react'
 import toast from 'react-hot-toast'
-interface Props {
-	className?: string
-}
-export const SidebarFooter: React.FC<Props> = ({ className }) => {
+import { AvatarWithBadge } from '../AvatarWithBadge'
+
+export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) => {
 	const { isMobile } = useSidebar()
-
 	const router = useRouter()
-
 	const session = useCurrentSession()
 
 	const handleLogout = async () => {
 		try {
 			await authClient.signOut()
-
 			router.push('auth/sign-up')
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 			toast.error('Something went wrong')
 		}
 	}
 
-	return (
-		<Footer>
-			<SidebarMenu>
-				<SidebarMenuItem>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<SidebarMenuButton
-								size="lg"
-								className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-							>
-								<div className="h-8 w-8 rounded-full bg-red-400" />
-								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-medium">{session?.user.name ?? 'Loading...'}</span>
-									<span className="truncate text-xs">{session?.user.email ?? 'Loading...'}</span>
-								</div>
-								<ChevronsUpDown className="ml-auto size-4" />
-							</SidebarMenuButton>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent
-							className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-							side={isMobile ? 'bottom' : 'right'}
-							align="end"
-							sideOffset={4}
-						>
-							<DropdownMenuLabel className="p-0 font-normal">
-								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-									<div className="h-8 w-8 rounded-full bg-red-400" />
-									<div className="grid flex-1 text-left text-sm leading-tight">
-										<span className="truncate font-medium">John Doe</span>
-										<span className="truncate text-xs">johndoe@gmail.com</span>
-									</div>
-								</div>
-							</DropdownMenuLabel>
-							<DropdownMenuSeparator />
+	const userName = session?.user.name
 
-							<DropdownMenuItem onClick={handleLogout}>
-								<LogOut />
-								Log out
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</SidebarMenuItem>
-			</SidebarMenu>
+	const userEmail = session?.user.email
+
+	const isLoading = !session?.user
+
+	return (
+		<Footer className={`h-12 border-t flex items-center justify-center p-0`}>
+			<DropdownMenu>
+				<DropdownMenuTrigger
+					className="rounded-none"
+					asChild
+				>
+					<button className="flex items-center w-full px-2 py-1 rounded-lg data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+						{isLoading ? <Skeleton className="h-8 w-8 rounded-full" /> : <AvatarWithBadge className="size-8" />}
+
+						<div className="ml-2 flex-1 flex flex-col text-left truncate">
+							{isLoading ? (
+								<>
+									<Skeleton className="h-4 w-24 mb-1 rounded" />
+									<Skeleton className="h-3 w-32 rounded" />
+								</>
+							) : (
+								<>
+									<span className="font-medium text-sm truncate">{userName}</span>
+									<span className="text-xs text-muted-foreground truncate">{userEmail}</span>
+								</>
+							)}
+						</div>
+
+						<ChevronsUpDown className="ml-auto size-4" />
+					</button>
+				</DropdownMenuTrigger>
+
+				<DropdownMenuContent
+					side={isMobile ? 'bottom' : 'right'}
+					align="end"
+					sideOffset={4}
+					className="min-w-[224px] rounded-lg"
+				>
+					<DropdownMenuLabel className="p-0">
+						<div className="flex items-center gap-2 px-2 py-1.5">
+							{isLoading ? <Skeleton className="h-8 w-8 rounded-full" /> : <AvatarWithBadge className="size-8" />}
+							<div className="flex-1 flex flex-col text-left truncate">
+								{isLoading ? (
+									<>
+										<Skeleton className="h-4 w-24 mb-1 rounded" />
+										<Skeleton className="h-3 w-32 rounded" />
+									</>
+								) : (
+									<>
+										<span className="font-medium text-sm truncate">{userName}</span>
+										<span className="text-xs text-muted-foreground truncate">{userEmail}</span>
+									</>
+								)}
+							</div>
+						</div>
+					</DropdownMenuLabel>
+
+					<DropdownMenuSeparator />
+
+					<DropdownMenuItem onClick={handleLogout}>
+						<LogOut className="mr-2" />
+						Log out
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
 		</Footer>
 	)
 }

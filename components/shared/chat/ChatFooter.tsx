@@ -3,6 +3,8 @@
 import { ChatMode } from '@/@types/ChatMode'
 import { InputGroup } from '@/components/ui'
 import { cn } from '@/lib/utils'
+import { currentConversationId } from '@/store'
+import { useAtom } from 'jotai'
 import React from 'react'
 import { ChatFooterInput } from './ChatFooterInput'
 import { ChatFooterSearch } from './ChatFooterSearch'
@@ -14,25 +16,24 @@ interface Props {
 }
 
 export const ChatFooter: React.FC<Props> = ({ mode, searchValue, setSearchValue }) => {
+	const [conversationId] = useAtom(currentConversationId) //conversationId
+
+	if (!conversationId) {
+		return null
+	}
+
 	return (
-		<InputGroup
-			className={cn(
-				'sticky bottom-0 left-0 shrink-0 h-12 w-full',
-				'border-t border-border',
-				'bg-[#171717]',
-				'p-2.5 pl-5',
-				'rounded-none text-lg font-medium',
-				'outline-none!'
-			)}
-		>
-			{mode === 'search' ? (
-				<ChatFooterSearch
-					searchValue={searchValue}
-					setSearchValue={setSearchValue}
-				/>
-			) : (
-				<ChatFooterInput />
-			)}
-		</InputGroup>
+		<div className="border-t sticky bottom-0 left-0 shrink-0 h-12 w-full">
+			<InputGroup className={cn('w-full h-full', 'bg-[#171717]', 'p-2.5 pl-4', 'rounded-none text-lg font-medium', 'outline-none!')}>
+				{mode === 'search' ? (
+					<ChatFooterSearch
+						searchValue={searchValue}
+						setSearchValue={setSearchValue}
+					/>
+				) : (
+					<ChatFooterInput conversationId={conversationId} />
+				)}
+			</InputGroup>
+		</div>
 	)
 }

@@ -16,7 +16,7 @@ export const ChatHeader: React.FC<Props> = ({ details, title, mode, setMode, set
 	}
 
 	return (
-		<div className="border-b border-border bg-[#171717] px-5 h-15 shrink-0 w-full flex items-center justify-between">
+		<div className="border-b border-border bg-[#171717] px-4 h-15.25 shrink-0 w-full flex items-center justify-between">
 			<div className="flex flex-col">
 				<span className="text-white font-medium">{title}</span>
 				<span className="text-xs text-sidebar-ring">{details}</span>
@@ -25,7 +25,7 @@ export const ChatHeader: React.FC<Props> = ({ details, title, mode, setMode, set
 				className="p-2 cursor-pointer"
 				onClick={handleClick}
 			>
-				{mode === 'default' ? <Search className="text-sidebar-ring size-5" /> : <X className="text-sidebar-ring size-5" />}
+				{mode === 'default' ? <Search className="text-sidebar-ring size-5.5" /> : <X className="text-sidebar-ring size-5.5" />}
 			</div>
 		</div>
 	)
