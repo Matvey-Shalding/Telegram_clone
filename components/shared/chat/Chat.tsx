@@ -2,7 +2,6 @@
 
 import { Chat as Conversation } from '@/@types/Chat'
 import { currentConversationId } from '@/store/conversationAtom'
-import { useQueryClient } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { ChatContent } from './ChatContent'
@@ -19,8 +18,7 @@ export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
 	const [mode, setMode] = useState<'default' | 'search'>('default')
 	const [searchValue, setSearchValue] = useState('')
 
-	const [currentId, setCurrentConversationId] = useAtom(currentConversationId)
-	const queryClient = useQueryClient()
+	const [, setCurrentConversationId] = useAtom(currentConversationId)
 
 	/**
 	 * 1️⃣ Set the conversation ID in Jotai
@@ -42,7 +40,6 @@ export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
 			/>
 
 			<ChatContent
-				conversationId={conversation?.id}
 				mode={mode}
 				searchValue={searchValue}
 			/>

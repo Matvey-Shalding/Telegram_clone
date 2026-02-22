@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import { prisma } from '@/db/prisma'
+import { pusherServer } from '@/lib/pusher'
 import { headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -48,6 +49,38 @@ export async function POST(req: NextRequest) {
 			include: {
 				sender: true
 			}
+		})
+
+		await prisma.conversation.update({
+			where: {
+				id: message.conversationId
+			},
+			data: {
+				lastMessageAt: message.createdAt,
+				lastMessagePreview: message.content
+			}
+		})
+
+		await pusherServer.trigger(message.conversationId, 'messages:new', message)
+
+		const updatedConversation = await prisma.conversation.findFirst({
+			where: {
+				id: message.conversationId
+			},
+			include: {
+				members: {
+					include: {
+						user: true
+					}
+				}
+			}
+		})
+
+		updatedConversation?.members.forEach(member => {
+			pusherServer.trigger(member.user.email!, 'conversation:update', {
+				id: updatedConversation.id,
+				messages: [message]
+			})
 		})
 
 		return NextResponse.json({ message }, { status: 201 })
