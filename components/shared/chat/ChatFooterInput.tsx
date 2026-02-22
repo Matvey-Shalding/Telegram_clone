@@ -5,7 +5,7 @@ import { InputGroupAddon, InputGroupInput } from '@/components/ui'
 import { useSendMessage } from '@/hooks/messages/useSendMessage'
 import { Mic, Paperclip, Send, Smile } from 'lucide-react'
 import React, { useState } from 'react'
-import { toast } from 'sonner'
+import toast from 'react-hot-toast'
 
 export const ChatFooterInput = ({ conversationId }: { conversationId: string }) => {
 	const [messageInput, setMessageInput] = useState('')
@@ -17,8 +17,8 @@ export const ChatFooterInput = ({ conversationId }: { conversationId: string }) 
 		if (!messageInput.trim() || isPending) return
 
 		try {
-			await sendMessage(messageInput)
 			setMessageInput('') // ✅ clear immediately
+			await sendMessage(messageInput)
 		} catch (e) {
 			toast.error('Something went wrong')
 		}

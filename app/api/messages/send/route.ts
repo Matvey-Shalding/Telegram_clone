@@ -61,8 +61,6 @@ export async function POST(req: NextRequest) {
 			}
 		})
 
-		await pusherServer.trigger(message.conversationId, 'messages:new', message)
-
 		const updatedConversation = await prisma.conversation.findFirst({
 			where: {
 				id: message.conversationId
@@ -76,11 +74,16 @@ export async function POST(req: NextRequest) {
 			}
 		})
 
-		updatedConversation?.members.forEach(member => {
-			pusherServer.trigger(member.user.email!, 'conversation:update', {
-				id: updatedConversation.id,
-				messages: [message]
-			})
+		if (!updatedConversation) {
+			return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+		}
+
+		updatedConversation.members.forEach(member => {
+			if (member.user.id) {
+				pusherServer.trigger(`user-${member.user.id}`, 'messages:new', {
+					message
+				})
+			}
 		})
 
 		return NextResponse.json({ message }, { status: 201 })
