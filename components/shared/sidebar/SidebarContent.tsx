@@ -13,11 +13,10 @@ import { SidebarItem } from '.'
 import { SidebarItemSkeleton } from './SidebarItemSkeleton'
 
 interface Props {
-	className?: string
 	searchValue: string
 }
 
-export const SidebarContent: React.FC<Props> = ({ className, searchValue }) => {
+export const SidebarContent: React.FC<Props> = ({ searchValue }) => {
 	const { data = [], isLoading } = useQuery<Chat[]>({
 		queryKey: [REACT_QUERY_KEYS.CHATS],
 		queryFn: () => Api.conversation.getAll()
@@ -34,7 +33,7 @@ export const SidebarContent: React.FC<Props> = ({ className, searchValue }) => {
 			const title = conversationService.getTitle(chat.members, userId)
 			return title.toLowerCase().includes(q)
 		})
-	}, [searchValue, data])
+	}, [searchValue, data, userId])
 
 	return (
 		<Sidebar>

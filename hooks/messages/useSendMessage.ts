@@ -10,6 +10,10 @@ interface SendResponse {
 	message: Message
 }
 
+type ClientMessage = Message & {
+	clientId?: string
+}
+
 export function useSendMessage(conversationId: string | null, userId?: string) {
 	const queryClient = useQueryClient()
 
@@ -24,11 +28,9 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 		onMutate: async (content: string) => {
 			if (!conversationId) return
 
-			// Identifier of optimistic message
-
 			const clientId = generateId()
 
-			const optimisticMessage: Message & { clientId: string } = {
+			const optimisticMessage: ClientMessage = {
 				id: `temp:${clientId}`,
 				clientId,
 				content,
@@ -39,17 +41,13 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 				image: null
 			}
 
-			// stop ongoing refetch
+			await queryClient.cancelQueries({
+				queryKey: [REACT_QUERY_KEYS.MESSAGES, conversationId]
+			})
 
-			await queryClient.cancelQueries({ queryKey: [REACT_QUERY_KEYS.MESSAGES, conversationId] })
+			const previousMessages = queryClient.getQueryData<ClientMessage[]>([REACT_QUERY_KEYS.MESSAGES, conversationId]) ?? []
 
-			// get previous messages
-
-			const previousMessages = queryClient.getQueryData<Message[]>([REACT_QUERY_KEYS.MESSAGES, conversationId]) ?? []
-
-			// add optimistic message
-
-			queryClient.setQueryData<Message[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => [...(old ?? []), optimisticMessage])
+			queryClient.setQueryData<ClientMessage[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => [...(old ?? []), optimisticMessage])
 
 			return { clientId, previousMessages }
 		},
@@ -57,32 +55,21 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 		onError: (_err, _content, ctx) => {
 			if (!conversationId || !ctx) return
 
-			// rollback on error
-
 			queryClient.setQueryData([REACT_QUERY_KEYS.MESSAGES, conversationId], ctx.previousMessages)
 		},
 
 		onSuccess: (serverMessage, _content, ctx) => {
 			if (!conversationId || !ctx) return
 
-			queryClient.setQueryData<Message[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => {
+			queryClient.setQueryData<ClientMessage[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => {
 				const list = old ?? []
 
-				// remove optimistic message
-
-				const cleaned = list.filter(m => {
-					const clientId = (m as any).clientId ?? (typeof m.id === 'string' && m.id.startsWith('temp:') ? m.id.slice(5) : null)
-
-					return clientId !== ctx.clientId
-				})
-
-				// prevent duplicates
+				const cleaned = list.filter(m => m.clientId !== ctx.clientId)
 
 				if (cleaned.some(m => m.id === serverMessage.id)) {
 					return cleaned
 				}
 
-				// append real server message
 				return [...cleaned, serverMessage].sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt))
 			})
 		}

@@ -41,5 +41,5 @@ export const useMessageSubscription = (conversationId: string | undefined, scrol
 			pusherClient.unbind('messages:new', messageHandler)
 			pusherClient.unsubscribe(conversationId)
 		}
-	}, [conversationId, queryClient])
+	}, [conversationId, queryClient, scrollToBottom])
 }

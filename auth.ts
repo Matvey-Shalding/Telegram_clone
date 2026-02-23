@@ -5,14 +5,14 @@ import { nextCookies } from 'better-auth/next-js'
 
 export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
-		provider: 'postgresql',
+		provider: 'postgresql'
 	}),
 	emailAndPassword: {
 		enabled: true
 	},
 	advanced: {
 		database: {
-			generateId: 'uuid',
+			generateId: 'uuid'
 		}
 	},
 	socialProviders: {

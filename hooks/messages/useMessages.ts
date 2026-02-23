@@ -3,7 +3,7 @@
 import { ChatMessage } from '@/@types/ChatMessage'
 import { Message } from '@/generated/prisma/client'
 import { isSameDay } from '@/lib'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const WINDOW_SIZE = 200
 const WINDOW_INCREMENT = 200
@@ -22,24 +22,17 @@ function normalize(msg: MessageLike): MessageLike {
 }
 
 export function useMessages(data: MessageLike[] = []) {
-	const [visibleCount, setVisibleCount] = useState(0)
-
 	/**
 	 * 1️⃣ Normalize + stable sort
-	 * Important: optimistic messages must participate in ordering
 	 */
 	const normalized = useMemo(() => {
 		return data.map(normalize).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
 	}, [data])
 
 	/**
-	 * 2️⃣ Auto-expand window when new messages arrive
+	 * 2️⃣ Visible window size (derived safely)
 	 */
-	useEffect(() => {
-		if (!normalized.length) return
-
-		setVisibleCount(prev => (prev === 0 ? Math.min(WINDOW_SIZE, normalized.length) : Math.min(normalized.length, prev + 1)))
-	}, [normalized.length])
+	const [visibleCount, setVisibleCount] = useState(() => Math.min(WINDOW_SIZE, normalized.length))
 
 	/**
 	 * 3️⃣ Visible slice
@@ -49,7 +42,7 @@ export function useMessages(data: MessageLike[] = []) {
 	}, [normalized, visibleCount])
 
 	/**
-	 * 4️⃣ DTO mapping → ChatMessage
+	 * 4️⃣ DTO → ChatMessage
 	 */
 	const messages: ChatMessage[] = useMemo(() => {
 		return visible.map((msg, i) => {
@@ -57,12 +50,8 @@ export function useMessages(data: MessageLike[] = []) {
 
 			return {
 				...msg,
-
-				// 👇 UI flags
 				optimistic: msg.optimistic === true || (typeof msg.id === 'string' && msg.id.startsWith('temp:')),
-
 				isSameSender: !!prev && prev.senderId === msg.senderId,
-
 				showDateBadge: !prev || !isSameDay(prev.createdAt, msg.createdAt)
 			}
 		})

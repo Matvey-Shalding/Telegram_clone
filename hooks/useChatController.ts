@@ -6,10 +6,7 @@ import { ChatMode } from '@/@types/ChatMode'
 import { useCalendar, useMessages, useSearch, useVirtuoso } from '@/hooks'
 import { useChatMessages } from '@/hooks/messages/useChatMessage'
 import { Chat } from '@/lib'
-import { currentConversationId } from '@/store'
-import { useAtom } from 'jotai'
 import { useMemo } from 'react'
-import { useMessageSubscription } from './messages/useMessageSubscription'
 
 export function useChatController(mode: ChatMode, searchValue: string) {
 	// 1️⃣ fetch
@@ -25,10 +22,9 @@ export function useChatController(mode: ChatMode, searchValue: string) {
 	const { isCalendarOpen, setIsCalendarOpen, selectedDate, handleDateSelect } = useCalendar(messages, virtuosoRef)
 
 	// 5️⃣ search
-	const chat = useMemo(() => new Chat(messages as any), [messages])
+	const chat = useMemo(() => new Chat(messages), [messages])
 
 	const { matchedMessageIndexes, currentMatchCursor, scrollToMatch } = useSearch(chat, messages, searchValue, mode, virtuosoRef)
-
 
 	// 6️⃣ skeletons
 	const skeletons: ChatMessageSkeleton[] = useMemo(

@@ -1,3 +1,4 @@
+import { ChatMessage } from '@/@types/ChatMessage'
 import { Message } from '@/generated/prisma/client'
 
 export class Chat {
@@ -10,7 +11,7 @@ export class Chat {
 	/**
 	 * Find all indexes where a date badge should appear
 	 */
-	getBadgeIndexes(enhancedMessages: any[]) {
+	getBadgeIndexes(enhancedMessages: ChatMessage[]) {
 		return enhancedMessages.map((msg, index) => (msg.showDateBadge ? index : null)).filter((i): i is number => i !== null)
 	}
 
@@ -18,7 +19,7 @@ export class Chat {
 	 * Find closest badge index for a given date
 	 * (Telegram-style jump-to-date)
 	 */
-	findClosestIndexByDate(date: Date, enhancedMessages: any[]) {
+	findClosestIndexByDate(date: Date, enhancedMessages: ChatMessage[]) {
 		if (!enhancedMessages.length) return 0
 
 		const targetDay = date.setHours(0, 0, 0, 0)
@@ -46,7 +47,7 @@ export class Chat {
 	 * Find all message indexes matching a search query
 	 * (newest → oldest)
 	 */
-	findSearchMatches(query: string, enhancedMessages: any[]) {
+	findSearchMatches(query: string, enhancedMessages: ChatMessage[]) {
 		const q = query.toLowerCase().trim()
 		if (!q) return []
 

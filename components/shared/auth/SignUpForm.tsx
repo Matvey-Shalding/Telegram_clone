@@ -34,10 +34,9 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 			await createUser(data)
 
 			toast.success('User created successfully')
-
 			reset()
-		} catch (error: any) {
-			if (error.message.includes('email')) {
+		} catch (error: unknown) {
+			if (error instanceof Error && error.message.includes('email')) {
 				toast.error('Such email is already registered')
 			} else {
 				toast.error('Something went wrong')

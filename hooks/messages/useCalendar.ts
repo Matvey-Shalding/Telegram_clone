@@ -3,8 +3,9 @@
 import { ChatMessage } from '@/@types/ChatMessage'
 import { Chat } from '@/lib/chat'
 import { useMemo, useState } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 
-export function useCalendar(messages: ChatMessage[] = [], virtuosoRef: React.RefObject<any>) {
+export function useCalendar(messages: ChatMessage[] = [], virtuosoRef: React.RefObject<VirtuosoHandle | null>) {
 	const [isCalendarOpen, setIsCalendarOpen] = useState(false)
 	const [selectedDate, setSelectedDate] = useState<Date | undefined>()
 

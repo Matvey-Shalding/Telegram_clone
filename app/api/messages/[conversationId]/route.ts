@@ -26,6 +26,5 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 		orderBy: { createdAt: 'asc' }
 	})
 
-
 	return NextResponse.json(messages)
 }

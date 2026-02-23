@@ -36,7 +36,7 @@ export const SidebarItem: React.FC<Chat> = ({
 
 	const currentUserName = useCurrentSession()?.user.name
 
-	console.log('current user name',currentUserName)
+	console.log('current user name', currentUserName)
 
 	const formattedTitle = conversationService.getTitle(members, session?.user.id)
 

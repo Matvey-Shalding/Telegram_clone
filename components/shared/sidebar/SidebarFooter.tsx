@@ -12,6 +12,7 @@ import {
 import { SidebarFooter as Footer, useSidebar } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
+import { cn } from '@/lib'
 import { ChevronsUpDown, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
@@ -40,7 +41,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 	const isLoading = !session?.user
 
 	return (
-		<Footer className={`h-12 border-t flex items-center justify-center p-0`}>
+		<Footer className={cn(className, `h-12 border-t flex items-center justify-center p-0`)}>
 			<DropdownMenu>
 				<DropdownMenuTrigger
 					className="rounded-none"

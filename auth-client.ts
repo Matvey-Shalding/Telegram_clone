@@ -10,6 +10,6 @@ export const signInViaProvider = async (provider: 'github' | 'google') => {
 		})
 	} catch (error) {
 		toast.error('Something went wrong')
+		console.log('[ERROR IN AUTH_CLIENT]', error)
 	}
 }
-

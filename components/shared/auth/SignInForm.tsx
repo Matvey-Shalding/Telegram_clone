@@ -38,6 +38,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 			reset()
 		} catch (error) {
 			toast.error('Invalid email or password')
+			console.error('[ERROR IN SIGN IN]', error)
 		}
 	}
 

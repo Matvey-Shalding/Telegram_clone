@@ -1,6 +1,7 @@
 'use client'
 
 import { ChatMode } from '@/@types/ChatMode'
+import { cn } from '@/lib'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import React from 'react'
 interface Props {
@@ -13,7 +14,7 @@ interface Props {
 export const ChatSearch: React.FC<Props> = ({ className, mode, matchedMessageIndexes, currentMatchCursor, scrollToMatch }) => {
 	if (matchedMessageIndexes.length > 0 && mode === 'search') {
 		return (
-			<div className="absolute right-6 bottom-6 z-30 flex gap-2">
+			<div className={cn('absolute right-6 bottom-6 z-30 flex gap-2', className)}>
 				<button
 					onClick={() => scrollToMatch('prev')}
 					disabled={currentMatchCursor === 0}

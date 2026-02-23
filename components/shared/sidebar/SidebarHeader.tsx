@@ -14,7 +14,7 @@ export const SidebarHeader: React.FC<Props> = ({ className, searchValue, setSear
 	const { state } = useSidebar()
 	const isCollapsed = state === 'collapsed'
 	return (
-		<Header className="flex items-center flex-row px-3 gap-x-3 h-15">
+		<Header className={cn('flex items-center flex-row px-3 gap-x-3 h-15', className)}>
 			{!isCollapsed && <Menu className="text-muted-foreground size-6 shrink-0" />}
 
 			<InputGroup className={cn('flex-1 overflow-hidden', isCollapsed && 'w-0 border-none')}>

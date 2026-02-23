@@ -21,6 +21,7 @@ export const ChatFooterInput = ({ conversationId }: { conversationId: string }) 
 			await sendMessage(messageInput)
 		} catch (e) {
 			toast.error('Something went wrong')
+			console.error(e)
 		}
 	}
 
