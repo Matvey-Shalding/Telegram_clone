@@ -1,6 +1,6 @@
-import { Message } from '@/generated/prisma/client'
+import { Message, User } from '@/generated/prisma/client'
 
-export interface ChatMessage extends ClientMessage {
+export interface ChatMessage extends Message {
 	isSameSender: boolean
 	showDateBadge: boolean
 }
@@ -11,9 +11,10 @@ export interface ChatMessageSkeleton {
 	type: 'skeleton'
 }
 
-export interface ClientMessage extends Message {
-	optimistic?: boolean
-	clientId?: string
+// message received from pusher
+
+export interface PusherMessage extends Message {
+	sender: User | null
 }
 
 export type VirtuosoMessage = ChatMessage | ChatMessageSkeleton

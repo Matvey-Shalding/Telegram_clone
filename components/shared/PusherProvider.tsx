@@ -1,16 +1,12 @@
+'use client'
+
 import { authClient } from '@/auth-client'
-import { Message } from '@/generated/prisma/client'
-import { getMessageSonnerPayload } from '@/lib/getMessageSonnerPayload'
 import { pusherClient } from '@/lib/pusher'
-import { showMessageToast } from '@/lib/showMessageSonner'
+import { createPusherHandlers } from '@/lib/pusher/eventHandlers'
 import { useQueryClient } from '@tanstack/react-query'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
-interface Props {
-	className?: string
-}
-
-export const PusherProvider: React.FC<Props> = ({ className }) => {
+export const PusherProvider = () => {
 	const queryClient = useQueryClient()
 	const userId = authClient.useSession().data?.user.id
 
@@ -18,35 +14,18 @@ export const PusherProvider: React.FC<Props> = ({ className }) => {
 		if (!userId) return
 
 		const channelName = `user-${userId}`
+		const handlers = createPusherHandlers(queryClient)
+
 		pusherClient.subscribe(channelName)
 
-		const messageHandler = async (payload: { message: Message }) => {
-			const message = payload.message // ✅ destructure correctly
-			if (!message) return
-
-			const conversationId = message.conversationId
-			if (!conversationId) return
-
-			// Update React Query cache
-			queryClient.setQueryData<Message[]>(['messages', conversationId], old => {
-				const exists = old?.some(m => m.id === message.id)
-				if (exists) return old
-				return [...(old ?? []), message]
-			})
-
-			// Show notification
-			try {
-				const sonnerData = await getMessageSonnerPayload(message)
-				if (sonnerData) showMessageToast(sonnerData)
-			} catch (err) {
-				console.error('Sonner error', err)
-			}
-		}
-
-		pusherClient.bind('messages:new', messageHandler)
+		Object.entries(handlers).forEach(([event, handler]) => {
+			pusherClient.bind(event, handler)
+		})
 
 		return () => {
-			pusherClient.unbind('messages:new', messageHandler)
+			Object.entries(handlers).forEach(([event, handler]) => {
+				pusherClient.unbind(event, handler)
+			})
 			pusherClient.unsubscribe(channelName)
 		}
 	}, [userId, queryClient])

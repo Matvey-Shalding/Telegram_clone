@@ -3,6 +3,7 @@
 import { Chat } from '@/@types/Chat'
 import { authClient } from '@/auth-client'
 import { SidebarContent as Sidebar, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
+import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Conversation } from '@/lib'
 import { Api } from '@/services/clientApi'
 import { useQuery } from '@tanstack/react-query'
@@ -18,7 +19,7 @@ interface Props {
 
 export const SidebarContent: React.FC<Props> = ({ className, searchValue }) => {
 	const { data = [], isLoading } = useQuery<Chat[]>({
-		queryKey: ['chats'],
+		queryKey: [REACT_QUERY_KEYS.CHATS],
 		queryFn: () => Api.conversation.getAll()
 	})
 

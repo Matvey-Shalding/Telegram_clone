@@ -6,7 +6,17 @@ import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { Conversation } from '@/lib/conversation'
 import { useRouter } from 'next/navigation'
 import { AvatarWithBadge } from '..'
-export const SidebarItem: React.FC<Chat> = ({ id, title, isGroup, lastMessageAt, createdAt, members, lastMessagePreview }) => {
+export const SidebarItem: React.FC<Chat> = ({
+	id,
+	title,
+	isGroup,
+	lastMessageAt,
+	createdAt,
+	members,
+	lastMessagePreview,
+	lastMessageAuthorId,
+	lastMessageAuthorName
+}) => {
 	const unreadCount = 0 // temporary static value
 
 	const session = useCurrentSession()
@@ -17,11 +27,20 @@ export const SidebarItem: React.FC<Chat> = ({ id, title, isGroup, lastMessageAt,
 		isGroup: isGroup,
 		lastMessageAt: lastMessageAt,
 		createdAt: createdAt,
-		lastMessagePreview
+		lastMessagePreview,
+		lastMessageAuthorId,
+		lastMessageAuthorName
 	})
+
+	const currentUserId = useCurrentSession()?.user.id
+
+	const currentUserName = useCurrentSession()?.user.name
+
+	console.log('current user name',currentUserName)
 
 	const formattedTitle = conversationService.getTitle(members, session?.user.id)
 
+	const description = conversationService.getDescription(currentUserId)
 
 	const router = useRouter()
 
@@ -50,7 +69,7 @@ export const SidebarItem: React.FC<Chat> = ({ id, title, isGroup, lastMessageAt,
 					</div>
 
 					<div className="flex min-w-0 items-center justify-between">
-						<span className="truncate text-xs text-muted-foreground">{lastMessagePreview}</span>
+						<span className="truncate text-xs text-muted-foreground">{description}</span>
 
 						{unreadCount > 0 && (
 							<div className="grid size-5 shrink-0 place-content-center rounded-full bg-muted text-xs">{unreadCount}</div>

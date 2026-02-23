@@ -1,5 +1,6 @@
 'use client'
 
+import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Message } from '@/generated/prisma/client'
 import { generateId } from '@/lib/generateId'
 import { Api } from '@/services/clientApi'
@@ -40,15 +41,15 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 
 			// stop ongoing refetch
 
-			await queryClient.cancelQueries({ queryKey: ['messages', conversationId] })
+			await queryClient.cancelQueries({ queryKey: [REACT_QUERY_KEYS.MESSAGES, conversationId] })
 
 			// get previous messages
 
-			const previousMessages = queryClient.getQueryData<Message[]>(['messages', conversationId]) ?? []
+			const previousMessages = queryClient.getQueryData<Message[]>([REACT_QUERY_KEYS.MESSAGES, conversationId]) ?? []
 
 			// add optimistic message
 
-			queryClient.setQueryData<Message[]>(['messages', conversationId], old => [...(old ?? []), optimisticMessage])
+			queryClient.setQueryData<Message[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => [...(old ?? []), optimisticMessage])
 
 			return { clientId, previousMessages }
 		},
@@ -58,13 +59,13 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 
 			// rollback on error
 
-			queryClient.setQueryData(['messages', conversationId], ctx.previousMessages)
+			queryClient.setQueryData([REACT_QUERY_KEYS.MESSAGES, conversationId], ctx.previousMessages)
 		},
 
 		onSuccess: (serverMessage, _content, ctx) => {
 			if (!conversationId || !ctx) return
 
-			queryClient.setQueryData<Message[]>(['messages', conversationId], old => {
+			queryClient.setQueryData<Message[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => {
 				const list = old ?? []
 
 				// remove optimistic message

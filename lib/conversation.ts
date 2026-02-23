@@ -1,4 +1,4 @@
-import { ConversationMember, Conversation as ConversationType, Message, User } from '@/generated/prisma/client'
+import { ConversationMember, Conversation as ConversationType, User } from '@/generated/prisma/client'
 
 export class Conversation {
 	conversation: ConversationType | null
@@ -25,10 +25,6 @@ export class Conversation {
 		return this.conversation.isGroup ? `${members.length} members` : 'last seen recently'
 	}
 
-	getLastMessageContent(messages: Message[] | null) {
-		if (!messages || messages.length === 0) return ''
-		return messages[messages.length - 1].content
-	}
 	formatDate(date: Date | string | null | undefined): string {
 		if (!date) return ''
 
@@ -61,5 +57,27 @@ export class Conversation {
 			day: '2-digit',
 			month: 'short'
 		})
+	}
+
+	getDescription(currentUserId?: string) {
+		if (!this.conversation) return ''
+
+		const { lastMessagePreview, lastMessageAuthorId, lastMessageAuthorName } = this.conversation
+
+		if (!this.conversation.isGroup) {
+			return lastMessagePreview
+		}
+
+		if (!lastMessagePreview) return ''
+
+		if (lastMessageAuthorId === currentUserId) {
+			return `You: ${lastMessagePreview}`
+		}
+
+		if (lastMessageAuthorName) {
+			return `${lastMessageAuthorName}: ${lastMessagePreview}`
+		}
+
+		return lastMessagePreview
 	}
 }

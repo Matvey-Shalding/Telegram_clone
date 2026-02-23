@@ -1,5 +1,6 @@
 'use client'
 
+import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Message } from '@/generated/prisma/client'
 import { Api } from '@/services/clientApi'
 import { currentConversationId } from '@/store'
@@ -10,7 +11,7 @@ export function useChatMessages() {
 	const [conversationId] = useAtom(currentConversationId)
 
 	return useQuery<Message[]>({
-		queryKey: ['messages', conversationId],
+		queryKey: [REACT_QUERY_KEYS.MESSAGES, conversationId],
 		queryFn: async () => Api.messages.getAll(conversationId!),
 		enabled: !!conversationId,
 		staleTime: 10000,

@@ -1,4 +1,5 @@
 import { auth } from '@/auth'
+import { PUSHER_KEYS } from '@/config/pusherKeys'
 import { prisma } from '@/db/prisma'
 import { pusherServer } from '@/lib/pusher'
 import { headers } from 'next/headers'
@@ -19,8 +20,6 @@ export async function POST(req: NextRequest) {
 		const content = typeof body.content === 'string' ? body.content.trim() : ''
 		const conversationId = body.conversationId
 
-		const optimisticId = body.optimisticId
-
 		// Wrong data
 
 		if (!conversationId || !content) {
@@ -29,14 +28,17 @@ export async function POST(req: NextRequest) {
 
 		// Check if user is part of the conversation
 
-		const isMember = await prisma.conversationMember.findFirst({
+		const sender = await prisma.conversationMember.findFirst({
 			where: {
 				conversationId,
 				userId
+			},
+			include: {
+				user: true
 			}
 		})
 
-		if (!isMember) {
+		if (!sender) {
 			return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 		}
 
@@ -57,7 +59,9 @@ export async function POST(req: NextRequest) {
 			},
 			data: {
 				lastMessageAt: message.createdAt,
-				lastMessagePreview: message.content
+				lastMessagePreview: message.content,
+				lastMessageAuthorId: message.senderId,
+				lastMessageAuthorName: message.sender.name
 			}
 		})
 
@@ -80,7 +84,7 @@ export async function POST(req: NextRequest) {
 
 		updatedConversation.members.forEach(member => {
 			if (member.user.id) {
-				pusherServer.trigger(`user-${member.user.id}`, 'messages:new', {
+				pusherServer.trigger(`user-${member.user.id}`, PUSHER_KEYS.NEW_MESSAGE, {
 					message
 				})
 			}

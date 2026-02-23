@@ -108,8 +108,11 @@ model Conversation {
   title              String?
   isGroup            Boolean   @default(false)
   createdAt          DateTime  @default(now())
+
   lastMessageAt      DateTime?
   lastMessagePreview String?
+  lastMessageAuthorId   String?
+  lastMessageAuthorName String?
 
   members  ConversationMember[]
   messages Message[]
