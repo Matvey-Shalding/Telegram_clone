@@ -18,3 +18,9 @@ export const send = async ({ content, conversationId }: SendMessageRequest) => {
 export const getAll = async (conversationId: string) => {
 	return (await axiosInstance.get(`${API_ROUTES.MESSAGES}/${conversationId}`)).data
 }
+
+export const remove = async (messageId: string) => {
+	await axiosInstance.post(API_ROUTES.MESSAGES + '/delete', {
+		messageId
+	})
+}

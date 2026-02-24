@@ -1,19 +1,14 @@
 'use client'
 
-import { ChatMessage } from '@/@types/ChatMessage'
+import { ChatMessage, ServerMessage } from '@/@types/ChatMessage'
 import { Message } from '@/generated/prisma/client'
 import { isSameDay } from '@/lib'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const WINDOW_SIZE = 200
 const WINDOW_INCREMENT = 200
 
-type MessageLike = Message & {
-	clientId?: string
-	optimistic?: boolean
-}
-
-function normalize(msg: MessageLike): MessageLike {
+function normalize(msg: ServerMessage): ServerMessage {
 	return {
 		...msg,
 		createdAt: new Date(msg.createdAt),
@@ -21,7 +16,7 @@ function normalize(msg: MessageLike): MessageLike {
 	}
 }
 
-export function useMessages(data: MessageLike[] = []) {
+export function useMessages(data: ServerMessage[] = []) {
 	/**
 	 * 1️⃣ Normalize + stable sort
 	 */
@@ -30,27 +25,39 @@ export function useMessages(data: MessageLike[] = []) {
 	}, [data])
 
 	/**
-	 * 2️⃣ Visible window size (derived safely)
+	 * 2️⃣ Visible window size
+	 * Start with WINDOW_SIZE, expand later if needed
 	 */
-	const [visibleCount, setVisibleCount] = useState(() => Math.min(WINDOW_SIZE, normalized.length))
+	const [visibleCount, setVisibleCount] = useState(WINDOW_SIZE)
 
 	/**
-	 * 3️⃣ Visible slice
+	 * 3️⃣ Expand window automatically when new messages arrive
+	 */
+	useEffect(() => {
+		if (normalized.length <= visibleCount) return
+		setVisibleCount(Math.min(normalized.length, visibleCount + 1))
+	}, [normalized, visibleCount])
+
+	/**
+	 * 4️⃣ Visible slice
 	 */
 	const visible = useMemo(() => {
 		return normalized.slice(Math.max(0, normalized.length - visibleCount))
 	}, [normalized, visibleCount])
 
 	/**
-	 * 4️⃣ DTO → ChatMessage
+	 * 5️⃣ DTO → ChatMessage
 	 */
 	const messages: ChatMessage[] = useMemo(() => {
 		return visible.map((msg, i) => {
 			const prev = visible[i - 1]
 
+			// Narrow msg to include optional fields
+			const maybeClientMsg = msg as Message & { clientId?: string; optimistic?: boolean }
+
 			return {
 				...msg,
-				optimistic: msg.optimistic === true || (typeof msg.id === 'string' && msg.id.startsWith('temp:')),
+				optimistic: maybeClientMsg.optimistic === true || (typeof msg.id === 'string' && msg.id.startsWith('temp:')),
 				isSameSender: !!prev && prev.senderId === msg.senderId,
 				showDateBadge: !prev || !isSameDay(prev.createdAt, msg.createdAt)
 			}
@@ -58,7 +65,7 @@ export function useMessages(data: MessageLike[] = []) {
 	}, [visible])
 
 	/**
-	 * 5️⃣ Pagination
+	 * 6️⃣ Pagination
 	 */
 	const loadOlderMessages = () => {
 		setVisibleCount(v => Math.min(normalized.length, v + WINDOW_INCREMENT))
