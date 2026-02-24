@@ -6,8 +6,8 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/ChatMessage'
 
 import { ChatMode } from '@/@types/ChatMode'
-import { ChatMessage } from './ChatMessage'
-import { ChatMessageSkeleton } from './ChatMessageSkeleton'
+import { ChatMessageSkeleton } from './message/ChatMessageSkeleton'
+import { ChatMessage } from './message/ChatMessage'
 import { MessagesScrollbar } from './MessagesScrollbar'
 
 interface Props {

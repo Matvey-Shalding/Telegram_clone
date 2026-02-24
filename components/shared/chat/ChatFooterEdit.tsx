@@ -1,16 +1,33 @@
 'use client'
 
+import { ChatMode } from '@/@types/ChatMode'
 import { InputGroupAddon, InputGroupInput } from '@/components/ui'
+import { Api } from '@/services/clientApi'
+import { editedMessageId } from '@/store/editedMessageIdAtom'
+import { useAtom } from 'jotai'
 import { Check } from 'lucide-react'
 import React from 'react'
 
 interface Props {
-	onSubmit: () => void
 	editedValue: string
 	setEditedValue: React.Dispatch<React.SetStateAction<string>>
+	setMode: React.Dispatch<React.SetStateAction<ChatMode>>
 }
 
-export const ChatFooterEdit: React.FC<Props> = ({ onSubmit, editedValue, setEditedValue }) => {
+export const ChatFooterEdit: React.FC<Props> = ({ editedValue, setEditedValue, setMode }) => {
+	const [messageId] = useAtom(editedMessageId)
+
+	const onSubmit = async () => {
+		if (messageId) {
+			setEditedValue('')
+			setMode('default')
+
+			try {
+				await Api.messages.edit(messageId, editedValue)
+			} catch (_error) {}
+		}
+	}
+
 	return (
 		<>
 			<InputGroupInput

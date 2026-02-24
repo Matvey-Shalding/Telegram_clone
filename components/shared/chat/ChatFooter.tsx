@@ -3,9 +3,7 @@
 import { ChatMode } from '@/@types/ChatMode'
 import { InputGroup } from '@/components/ui'
 import { cn } from '@/lib/utils'
-import { Api } from '@/services/clientApi'
 import { currentConversationId } from '@/store'
-import { editedMessageId } from '@/store/editedMessageIdAtom'
 import { useAtom } from 'jotai'
 import React from 'react'
 import { ChatFooterEdit } from './ChatFooterEdit'
@@ -23,21 +21,7 @@ interface Props {
 
 export const ChatFooter: React.FC<Props> = ({ mode, searchValue, setSearchValue, editedValue, setEditedValue, setMode }) => {
 	const [conversationId] = useAtom(currentConversationId)
-
-	const [messageId] = useAtom(editedMessageId)
-
 	if (!conversationId) return null
-
-	const onSubmit = async () => {
-		if (messageId) {
-			setEditedValue('')
-			setMode('default')
-
-			try {
-				await Api.messages.edit(messageId, editedValue)
-			} catch (_error) {}
-		}
-	}
 
 	const renderContent = () => {
 		switch (mode) {
@@ -52,9 +36,9 @@ export const ChatFooter: React.FC<Props> = ({ mode, searchValue, setSearchValue,
 			case 'edit':
 				return (
 					<ChatFooterEdit
+						setMode={setMode}
 						editedValue={editedValue}
 						setEditedValue={setEditedValue}
-						onSubmit={onSubmit}
 					/>
 				)
 
