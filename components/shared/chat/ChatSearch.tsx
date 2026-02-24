@@ -16,7 +16,9 @@ export const ChatSearch: React.FC<Props> = ({ className, mode, matchedMessageInd
 		return (
 			<div className={cn('absolute right-6 bottom-6 z-30 flex gap-2', className)}>
 				<button
-					onClick={() => scrollToMatch('prev')}
+					onClick={() => {
+						scrollToMatch('prev')
+					}}
 					disabled={currentMatchCursor === 0}
 					className="rounded-full size-8 grid place-items-center bg-black border text-sm disabled:opacity-50"
 				>
@@ -24,7 +26,9 @@ export const ChatSearch: React.FC<Props> = ({ className, mode, matchedMessageInd
 				</button>
 
 				<button
-					onClick={() => scrollToMatch('next')}
+					onClick={() => {
+						scrollToMatch('next')
+					}}
 					disabled={currentMatchCursor === matchedMessageIndexes.length - 1}
 					className="rounded-full size-8 grid place-items-center bg-black border text-sm disabled:opacity-50"
 				>

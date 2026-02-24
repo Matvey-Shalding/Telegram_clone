@@ -1,1 +1,1 @@
-export type ChatMode = 'default' | 'search'
+export type ChatMode = 'default' | 'search' | 'edit'

@@ -1,6 +1,7 @@
 'use client'
 
 import { Chat as Conversation } from '@/@types/Chat'
+import { ChatMode } from '@/@types/ChatMode'
 import { currentConversationId } from '@/store/conversationAtom'
 import { useAtom } from 'jotai'
 import { useEffect, useState } from 'react'
@@ -15,13 +16,16 @@ interface Props {
 }
 
 export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
-	const [mode, setMode] = useState<'default' | 'search'>('default')
+	const [mode, setMode] = useState<ChatMode>('default')
+
 	const [searchValue, setSearchValue] = useState('')
+
+	const [editedValue, setEditedValue] = useState('')
 
 	const [, setCurrentConversationId] = useAtom(currentConversationId)
 
 	/**
-	 * 1️⃣ Set the conversation ID in Jotai
+	 *  Set the conversation ID in Jotai
 	 */
 	useEffect(() => {
 		if (conversation?.id) {
@@ -40,11 +44,16 @@ export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
 			/>
 
 			<ChatContent
+				setMode={setMode}
+				setEditedValue={setEditedValue}
 				mode={mode}
 				searchValue={searchValue}
 			/>
 
 			<ChatFooter
+				setMode={setMode}
+				editedValue={editedValue}
+				setEditedValue={setEditedValue}
 				mode={mode}
 				searchValue={searchValue}
 				setSearchValue={setSearchValue}

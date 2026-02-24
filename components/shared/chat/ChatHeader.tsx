@@ -1,11 +1,12 @@
+import { ChatMode } from '@/@types/ChatMode'
 import { Search, X } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
 interface Props {
 	details: string
 	title: string
-	setMode: Dispatch<SetStateAction<'default' | 'search'>>
-	mode: 'default' | 'search'
+	setMode: Dispatch<SetStateAction<ChatMode>>
+	mode: ChatMode
 	setSearchValue: Dispatch<SetStateAction<string>>
 }
 

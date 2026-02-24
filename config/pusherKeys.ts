@@ -1,4 +1,5 @@
 export const PUSHER_KEYS = {
 	NEW_MESSAGE: 'messages:new',
-	DELETE_MESSAGE: 'messages:delete'
+	DELETE_MESSAGE: 'messages:delete',
+	EDIT_MESSAGE: 'messages:edit'
 } as const

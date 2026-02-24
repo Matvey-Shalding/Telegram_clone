@@ -24,3 +24,10 @@ export const remove = async (messageId: string) => {
 		messageId
 	})
 }
+
+export const edit = async (messageId: string, content: string) => {
+	await axiosInstance.post(API_ROUTES.MESSAGES + '/edit', {
+		messageId,
+		content
+	})
+}

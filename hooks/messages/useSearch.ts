@@ -22,21 +22,21 @@ export function useSearch(
 	}, [searchValue, messages, chat])
 
 	/**
-	 * 2️⃣ Cursor (resets naturally when matches change)
+	 * 2️⃣ Cursor
 	 */
 	const [currentMatchCursor, setCurrentMatchCursor] = useState(0)
 
 	/**
-	 * Reset cursor when search results change
-	 * (this is a state transition, not an effect)
+	 * 3️⃣ Reset cursor when matches change
+	 * (side-effect, not render logic)
 	 */
-	if (currentMatchCursor !== 0 && matchedMessageIndexes.length > 0) {
-		// safe because it's guarded and deterministic
+	useLayoutEffect(() => {
 		setCurrentMatchCursor(0)
-	}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [matchedMessageIndexes])
 
 	/**
-	 * 3️⃣ Side-effect only: scroll to first match
+	 * 4️⃣ Scroll to first match when entering search mode
 	 */
 	useLayoutEffect(() => {
 		if (mode !== 'search' || !virtuosoRef.current || matchedMessageIndexes.length === 0) {
@@ -51,7 +51,7 @@ export function useSearch(
 	}, [mode, matchedMessageIndexes, virtuosoRef])
 
 	/**
-	 * 4️⃣ Navigate matches
+	 * 5️⃣ Navigate between matches
 	 */
 	const scrollToMatch = (direction: 'next' | 'prev') => {
 		if (!virtuosoRef.current || matchedMessageIndexes.length === 0) return
@@ -59,7 +59,7 @@ export function useSearch(
 		setCurrentMatchCursor(prev => {
 			const next = direction === 'next' ? Math.min(prev + 1, matchedMessageIndexes.length - 1) : Math.max(prev - 1, 0)
 
-			virtuosoRef.current?.scrollToIndex({
+			virtuosoRef.current!.scrollToIndex({
 				index: matchedMessageIndexes[next],
 				align: 'start',
 				behavior: 'smooth'

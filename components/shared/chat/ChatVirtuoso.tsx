@@ -5,6 +5,7 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 
 import { ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/ChatMessage'
 
+import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage } from './ChatMessage'
 import { ChatMessageSkeleton } from './ChatMessageSkeleton'
 import { MessagesScrollbar } from './MessagesScrollbar'
@@ -13,11 +14,13 @@ interface Props {
 	isLoading: boolean
 	messages: ChatMessageType[]
 	data: VirtuosoMessage[]
-	virtuosoRef: React.RefObject<VirtuosoHandle>
+	virtuosoRef: React.RefObject<VirtuosoHandle | null>
 	loadOlderMessages: () => void
 	searchValue: string
 	activeMatchIndex: number | undefined
 	setIsCalendarOpen: Dispatch<SetStateAction<boolean>>
+	setEditedValue: React.Dispatch<React.SetStateAction<string>>
+	setMode: Dispatch<SetStateAction<ChatMode>>
 }
 
 export const ChatVirtuoso: React.FC<Props> = ({
@@ -28,7 +31,9 @@ export const ChatVirtuoso: React.FC<Props> = ({
 	loadOlderMessages,
 	searchValue,
 	activeMatchIndex,
-	setIsCalendarOpen
+	setIsCalendarOpen,
+	setEditedValue,
+	setMode
 }) => {
 	return (
 		<Virtuoso<VirtuosoMessage>
@@ -54,6 +59,8 @@ export const ChatVirtuoso: React.FC<Props> = ({
 
 				return (
 					<ChatMessage
+						setMode={setMode}
+						setEditedValue={setEditedValue}
 						key={item.id}
 						isLastMessage={isLastMessage}
 						message={item as ChatMessageType}
