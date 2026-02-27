@@ -11,31 +11,41 @@ interface SendResponse {
 	message: Message
 }
 
+type SendMessagePayload = {
+	content?: string | null
+	image?: string | null
+}
+
 export function useSendMessage(conversationId: string | null, userId?: string) {
 	const queryClient = useQueryClient()
 
 	const mutation = useMutation({
-		mutationFn: async (content: string): Promise<Message> => {
+		mutationFn: async (payload: SendMessagePayload): Promise<Message> => {
 			if (!conversationId) throw new Error('No conversationId provided')
 
-			const res: SendResponse = await Api.messages.send({ conversationId, content })
+			const res: SendResponse = await Api.messages.send({
+				conversationId,
+				content: payload.content ?? '',
+				imageUrl: payload.image ?? null
+			})
+
 			return res.message
 		},
 
-		onMutate: async (content: string) => {
+		onMutate: async (payload: SendMessagePayload) => {
 			if (!conversationId) return
 
 			const clientId = generateId()
 
-			const optimisticMessage: ServerMessage = {
+			const optimisticMessage: ServerMessage & { clientId: string } = {
 				id: `temp:${clientId}`,
 				clientId,
-				content,
 				conversationId,
 				senderId: userId ?? '',
+				content: payload.content ?? null,
+				image: payload.image ?? null,
 				createdAt: new Date(),
-				updatedAt: new Date(),
-				image: null
+				updatedAt: new Date()
 			}
 
 			await queryClient.cancelQueries({
@@ -49,30 +59,21 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 			return { clientId, previousMessages }
 		},
 
-		onError: (_err, _content, ctx) => {
+		onError: (_err, _payload, ctx) => {
 			if (!conversationId || !ctx) return
 
 			queryClient.setQueryData([REACT_QUERY_KEYS.MESSAGES, conversationId], ctx.previousMessages)
 		},
 
-		onSuccess: (serverMessage, _content, ctx) => {
+		onSuccess: (serverMessage, _payload, ctx) => {
 			if (!conversationId || !ctx) return
 
 			queryClient.setQueryData<ServerMessage[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => {
 				const list = old ?? []
 
-				// Clean the messages, removing the optimistic one with this clientId
 				const cleaned = list.filter(m => {
-					// Narrow m to the extended type with clientId
-					const maybeClientMessage = m as Message & { clientId?: string }
-
-					// If m has a clientId, compare it to the ctx.clientId
-					if (maybeClientMessage.clientId !== undefined) {
-						return maybeClientMessage.clientId !== ctx.clientId
-					}
-
-					// Otherwise, keep the message (it’s a regular server message)
-					return true
+					const withClientId = m as ServerMessage & { clientId?: string }
+					return withClientId.clientId !== ctx.clientId
 				})
 
 				if (cleaned.some(m => m.id === serverMessage.id)) {

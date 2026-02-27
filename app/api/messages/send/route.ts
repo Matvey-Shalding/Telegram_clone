@@ -10,24 +10,30 @@ export async function POST(req: NextRequest) {
 		const session = await auth.api.getSession({ headers: await headers() })
 		const userId = session?.user.id
 
-		// User not found
-
 		if (!userId) {
 			return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 		}
 
 		const body = await req.json()
-		const content = typeof body.content === 'string' ? body.content.trim() : ''
-		const conversationId = body.conversationId
 
-		// Wrong data
+		const conversationId: string | undefined = body.conversationId
+		const rawContent = typeof body.content === 'string' ? body.content.trim() : null
+		const imageUrl: string | null = typeof body.imageUrl === 'string' ? body.imageUrl : null
 
-		if (!conversationId || !content) {
+		// Must have conversationId
+		if (!conversationId) {
 			return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
 		}
 
-		// Check if user is part of the conversation
+		// Enforce: text-only OR image-only
+		const isTextMessage = !!rawContent && !imageUrl
+		const isImageMessage = !rawContent && !!imageUrl
 
+		if (!isTextMessage && !isImageMessage) {
+			return NextResponse.json({ error: 'Message must contain either text or image (not both)' }, { status: 400 })
+		}
+
+		// Check membership
 		const sender = await prisma.conversationMember.findFirst({
 			where: {
 				conversationId,
@@ -42,33 +48,33 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 		}
 
+		// Create message
 		const message = await prisma.message.create({
 			data: {
 				conversationId,
 				senderId: userId,
-				content
+				content: isTextMessage ? rawContent : null,
+				image: isImageMessage ? imageUrl : null
 			},
 			include: {
 				sender: true
 			}
 		})
 
+		// Update conversation preview
 		await prisma.conversation.update({
-			where: {
-				id: message.conversationId
-			},
+			where: { id: conversationId },
 			data: {
 				lastMessageAt: message.createdAt,
-				lastMessagePreview: message.content,
+				lastMessagePreview: isTextMessage ? message.content : 'Sent an image',
 				lastMessageAuthorId: message.senderId,
 				lastMessageAuthorName: message.sender.name
 			}
 		})
 
+		// Notify members
 		const updatedConversation = await prisma.conversation.findFirst({
-			where: {
-				id: message.conversationId
-			},
+			where: { id: conversationId },
 			include: {
 				members: {
 					include: {
@@ -83,11 +89,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		updatedConversation.members.forEach(member => {
-			if (member.user.id) {
-				pusherServer.trigger(`user-${member.user.id}`, PUSHER_KEYS.NEW_MESSAGE, {
-					message
-				})
-			}
+			pusherServer.trigger(`user-${member.user.id}`, PUSHER_KEYS.NEW_MESSAGE, { message })
 		})
 
 		return NextResponse.json({ message }, { status: 201 })

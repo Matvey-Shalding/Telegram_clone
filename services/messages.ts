@@ -4,13 +4,15 @@ import { axiosInstance } from './instance'
 export interface SendMessageRequest {
 	content: string
 	conversationId: string | undefined
+	imageUrl: string | null
 }
 
-export const send = async ({ content, conversationId }: SendMessageRequest) => {
+export const send = async ({ content, conversationId ,imageUrl}: SendMessageRequest) => {
 	return (
 		await axiosInstance.post(API_ROUTES.MESSAGES + '/send', {
 			content,
-			conversationId
+			conversationId,
+			imageUrl
 		})
 	).data
 }

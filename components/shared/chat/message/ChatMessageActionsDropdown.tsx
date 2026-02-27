@@ -1,6 +1,5 @@
 'use client'
 
-import { ChatMessage } from '@/@types/ChatMessage'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,9 +15,10 @@ interface Props {
 	isMine: boolean
 	isOpen: boolean
 	setIsOpen: (open: boolean) => void
-	handleEdit: (e: React.MouseEvent) => void
+	handleEdit?: (e: React.MouseEvent) => void
 	handleDelete: (e: React.MouseEvent) => void
-	handleCopy: (e: React.MouseEvent) => void
+	handleCopy?: (e: React.MouseEvent) => void
+	onlyDelete?: boolean
 }
 
 export const ChatMessageActionsDropdown: React.FC<Props> = ({
@@ -27,7 +27,8 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 	setIsOpen,
 	handleCopy,
 	handleDelete,
-	handleEdit
+	handleEdit,
+	onlyDelete = false
 }) => {
 	return (
 		<DropdownMenu
@@ -52,10 +53,12 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 				{/* Only show edit/delete if it's mine */}
 				{isMine && (
 					<>
-						<DropdownMenuItem onClick={handleEdit}>
-							<Edit className="mr-2 size-4" />
-							Edit
-						</DropdownMenuItem>
+						{!onlyDelete && (
+							<DropdownMenuItem onClick={handleEdit}>
+								<Edit className="mr-2 size-4" />
+								Edit
+							</DropdownMenuItem>
+						)}
 						<DropdownMenuItem onClick={handleDelete}>
 							<Trash className="mr-2 size-4" />
 							Delete
@@ -64,10 +67,12 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 				)}
 
 				{/* Always show copy */}
-				<DropdownMenuItem onClick={handleCopy}>
-					<Copy className="mr-2 size-4" />
-					Copy
-				</DropdownMenuItem>
+				{!onlyDelete && (
+					<DropdownMenuItem onClick={handleCopy}>
+						<Copy className="mr-2 size-4" />
+						Copy
+					</DropdownMenuItem>
+				)}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

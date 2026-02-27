@@ -9,6 +9,7 @@ import { formatMessageTime } from '@/lib/formatMessageTime'
 import { cn } from '@/lib/utils'
 import { Dispatch, memo, SetStateAction } from 'react'
 import { DateBadge } from '../DateBadge'
+import { ChatImageMessage } from './ChatImageMessage'
 import { ChatMessageBubble } from './ChatMessageBubble'
 
 interface Props {
@@ -28,10 +29,13 @@ export const ChatMessage = memo(
 		const isMine = session?.user.id === message.senderId
 		const isOptimistic = message.optimistic === true
 
-		if (!message.content) return null
+		const isTextMessage = !!message.content
+		const isImageMessage = !!message.image
+
+		// Guard: must be text OR image
+		if (!isTextMessage && !isImageMessage) return null
 
 		const time = formatMessageTime(message.createdAt)
-
 		const actions = useMessageActions(message, setEditedValue, setMode)
 
 		return (
@@ -48,21 +52,38 @@ export const ChatMessage = memo(
 				>
 					{!isMine && <AvatarWithBadge className="size-7 shrink-0" />}
 
-					<ChatMessageBubble
-						content={message.content}
-						searchValue={searchValue}
-						isActiveMatch={isActiveMatch}
-						isMine={isMine}
-						isOptimistic={isOptimistic}
-						time={time}
-						dropdown={{
-							isOpen: actions.isOpen,
-							setIsOpen: actions.setIsOpen,
-							onEdit: actions.handleEdit,
-							onDelete: actions.handleDelete,
-							onCopy: actions.handleCopy
-						}}
-					/>
+					{/* TEXT MESSAGE */}
+					{isTextMessage && (
+						<ChatMessageBubble
+							content={message.content!}
+							searchValue={searchValue}
+							isActiveMatch={isActiveMatch}
+							isMine={isMine}
+							isOptimistic={isOptimistic}
+							time={time}
+							dropdown={{
+								isOpen: actions.isOpen,
+								setIsOpen: actions.setIsOpen,
+								onEdit: actions.handleEdit,
+								onDelete: actions.handleDelete,
+								onCopy: actions.handleCopy
+							}}
+						/>
+					)}
+
+					{isImageMessage && (
+						<ChatImageMessage
+							image={message.image!}
+							isMine={isMine}
+							isOptimistic={isOptimistic}
+							time={time}
+							dropdown={{
+								isOpen: actions.isOpen,
+								setIsOpen: actions.setIsOpen,
+								onDelete: actions.handleDelete
+							}}
+						/>
+					)}
 
 					{isMine && <AvatarWithBadge className="size-7 shrink-0" />}
 				</div>

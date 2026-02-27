@@ -27,7 +27,7 @@ export const onNewMessage = (queryClient: QueryClient) => async (payload: { mess
 			return {
 				...conv,
 				lastMessageAt: message.createdAt,
-				lastMessagePreview: message.content ?? '',
+				lastMessagePreview: message.content ?? 'Sent an image',
 				lastMessageAuthorId: message.senderId,
 				lastMessageAuthorName: message.sender?.name ?? null
 			}

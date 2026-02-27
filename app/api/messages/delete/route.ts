@@ -70,12 +70,14 @@ export async function POST(req: NextRequest) {
 			}
 		})
 
+		const latestPreview = latest ? (latest.content ?? (latest.image ? 'Sent an image' : null)) : null
+
 		if (updatedConversation) {
 			for (const member of updatedConversation.members) {
 				pusherServer.trigger(`user-${member.userId}`, PUSHER_KEYS.DELETE_MESSAGE, {
 					messageId,
 					conversationId,
-					lastMessage: latest
+					lastMessage: latest ? { ...latest, content: latestPreview } : null
 				})
 			}
 		}
