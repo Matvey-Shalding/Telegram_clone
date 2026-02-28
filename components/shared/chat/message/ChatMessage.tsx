@@ -55,6 +55,7 @@ export const ChatMessage = memo(
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
 						<ChatMessageBubble
+							isLastMessage={isLastMessage}
 							content={message.content!}
 							searchValue={searchValue}
 							isActiveMatch={isActiveMatch}
@@ -73,6 +74,7 @@ export const ChatMessage = memo(
 
 					{isImageMessage && (
 						<ChatImageMessage
+						isLastMessage={isLastMessage}
 							image={message.image!}
 							isMine={isMine}
 							isOptimistic={isOptimistic}

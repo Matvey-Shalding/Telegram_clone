@@ -1,37 +1,17 @@
 'use client'
 
 import { Chat as Conversation } from '@/@types/Chat'
-import { ChatMode } from '@/@types/ChatMode'
-import { currentConversationId } from '@/store/conversationAtom'
-import { useAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { useChatController } from '@/hooks/useChatController'
 import { ChatContent } from './ChatContent'
 import { ChatFooter } from './ChatFooter'
 import { ChatHeader } from './ChatHeader'
 
 interface Props {
-	title: string
-	details: string
 	conversation: Conversation | null
 }
 
-export const Chat: React.FC<Props> = ({ title, details, conversation }) => {
-	const [mode, setMode] = useState<ChatMode>('default')
-
-	const [searchValue, setSearchValue] = useState('')
-
-	const [editedValue, setEditedValue] = useState('')
-
-	const [, setCurrentConversationId] = useAtom(currentConversationId)
-
-	/**
-	 *  Set the conversation ID in Jotai
-	 */
-	useEffect(() => {
-		if (conversation?.id) {
-			setCurrentConversationId(conversation.id)
-		}
-	}, [conversation?.id, setCurrentConversationId])
+export const Chat: React.FC<Props> = ({ conversation }) => {
+	const { mode, setMode, searchValue, setSearchValue, editedValue, setEditedValue, title, details } = useChatController(conversation)
 
 	return (
 		<div className="h-screen w-full flex flex-col">

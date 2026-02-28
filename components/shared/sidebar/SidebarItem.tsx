@@ -3,49 +3,26 @@
 import { Chat } from '@/@types/Chat'
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
-import { Conversation } from '@/lib/conversation'
+import { formatConversationDate, getConversationDescription, getConversationTitle } from '@/lib/conversation.helpers'
 import { useRouter } from 'next/navigation'
 import { AvatarWithBadge } from '..'
-export const SidebarItem: React.FC<Chat> = ({
-	id,
-	title,
-	isGroup,
-	lastMessageAt,
-	createdAt,
-	members,
-	lastMessagePreview,
-	lastMessageAuthorId,
-	lastMessageAuthorName
-}) => {
+export const SidebarItem: React.FC<Chat> = conversation => {
 	const unreadCount = 0 // temporary static value
 
 	const session = useCurrentSession()
-
-	const conversationService = new Conversation({
-		title: title,
-		id: id,
-		isGroup: isGroup,
-		lastMessageAt: lastMessageAt,
-		createdAt: createdAt,
-		lastMessagePreview,
-		lastMessageAuthorId,
-		lastMessageAuthorName
-	})
 
 	const currentUserId = useCurrentSession()?.user.id
 
 	const currentUserName = useCurrentSession()?.user.name
 
-	console.log('current user name', currentUserName)
+	const formattedTitle = getConversationTitle(conversation, conversation.members, currentUserId)
 
-	const formattedTitle = conversationService.getTitle(members, session?.user.id)
-
-	const description = conversationService.getDescription(currentUserId)
+	const description = getConversationDescription(conversation, currentUserId)
 
 	const router = useRouter()
 
 	const handleClick = () => {
-		router.push(`/chat/${id}`)
+		router.push(`/chat/${conversation.id}`)
 	}
 
 	return (
@@ -65,7 +42,7 @@ export const SidebarItem: React.FC<Chat> = ({
 				>
 					<div className="flex min-w-0 items-center justify-between">
 						<span className="truncate text-sm font-medium">{formattedTitle}</span>
-						<span className="shrink-0 text-xs text-muted-foreground">{conversationService.formatDate(lastMessageAt)}</span>
+						<span className="shrink-0 text-xs text-muted-foreground">{formatConversationDate(conversation.lastMessageAt)}</span>
 					</div>
 
 					<div className="flex min-w-0 items-center justify-between">

@@ -6,13 +6,13 @@ import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 type UploadImageModalProps = {
-	open: boolean
+	isOpen: boolean
 	onOpenChange: (open: boolean) => void
 	onFilesSelected: (files: File[] | null) => void
 	selectedFile: File | null
 }
 
-export function UploadImageModal({ open, onOpenChange, onFilesSelected, selectedFile }: UploadImageModalProps) {
+export function UploadImageModal({ isOpen, onOpenChange, onFilesSelected, selectedFile }: UploadImageModalProps) {
 	const onDrop = useCallback(
 		(files: File[]) => {
 			const file = files[0]
@@ -40,7 +40,7 @@ export function UploadImageModal({ open, onOpenChange, onFilesSelected, selected
 
 	return (
 		<Dialog
-			open={open}
+			open={isOpen}
 			onOpenChange={onOpenChange}
 		>
 			<DialogContent className="sm:max-w-md">

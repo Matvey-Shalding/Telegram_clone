@@ -21,7 +21,7 @@ export const DateBadge: React.FC<Props> = ({ date, setOpen }) => {
 	return (
 		<div
 			onClick={() => setOpen(prev => !prev)}
-			className="w-full flex justify-center my-4"
+			className="w-full flex justify-center my-4 cursor-pointer"
 		>
 			<div className="px-3.5 py-1.5 rounded-full text-xs bg-muted text-muted-foreground">{label}</div>
 		</div>

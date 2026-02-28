@@ -1,15 +1,17 @@
 'use client'
 
 import { Card } from '@/components/ui'
+import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import { ChatMessageActionsDropdown } from './ChatMessageActionsDropdown'
 import { ChatMessageStatus } from './ChatMessageStatus'
-import { cn } from '@/lib/utils'
 
 interface Props {
 	image: string
 	isMine: boolean
 	isOptimistic: boolean
 	time: string
+	isLastMessage?: boolean
 	dropdown: {
 		isOpen: boolean
 		setIsOpen: (v: boolean) => void
@@ -17,19 +19,24 @@ interface Props {
 	}
 }
 
-export const ChatImageMessage = ({
-	image,
-	isMine,
-	isOptimistic,
-	time,
-	dropdown
-}: Props) => {
+export const ChatImageMessage = ({ image, isMine, isOptimistic, time, isLastMessage, dropdown }: Props) => {
+	const shouldAnimateIn = isLastMessage && !isOptimistic
+
 	return (
-		<div className="flex flex-col gap-1">
+		<motion.div
+			layout
+			initial={false}
+			animate={shouldAnimateIn ? { opacity: [0, 1], y: [12, 0], scale: [0.98, 1] } : undefined}
+			transition={{
+				layout: { type: 'spring', stiffness: 500, damping: 40 },
+				duration: 0.22
+			}}
+			className="flex flex-col gap-1"
+		>
 			<Card
 				onClick={() => !isOptimistic && dropdown.setIsOpen(!dropdown.isOpen)}
 				className={cn(
-					'relative p-0 overflow-hidden border shadow-none cursor-pointer group',
+					'relative p-0 overflow-hidden border shadow-none cursor-pointer group rounded-2xl',
 					isOptimistic && 'opacity-70 border-dashed',
 					isMine ? 'bg-primary/5' : 'bg-muted'
 				)}
@@ -41,7 +48,6 @@ export const ChatImageMessage = ({
 					className="w-[260px] h-[180px] object-cover"
 				/>
 
-				{/* Dropdown – delete only */}
 				<ChatMessageActionsDropdown
 					isMine={isMine}
 					isOpen={dropdown.isOpen}
@@ -51,21 +57,13 @@ export const ChatImageMessage = ({
 				/>
 			</Card>
 
-			{/* Bottom meta (time + status) */}
-			<div
-				className={cn(
-					'flex items-center gap-1 text-[11px] px-1',
-					isMine
-						? 'justify-end text-muted-foreground'
-						: 'justify-start text-muted-foreground'
-				)}
-			>
+			<div className={cn('flex items-center gap-1 text-[11px] px-1 text-muted-foreground', isMine ? 'justify-end' : 'justify-start')}>
 				<ChatMessageStatus
 					time={time}
 					isMine={isMine}
 					isOptimistic={isOptimistic}
 				/>
 			</div>
-		</div>
+		</motion.div>
 	)
 }

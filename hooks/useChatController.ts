@@ -1,66 +1,41 @@
-// hooks/chat/useChatContent.ts
 'use client'
 
-import { ChatMessageSkeleton, VirtuosoMessage } from '@/@types/ChatMessage'
+import { Chat as Conversation } from '@/@types/Chat'
 import { ChatMode } from '@/@types/ChatMode'
-import { useCalendar, useMessages, useSearch, useVirtuoso } from '@/hooks'
-import { useChatMessages } from '@/hooks/messages/useChatMessage'
-import { Chat } from '@/lib'
-import { useMemo } from 'react'
+import { authClient } from '@/auth-client'
+import { getConversationDetails, getConversationTitle } from '@/lib/conversation.helpers'
+import { currentConversationId } from '@/store/conversationAtom'
+import { useAtom } from 'jotai'
+import { useEffect, useState } from 'react'
 
-export function useChatController(mode: ChatMode, searchValue: string) {
-	// 1️⃣ fetch
-	const { data, isLoading, isError } = useChatMessages()
+export function useChatController(conversation: Conversation | null) {
+	const [mode, setMode] = useState<ChatMode>('default')
+	const [searchValue, setSearchValue] = useState('')
+	const [editedValue, setEditedValue] = useState('')
 
-	// 2️⃣ DTO + windowing
-	const { messages, loadOlderMessages } = useMessages(data)
+	const userId = authClient.useSession().data?.user.id
 
-	// 3️⃣ virtuoso
-	const { virtuosoRef } = useVirtuoso(messages.length, mode)
+	const title = getConversationTitle(conversation, conversation?.members ?? null, userId)
 
-	// 4️⃣ calendar
-	const { isCalendarOpen, setIsCalendarOpen, selectedDate, handleDateSelect } = useCalendar(messages, virtuosoRef)
+	const details = getConversationDetails(conversation, conversation?.members ?? null)
 
-	// 5️⃣ search
-	const chat = useMemo(() => new Chat(messages), [messages])
+	const [, setCurrentConversationId] = useAtom(currentConversationId)
 
-	const { matchedMessageIndexes, currentMatchCursor, scrollToMatch } = useSearch(chat, messages, searchValue, mode, virtuosoRef)
-
-	// 6️⃣ skeletons
-	const skeletons: ChatMessageSkeleton[] = useMemo(
-		() =>
-			Array.from({ length: 10 }, (_, i) => ({
-				id: `skeleton-${i}`,
-				isMine: i % 2 === 0,
-				type: 'skeleton'
-			})),
-		[]
-	)
-
-	const virtuosoData: VirtuosoMessage[] = useMemo(() => (isLoading ? skeletons : messages), [isLoading, skeletons, messages])
+	// Sync current conversation ID to Jotai
+	useEffect(() => {
+		if (conversation?.id) {
+			setCurrentConversationId(conversation.id)
+		}
+	}, [conversation?.id, setCurrentConversationId])
 
 	return {
-		// state
-		isLoading,
-		isError,
-
-		// messages
-		messages,
-		virtuosoData,
-		loadOlderMessages,
-
-		// virtuoso
-		virtuosoRef,
-
-		// calendar
-		isCalendarOpen,
-		setIsCalendarOpen,
-		selectedDate,
-		handleDateSelect,
-
-		// search
-		matchedMessageIndexes,
-		currentMatchCursor,
-		scrollToMatch
+		mode,
+		setMode,
+		searchValue,
+		setSearchValue,
+		editedValue,
+		setEditedValue,
+		title,
+		details
 	}
 }

@@ -4,7 +4,7 @@ import { Chat } from '@/@types/Chat'
 import { authClient } from '@/auth-client'
 import { SidebarContent as Sidebar, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
-import { Conversation } from '@/lib'
+import { getConversationTitle } from '@/lib/conversation.helpers'
 import { Api } from '@/services/clientApi'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -27,12 +27,25 @@ export const SidebarContent: React.FC<Props> = ({ searchValue }) => {
 	const chats = useMemo(() => {
 		const q = searchValue.toLowerCase()
 
-		return data.filter(chat => {
-			const conversationService = new Conversation(chat)
+		return data
+			.map(chat => ({
+				...chat,
+				lastMessageAt: chat.lastMessageAt ? new Date(chat.lastMessageAt) : null
+			}))
+			.filter(chat => {
+				const title = getConversationTitle(chat, chat.members, userId)
+				return title.toLowerCase().includes(q)
+			})
+			.sort((a, b) => {
+				const aTime = a.lastMessageAt?.getTime()
+				const bTime = b.lastMessageAt?.getTime()
 
-			const title = conversationService.getTitle(chat.members, userId)
-			return title.toLowerCase().includes(q)
-		})
+				if (!aTime && !bTime) return 0
+				if (!aTime) return 1
+				if (!bTime) return -1
+
+				return bTime - aTime
+			})
 	}, [searchValue, data, userId])
 
 	return (

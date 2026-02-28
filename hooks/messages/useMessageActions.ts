@@ -1,20 +1,16 @@
 'use client'
 
+import type { ServerMessage } from '@/@types/ChatMessage'
+import type { ChatMode } from '@/@types/ChatMode'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Api } from '@/services/clientApi'
 import { editedMessageId } from '@/store/editedMessageIdAtom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
-import toast from 'react-hot-toast'
 import { useCallback, useState } from 'react'
-import type { ServerMessage } from '@/@types/ChatMessage'
-import type { ChatMode } from '@/@types/ChatMode'
+import toast from 'react-hot-toast'
 
-export function useMessageActions(
-	message: ServerMessage,
-	setEditedValue: (v: string) => void,
-	setMode: (v: ChatMode) => void
-) {
+export function useMessageActions(message: ServerMessage, setEditedValue: (v: string) => void, setMode: (v: ChatMode) => void) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [, setEditedMessageId] = useAtom(editedMessageId)
 	const queryClient = useQueryClient()
@@ -35,9 +31,8 @@ export function useMessageActions(
 			e.stopPropagation()
 			setIsOpen(false)
 
-			queryClient.setQueryData<ServerMessage[]>(
-				[REACT_QUERY_KEYS.MESSAGES, message.conversationId],
-				old => old?.filter(m => m.id !== message.id)
+			queryClient.setQueryData<ServerMessage[]>([REACT_QUERY_KEYS.MESSAGES, message.conversationId], old =>
+				old?.filter(m => m.id !== message.id)
 			)
 
 			try {
@@ -52,12 +47,15 @@ export function useMessageActions(
 		[message, queryClient]
 	)
 
-	const handleCopy = useCallback((e: React.MouseEvent) => {
-		e.stopPropagation()
-		navigator.clipboard.writeText(message.content ?? '')
-		toast.success('Copied to clipboard')
-		setIsOpen(false)
-	}, [message.content])
+	const handleCopy = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation()
+			navigator.clipboard.writeText(message.content ?? '')
+			toast.success('Copied to clipboard')
+			setIsOpen(false)
+		},
+		[message.content]
+	)
 
 	return {
 		isOpen,

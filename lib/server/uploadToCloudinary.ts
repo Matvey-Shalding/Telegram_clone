@@ -19,10 +19,13 @@ export async function uploadToCloudinary(file: File): Promise<string> {
 	formData.append('folder', 'chat-images')
 
 	// 3. Upload to Cloudinary
-	const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-		method: 'POST',
-		body: formData
-	})
+	const uploadRes = await fetch(
+		`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+		{
+			method: 'POST',
+			body: formData
+		}
+	)
 
 	if (!uploadRes.ok) {
 		throw new Error('Cloudinary upload failed')

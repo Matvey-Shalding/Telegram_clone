@@ -7,7 +7,7 @@ import { currentConversationId } from '@/store'
 import { useQuery } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 
-export function useChatMessages() {
+export function useFetchMessages() {
 	const [conversationId] = useAtom(currentConversationId)
 
 	return useQuery<ServerMessage[]>({

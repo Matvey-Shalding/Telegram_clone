@@ -1,5 +1,5 @@
-export { Chat } from './chat'
-export { Conversation } from './conversation'
+export { Chat } from './chat.helpers'
+export { Conversation } from './conversation.helpers'
 export { generateId } from './generateId'
 export { isSameDay } from './isSameDay'
 export * from './server'

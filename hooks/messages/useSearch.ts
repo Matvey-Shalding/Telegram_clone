@@ -2,12 +2,11 @@
 
 import { ChatMessage } from '@/@types/ChatMessage'
 import { ChatMode } from '@/@types/ChatMode'
-import { Chat } from '@/lib/chat'
+import { findSearchMatches } from '@/lib/chat.helpers'
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 
 export function useSearch(
-	chat: Chat,
 	messages: ChatMessage[],
 	searchValue: string,
 	mode: ChatMode,
@@ -18,8 +17,8 @@ export function useSearch(
 	 */
 	const matchedMessageIndexes = useMemo(() => {
 		if (!searchValue) return []
-		return chat.findSearchMatches(searchValue, messages)
-	}, [searchValue, messages, chat])
+		return findSearchMatches(searchValue, messages)
+	}, [searchValue, messages])
 
 	/**
 	 * 2️⃣ Cursor

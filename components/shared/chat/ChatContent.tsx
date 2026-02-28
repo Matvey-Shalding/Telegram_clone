@@ -6,7 +6,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/button'
-import { useChatController } from '@/hooks/useChatController'
+import { useChatController } from '@/hooks/useMessagesController'
 import { ChatCalendar } from './ChatCalendar'
 import { ChatSearch } from './ChatSearch'
 import { ChatVirtuoso } from './ChatVirtuoso'

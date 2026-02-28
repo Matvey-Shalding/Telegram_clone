@@ -16,11 +16,11 @@ export const ChatFooterSearch: React.FC<Props> = ({ searchValue, setSearchValue 
 				value={searchValue}
 				onChange={e => setSearchValue(e.target.value)}
 				placeholder="Search..."
-				className="outline-none!"
+				className="outline-none! pl-1!"
 			/>
 
-			<InputGroupAddon>
-				<Search className="text-muted-foreground size-6 -translate-x-1" />
+			<InputGroupAddon className="p-0">
+				<Search className="text-muted-foreground size-5.5 cursor-pointer" />
 			</InputGroupAddon>
 		</>
 	)

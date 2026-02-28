@@ -1,4 +1,7 @@
+'use client'
+
 import { ChatMode } from '@/@types/ChatMode'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Search, X } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -22,11 +25,34 @@ export const ChatHeader: React.FC<Props> = ({ details, title, mode, setMode, set
 				<span className="text-white font-medium">{title}</span>
 				<span className="text-xs text-sidebar-ring">{details}</span>
 			</div>
+
 			<div
-				className="p-2 cursor-pointer"
+				className="p-2 cursor-pointer relative"
 				onClick={handleClick}
 			>
-				{mode === 'default' ? <Search className="text-sidebar-ring size-5.5" /> : <X className="text-sidebar-ring size-5.5" />}
+				<AnimatePresence mode="wait">
+					{mode === 'default' ? (
+						<motion.div
+							key="search"
+							initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+							animate={{ rotate: 0, opacity: 1, scale: 1 }}
+							exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+							transition={{ duration: 0.2 }}
+						>
+							<Search className="text-sidebar-ring size-5.5" />
+						</motion.div>
+					) : (
+						<motion.div
+							key="close"
+							initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+							animate={{ rotate: 0, opacity: 1, scale: 1 }}
+							exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+							transition={{ duration: 0.2 }}
+						>
+							<X className="text-sidebar-ring size-5.5" />
+						</motion.div>
+					)}
+				</AnimatePresence>
 			</div>
 		</div>
 	)

@@ -6,8 +6,8 @@ import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/ChatMessage'
 
 import { ChatMode } from '@/@types/ChatMode'
-import { ChatMessageSkeleton } from './message/ChatMessageSkeleton'
 import { ChatMessage } from './message/ChatMessage'
+import { ChatMessageSkeleton } from './message/ChatMessageSkeleton'
 import { MessagesScrollbar } from './MessagesScrollbar'
 
 interface Props {
@@ -37,6 +37,7 @@ export const ChatVirtuoso: React.FC<Props> = ({
 }) => {
 	return (
 		<Virtuoso<VirtuosoMessage>
+			initialTopMostItemIndex={data.length - 1}
 			ref={virtuosoRef}
 			data={data}
 			computeItemKey={(_, item) => item.id}
@@ -61,7 +62,6 @@ export const ChatVirtuoso: React.FC<Props> = ({
 					<ChatMessage
 						setMode={setMode}
 						setEditedValue={setEditedValue}
-						key={item.id}
 						isLastMessage={isLastMessage}
 						message={item as ChatMessageType}
 						searchValue={searchValue}

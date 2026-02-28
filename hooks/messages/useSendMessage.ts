@@ -11,7 +11,7 @@ interface SendResponse {
 	message: Message
 }
 
-type SendMessagePayload = {
+export type SendMessagePayload = {
 	content?: string | null
 	image?: string | null
 }
