@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
+import { ActiveStatus } from './ActiveStatus'
 import { PusherProvider } from './PusherProvider'
 
 interface Props {
@@ -37,6 +38,7 @@ export const Providers: React.FC<Props> = ({ children }) => {
 		<QueryClientProvider client={queryClient}>
 			<PusherProvider />
 			<Toaster />
+			<ActiveStatus />
 			{children}
 		</QueryClientProvider>
 	)

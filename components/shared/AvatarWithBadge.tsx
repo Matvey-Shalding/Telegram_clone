@@ -1,11 +1,12 @@
 import { Avatar, AvatarBadge } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { CircleUserRound } from 'lucide-react'
 
-export function AvatarWithBadge({ className }: { className?: string }) {
+export function AvatarWithBadge({ className, noBadge }: { className?: string; noBadge?: boolean }) {
 	return (
-		<Avatar className={cn('size-8', className)}>
-			<div className="h-8 w-8 rounded-full bg-red-400" />
-			<AvatarBadge className="bg-green-600 dark:bg-green-800" />
+		<Avatar>
+			<CircleUserRound className={cn('size-8', className)} />
+			{!noBadge && <AvatarBadge className="bg-green-600" />}
 		</Avatar>
 	)
 }

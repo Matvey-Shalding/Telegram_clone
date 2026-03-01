@@ -4,16 +4,15 @@ import { Chat } from '@/@types/Chat'
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { formatConversationDate, getConversationDescription, getConversationTitle } from '@/lib/conversation.helpers'
+import { activeUsers } from '@/store/activeUsersAtom'
+import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
+import { useMemo } from 'react'
 import { AvatarWithBadge } from '..'
 export const SidebarItem: React.FC<Chat> = conversation => {
 	const unreadCount = 0 // temporary static value
 
-	const session = useCurrentSession()
-
 	const currentUserId = useCurrentSession()?.user.id
-
-	const currentUserName = useCurrentSession()?.user.name
 
 	const formattedTitle = getConversationTitle(conversation, conversation.members, currentUserId)
 
@@ -25,6 +24,22 @@ export const SidebarItem: React.FC<Chat> = conversation => {
 		router.push(`/chat/${conversation.id}`)
 	}
 
+	const [activeIds] = useAtom(activeUsers)
+
+	const isOnline = useMemo(() => {
+		if (conversation.isGroup) {
+			return false
+		}
+
+		const otherMember = conversation.members.find(m => m.userId !== currentUserId)
+
+		if (!otherMember) {
+			return false
+		}
+
+		return activeIds.includes(otherMember.userId)
+	}, [activeIds, currentUserId, conversation])
+
 	return (
 		<SidebarMenuItem onClick={handleClick}>
 			<SidebarMenuButton
@@ -32,10 +47,10 @@ export const SidebarItem: React.FC<Chat> = conversation => {
 				className="
 				flex items-center rounded-none min-h-14 min-w-full"
 			>
-				<div className="flex h-8 w-8 items-center justify-center shrink-0">
-					<AvatarWithBadge />
-				</div>
-
+				<AvatarWithBadge
+					noBadge={!isOnline}
+					className="min-w-8 min-h-8"
+				/>
 				<div
 					data-sidebar="label"
 					className="flex min-w-0 flex-1 flex-col gap-1"

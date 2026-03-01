@@ -1,7 +1,9 @@
 'use client'
 
 import { ChatMode } from '@/@types/ChatMode'
+import { activeUsers } from '@/store/activeUsersAtom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useAtom } from 'jotai'
 import { Search, X } from 'lucide-react'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -18,6 +20,7 @@ export const ChatHeader: React.FC<Props> = ({ details, title, mode, setMode, set
 		if (mode === 'search') setSearchValue('')
 		setMode(prev => (prev === 'default' ? 'search' : 'default'))
 	}
+
 
 	return (
 		<div className="border-b border-border bg-[#171717] px-4 h-15.25 shrink-0 w-full flex items-center justify-between">

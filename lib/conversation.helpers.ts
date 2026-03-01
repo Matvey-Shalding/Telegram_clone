@@ -21,10 +21,25 @@ export function getConversationTitle(
 /**
  * Get conversation details (subtitle)
  */
-export function getConversationDetails(conversation: ConversationType | null, members: ConversationMember[] | null): string {
-	if (!conversation || !members?.length) return ''
+export function getConversationDetails(
+	conversation: ConversationType | null,
+	members: ConversationMember[] | null,
+	activeUsers: string[],
+	currentUserId?: string
+): string {
+	if (!conversation || !members?.length || !currentUserId) return ''
 
-	return conversation.isGroup ? `${members.length} members` : 'last seen recently'
+	if (conversation.isGroup) {
+		return `${members.length} members`
+	} else {
+		const otherMember = members.find(m => m.userId !== currentUserId)
+
+		if (!otherMember) return ''
+
+		const isActive = activeUsers.includes(otherMember.userId)
+
+		return isActive ? 'Online' : 'last seen recently'
+	}
 }
 
 /**

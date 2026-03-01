@@ -30,9 +30,6 @@ export const ChatMessage = memo(
 		const isMine = session?.user.id === message.senderId
 		const isOptimistic = message.optimistic === true
 
-		console.log(typeof lastReadAt)
-		console.log(typeof message.createdAt)
-
 		const wasSeen = lastReadAt ? +message.createdAt <= +new Date(lastReadAt) : false
 
 		const isTextMessage = !!message.content
@@ -56,7 +53,7 @@ export const ChatMessage = memo(
 				<div
 					className={cn('w-full flex items-end gap-2 px-3', isMine ? 'justify-end' : 'justify-start', isLastMessage && 'mb-20', className)}
 				>
-					{!isMine && <AvatarWithBadge className="size-7 shrink-0" />}
+					{!isMine && <AvatarWithBadge noBadge className="size-7 shrink-0" />}
 
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
@@ -93,7 +90,7 @@ export const ChatMessage = memo(
 						/>
 					)}
 
-					{isMine && <AvatarWithBadge className="size-7 shrink-0" />}
+					{isMine && <AvatarWithBadge noBadge className="size-7 shrink-0" />}
 				</div>
 			</div>
 		)

@@ -13,9 +13,11 @@ import { SidebarFooter as Footer, useSidebar } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { cn } from '@/lib'
+import { activeUsers } from '@/store/activeUsersAtom'
+import { useAtom } from 'jotai'
 import { ChevronsUpDown, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { AvatarWithBadge } from '../AvatarWithBadge'
 
@@ -48,7 +50,14 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 					asChild
 				>
 					<button className="flex items-center w-full px-2 py-1 rounded-lg data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-						{isLoading ? <Skeleton className="h-8 w-8 rounded-full" /> : <AvatarWithBadge className="size-8" />}
+						{isLoading ? (
+							<Skeleton className="h-8 w-8 rounded-full" />
+						) : (
+							<AvatarWithBadge
+								noBadge
+								className="size-8"
+							/>
+						)}
 
 						<div className="ml-2 flex-1 flex flex-col text-left truncate">
 							{isLoading ? (
@@ -76,7 +85,14 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 				>
 					<DropdownMenuLabel className="p-0">
 						<div className="flex items-center gap-2 px-2 py-1.5">
-							{isLoading ? <Skeleton className="h-8 w-8 rounded-full" /> : <AvatarWithBadge className="size-8" />}
+							{isLoading ? (
+								<Skeleton className="h-8 w-8 rounded-full" />
+							) : (
+								<AvatarWithBadge
+									noBadge
+									className="size-8"
+								/>
+							)}
 							<div className="flex-1 flex flex-col text-left truncate">
 								{isLoading ? (
 									<>

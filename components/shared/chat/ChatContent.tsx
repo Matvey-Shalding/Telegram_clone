@@ -40,8 +40,6 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 		scrollToMatch
 	} = useChatController(mode, searchValue)
 
-	console.log('last read at', lastReadAt)
-
 	if (isError) {
 		return (
 			<div className="h-full w-full grid place-content-center">
