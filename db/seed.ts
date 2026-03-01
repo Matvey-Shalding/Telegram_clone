@@ -86,19 +86,30 @@ async function main() {
 	// -----------------------------
 	// 4. Create messages + update conversation summary
 	// -----------------------------
+	// -----------------------------
+	// 4. Create messages + update conversation summary + seed read state
+	// -----------------------------
 	for (const convo of conversations) {
 		const messageCount = convo === conversations[0] ? 100 : 4
 
+		const convoMembers = await prisma.conversationMember.findMany({
+			where: { conversationId: convo.id }
+		})
+
+		const createdMessages: { id: string; createdAt: Date }[] = []
+
 		let lastMessageAt: Date | null = null
 		let lastMessagePreview: string | null = null
+		let lastMessageAuthorId: string | null = null
+		let lastMessageAuthorName: string | null = null
 
 		for (let i = 0; i < messageCount; i++) {
-			const sender = users[(i + Math.floor(Math.random() * users.length)) % users.length]
+			const sender = users[Math.floor(Math.random() * users.length)]
 			const createdAt = randomDateWithinMonths(convo === conversations[0] ? 6 : 3)
 
 			const content = `Message ${i + 1} in ${convo.title ?? convo.id}`
 
-			await prisma.message.create({
+			const message = await prisma.message.create({
 				data: {
 					conversationId: convo.id,
 					senderId: sender.id,
@@ -107,21 +118,64 @@ async function main() {
 				}
 			})
 
-			// Track last message
+			createdMessages.push({
+				id: message.id,
+				createdAt
+			})
+
 			if (!lastMessageAt || createdAt > lastMessageAt) {
 				lastMessageAt = createdAt
 				lastMessagePreview = content.slice(0, 100)
+				lastMessageAuthorId = sender.id
+				lastMessageAuthorName = `User ${users.findIndex(u => u.id === sender.id) + 1}`
 			}
 		}
 
-		// ✅ Update conversation summary ONCE
+		// Update conversation summary
 		await prisma.conversation.update({
 			where: { id: convo.id },
 			data: {
 				lastMessageAt,
-				lastMessagePreview
+				lastMessagePreview,
+				lastMessageAuthorId,
+				lastMessageAuthorName
 			}
 		})
+
+		// -----------------------------
+		// Seed read cursors (lastReadAt)
+		// -----------------------------
+		const sortedMessages = createdMessages.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+
+		for (const member of convoMembers) {
+			const readMode = Math.random()
+
+			let lastReadAt: Date | null = null
+
+			if (readMode < 0.33) {
+				// Fully read
+				lastReadAt = sortedMessages[sortedMessages.length - 1]?.createdAt ?? null
+			} else if (readMode < 0.66) {
+				// Partially read
+				const randomIndex = Math.floor(Math.random() * sortedMessages.length)
+				lastReadAt = sortedMessages[randomIndex]?.createdAt ?? null
+			} else {
+				// Not read at all
+				lastReadAt = null
+			}
+
+			await prisma.conversationMember.update({
+				where: {
+					conversationId_userId: {
+						conversationId: convo.id,
+						userId: member.userId
+					}
+				},
+				data: {
+					lastReadAt
+				}
+			})
+		}
 	}
 
 	console.log('✔ Created messages and updated conversation summaries')

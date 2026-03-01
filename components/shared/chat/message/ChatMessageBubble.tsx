@@ -13,6 +13,7 @@ interface Props {
 	isActiveMatch?: boolean
 	isMine: boolean
 	isOptimistic: boolean
+	wasSeen: boolean
 	time: string
 	dropdown: {
 		isOpen: boolean
@@ -23,7 +24,8 @@ interface Props {
 	}
 }
 
-export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine, isOptimistic, time, dropdown }: Props) => {
+export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine, isOptimistic, time, dropdown, wasSeen }: Props) => {
+
 	return (
 		<motion.div
 			layout
@@ -61,6 +63,7 @@ export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine,
 					/>
 
 					<ChatMessageStatus
+						wasSeen={wasSeen}
 						time={time}
 						isMine={isMine}
 						isOptimistic={isOptimistic}

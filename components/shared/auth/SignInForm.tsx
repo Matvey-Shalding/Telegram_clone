@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 type LogInSchema = z.infer<typeof logInSchema>
 
@@ -29,11 +30,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 		mode: 'onSubmit'
 	})
 
+	const router = useRouter()
+
 	const onSubmit = async (data: LogInSchema) => {
 		try {
 			await signInUser(data)
 
 			toast.success('Logged in successfully')
+
+			router.push('/')
 
 			reset()
 		} catch (error) {

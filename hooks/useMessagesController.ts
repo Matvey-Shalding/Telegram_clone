@@ -6,10 +6,15 @@ import { ChatMode } from '@/@types/ChatMode'
 import { useCalendar, useMessages, useSearch, useVirtuoso } from '@/hooks'
 import { useMemo } from 'react'
 import { useFetchMessages } from './messages/useFetchMessage'
+import { useLastReadAt } from './messages/useLastReadAt'
 
 export function useChatController(mode: ChatMode, searchValue: string) {
-	// 1️⃣ fetch
+	// 1️⃣ fetch messages
 	const { data, isLoading, isError } = useFetchMessages()
+
+	// fetch last message status
+
+	const lastReadAt = useLastReadAt()
 
 	// 2️⃣ DTO + windowing
 	const { messages, loadOlderMessages } = useMessages(data)
@@ -46,6 +51,7 @@ export function useChatController(mode: ChatMode, searchValue: string) {
 		messages,
 		virtuosoData,
 		loadOlderMessages,
+		lastReadAt,
 
 		// virtuoso
 		virtuosoRef,

@@ -71,5 +71,6 @@ export function useMessages(data: ServerMessage[] = []) {
 		setVisibleCount(v => Math.min(normalized.length, v + WINDOW_INCREMENT))
 	}
 
+
 	return { messages, loadOlderMessages }
 }

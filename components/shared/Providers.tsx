@@ -1,7 +1,8 @@
 'use client'
 
 import { authClient } from '@/auth-client'
-import { currentSession } from '@/store'
+import { Api } from '@/services/clientApi'
+import { currentConversationId, currentSession } from '@/store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
@@ -16,11 +17,21 @@ export const Providers: React.FC<Props> = ({ children }) => {
 
 	const [, setSession] = useAtom(currentSession)
 
+	const [conversationId] = useAtom(currentConversationId)
+
 	const [queryClient] = useState(() => new QueryClient())
 
 	useEffect(() => {
 		setSession(data)
 	}, [data, setSession])
+
+	useEffect(() => {
+		const updateLastSeen = async () => {
+			if (!conversationId) return
+			await Api.conversation.updateLastReadAt(conversationId)
+		}
+		updateLastSeen()
+	}, [conversationId])
 
 	return (
 		<QueryClientProvider client={queryClient}>

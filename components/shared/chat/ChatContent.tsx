@@ -28,6 +28,7 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 		virtuosoData,
 		loadOlderMessages,
 		virtuosoRef,
+		lastReadAt,
 
 		isCalendarOpen,
 		setIsCalendarOpen,
@@ -38,6 +39,8 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 		currentMatchCursor,
 		scrollToMatch
 	} = useChatController(mode, searchValue)
+
+	console.log('last read at', lastReadAt)
 
 	if (isError) {
 		return (
@@ -75,6 +78,7 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 			/>
 
 			<ChatVirtuoso
+				lastReadAt={lastReadAt}
 				setMode={setMode}
 				setEditedValue={setEditedValue}
 				isLoading={isLoading}

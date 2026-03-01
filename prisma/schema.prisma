@@ -26,7 +26,6 @@ model User {
 
   // Messenger relations
   messages         Message[]            @relation("WrittenMessages")
-  seenMessages     Message[]            @relation("SeenMessages")
   messageReactions MessageReaction[]
   conversations    ConversationMember[]
 
@@ -96,6 +95,7 @@ model ConversationMember {
   conversationId String
   userId         String
   joinedAt       DateTime @default(now())
+  lastReadAt DateTime?
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -131,7 +131,6 @@ model Message {
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User         @relation("WrittenMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
-  seenBy           User[]            @relation("SeenMessages")
   messageReactions MessageReaction[]
 }
 

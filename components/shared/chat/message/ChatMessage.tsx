@@ -20,14 +20,20 @@ interface Props {
 	setIsCalendarOpen: Dispatch<SetStateAction<boolean>>
 	setEditedValue: Dispatch<SetStateAction<string>>
 	setMode: Dispatch<SetStateAction<ChatMode>>
+	lastReadAt: Date | null | undefined
 	className?: string
 }
 
 export const ChatMessage = memo(
-	({ message, searchValue, isActiveMatch, isLastMessage, setIsCalendarOpen, setEditedValue, setMode, className }: Props) => {
+	({ message, searchValue, isActiveMatch, isLastMessage, setIsCalendarOpen, setEditedValue, setMode, className, lastReadAt }: Props) => {
 		const session = useCurrentSession()
 		const isMine = session?.user.id === message.senderId
 		const isOptimistic = message.optimistic === true
+
+		console.log(typeof lastReadAt)
+		console.log(typeof message.createdAt)
+
+		const wasSeen = lastReadAt ? +message.createdAt <= +new Date(lastReadAt) : false
 
 		const isTextMessage = !!message.content
 		const isImageMessage = !!message.image
@@ -55,7 +61,7 @@ export const ChatMessage = memo(
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
 						<ChatMessageBubble
-							isLastMessage={isLastMessage}
+							wasSeen={wasSeen}
 							content={message.content!}
 							searchValue={searchValue}
 							isActiveMatch={isActiveMatch}
@@ -74,7 +80,7 @@ export const ChatMessage = memo(
 
 					{isImageMessage && (
 						<ChatImageMessage
-						isLastMessage={isLastMessage}
+							isLastMessage={isLastMessage}
 							image={message.image!}
 							isMine={isMine}
 							isOptimistic={isOptimistic}
