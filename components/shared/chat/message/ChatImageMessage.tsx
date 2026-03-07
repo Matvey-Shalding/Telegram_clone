@@ -17,9 +17,10 @@ interface Props {
 		setIsOpen: (v: boolean) => void
 		onDelete: (e: React.MouseEvent) => void
 	}
+	wasSeen: boolean
 }
 
-export const ChatImageMessage = ({ image, isMine, isOptimistic, time, isLastMessage, dropdown }: Props) => {
+export const ChatImageMessage = ({ image, isMine, isOptimistic, time, isLastMessage, dropdown, wasSeen }: Props) => {
 	const shouldAnimateIn = isLastMessage && !isOptimistic
 
 	return (
@@ -59,6 +60,7 @@ export const ChatImageMessage = ({ image, isMine, isOptimistic, time, isLastMess
 
 			<div className={cn('flex items-center gap-1 text-[11px] px-1 text-muted-foreground', isMine ? 'justify-end' : 'justify-start')}>
 				<ChatMessageStatus
+					wasSeen={wasSeen}
 					time={time}
 					isMine={isMine}
 					isOptimistic={isOptimistic}

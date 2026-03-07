@@ -53,11 +53,17 @@ export const ChatMessage = memo(
 				<div
 					className={cn('w-full flex items-end gap-2 px-3', isMine ? 'justify-end' : 'justify-start', isLastMessage && 'mb-20', className)}
 				>
-					{!isMine && <AvatarWithBadge noBadge className="size-7 shrink-0" />}
+					{!isMine && (
+						<AvatarWithBadge
+							noBadge
+							className="size-7 shrink-0"
+						/>
+					)}
 
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
 						<ChatMessageBubble
+							messageId={message.id}
 							wasSeen={wasSeen}
 							content={message.content!}
 							searchValue={searchValue}
@@ -77,6 +83,7 @@ export const ChatMessage = memo(
 
 					{isImageMessage && (
 						<ChatImageMessage
+							wasSeen={wasSeen}
 							isLastMessage={isLastMessage}
 							image={message.image!}
 							isMine={isMine}
@@ -90,7 +97,12 @@ export const ChatMessage = memo(
 						/>
 					)}
 
-					{isMine && <AvatarWithBadge noBadge className="size-7 shrink-0" />}
+					{isMine && (
+						<AvatarWithBadge
+							noBadge
+							className="size-7 shrink-0"
+						/>
+					)}
 				</div>
 			</div>
 		)

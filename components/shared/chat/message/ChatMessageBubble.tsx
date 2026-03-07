@@ -22,9 +22,10 @@ interface Props {
 		onDelete: (e: React.MouseEvent) => void
 		onCopy: (e: React.MouseEvent) => void
 	}
+	messageId:string
 }
 
-export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine, isOptimistic, time, dropdown, wasSeen }: Props) => {
+export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine, isOptimistic, time, dropdown, wasSeen,messageId }: Props) => {
 
 	return (
 		<motion.div
@@ -46,6 +47,7 @@ export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine,
 				)}
 			>
 				<ChatMessageActionsDropdown
+				messageId={messageId}
 					isMine={isMine}
 					isOpen={dropdown.isOpen}
 					setIsOpen={dropdown.setIsOpen}
