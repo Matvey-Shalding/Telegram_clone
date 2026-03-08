@@ -1,8 +1,8 @@
 // hooks/chat/useChatContent.ts
 'use client'
 
-import { ChatMessageSkeleton, VirtuosoMessage } from '@/@types/ChatMessage'
 import { ChatMode } from '@/@types/ChatMode'
+import { ChatMessageSkeleton, VirtuosoMessage } from '@/@types/Message'
 import { useCalendar, useMessages, useSearch, useVirtuoso } from '@/hooks'
 import { useMemo } from 'react'
 import { useFetchMessages } from './messages/useFetchMessage'

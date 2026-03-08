@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatMessage, ServerMessage } from '@/@types/ChatMessage'
+import { ChatMessage, ServerMessage } from '@/@types/Message'
 import { Message } from '@/generated/prisma/client'
 import { isSameDay } from '@/lib'
 import { useEffect, useMemo, useState } from 'react'
@@ -70,7 +70,6 @@ export function useMessages(data: ServerMessage[] = []) {
 	const loadOlderMessages = () => {
 		setVisibleCount(v => Math.min(normalized.length, v + WINDOW_INCREMENT))
 	}
-
 
 	return { messages, loadOlderMessages }
 }

@@ -15,6 +15,8 @@ import React from 'react'
 
 import { EmojiPicker, EmojiPickerContent } from '@/components/ui/emoji-picker'
 import { Api } from '@/services/clientApi'
+import { currentConversationId } from '@/store'
+import { useAtom } from 'jotai'
 import toast from 'react-hot-toast'
 
 interface Props {
@@ -42,11 +44,13 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 }) => {
 	const previewEmojis = ['👍', '❤️', '😮', '👏', '🔥', '🎉']
 
+	const [conversationId] = useAtom(currentConversationId)
+
 	const handleSelect = async (emoji: string) => {
 		setIsOpen(false)
 		try {
 			// emoji can only be selected on default message
-			await Api.reactions.add(emoji, messageId!)
+			await Api.reactions.add(emoji, messageId!, conversationId)
 		} catch {
 			toast.error('Something went wrong')
 		}

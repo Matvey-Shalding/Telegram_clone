@@ -1,4 +1,4 @@
-import { ChatMessage } from '@/@types/ChatMessage'
+import { ChatMessage } from '@/@types/Message'
 
 /**
  * Find all indexes where a date badge should appear

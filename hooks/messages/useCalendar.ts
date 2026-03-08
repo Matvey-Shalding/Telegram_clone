@@ -1,6 +1,6 @@
 'use client'
 
-import { ChatMessage } from '@/@types/ChatMessage'
+import { ChatMessage } from '@/@types/Message'
 import { findClosestIndexByDate } from '@/lib/chat.helpers'
 import { useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'

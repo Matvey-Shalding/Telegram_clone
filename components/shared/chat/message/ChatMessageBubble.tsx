@@ -2,10 +2,13 @@
 
 import { Card } from '@/components/ui'
 import { Highlight } from '@/components/ui/Highlighted'
+import { MessageReaction } from '@/generated/prisma/client'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
+import React from 'react'
 import { ChatMessageActionsDropdown } from './ChatMessageActionsDropdown'
 import { ChatMessageStatus } from './ChatMessageStatus'
+import { MessageReactionsRow } from './MessageReaction'
 
 interface Props {
 	content: string
@@ -22,10 +25,23 @@ interface Props {
 		onDelete: (e: React.MouseEvent) => void
 		onCopy: (e: React.MouseEvent) => void
 	}
-	messageId:string
+	messageId: string
+	reactions: MessageReaction[]
 }
 
-export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine, isOptimistic, time, dropdown, wasSeen,messageId }: Props) => {
+export const ChatMessageBubble = ({
+	content,
+	searchValue,
+	isActiveMatch,
+	isMine,
+	isOptimistic,
+	time,
+	dropdown,
+	wasSeen,
+	messageId,
+	reactions
+}: Props) => {
+	const hasReactions = reactions && reactions.length > 0
 
 	return (
 		<motion.div
@@ -47,7 +63,7 @@ export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine,
 				)}
 			>
 				<ChatMessageActionsDropdown
-				messageId={messageId}
+					messageId={messageId}
 					isMine={isMine}
 					isOpen={dropdown.isOpen}
 					setIsOpen={dropdown.setIsOpen}
@@ -56,21 +72,51 @@ export const ChatMessageBubble = ({ content, searchValue, isActiveMatch, isMine,
 					handleCopy={dropdown.onCopy}
 				/>
 
-				<div className="flex items-end gap-2">
-					<Highlight
-						text={content}
-						query={searchValue}
-						isActive={isActiveMatch}
-						invertColors={!isMine}
-					/>
+				{/* If there are no reactions — keep the original single-row layout */}
+				{!hasReactions ? (
+					<div className="flex items-end gap-2">
+						<Highlight
+							text={content}
+							query={searchValue}
+							isActive={isActiveMatch}
+							invertColors={!isMine}
+						/>
 
-					<ChatMessageStatus
-						wasSeen={wasSeen}
-						time={time}
-						isMine={isMine}
-						isOptimistic={isOptimistic}
-					/>
-				</div>
+						<ChatMessageStatus
+							wasSeen={wasSeen}
+							time={time}
+							isMine={isMine}
+							isOptimistic={isOptimistic}
+						/>
+					</div>
+				) : (
+					/* If there ARE reactions — place content in its own row,
+             and render reactions (left) + status (right) in the second row */
+					<div>
+						{/* Content row */}
+						<div className="mb-0.5">
+							<Highlight
+								text={content}
+								query={searchValue}
+								isActive={isActiveMatch}
+								invertColors={!isMine}
+							/>
+						</div>
+
+						{/* Reaction + Status row (reactions on left; status on right) */}
+						<div className="flex items-end justify-between gap-3">
+							<MessageReactionsRow reactions={reactions} />
+							<div className="flex-shrink-0">
+								<ChatMessageStatus
+									wasSeen={wasSeen}
+									time={time}
+									isMine={isMine}
+									isOptimistic={isOptimistic}
+								/>
+							</div>
+						</div>
+					</div>
+				)}
 			</Card>
 		</motion.div>
 	)

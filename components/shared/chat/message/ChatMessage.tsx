@@ -1,7 +1,7 @@
 'use client'
 
-import { ChatMessage as Message } from '@/@types/ChatMessage'
 import { ChatMode } from '@/@types/ChatMode'
+import { ChatMessage as Message } from '@/@types/Message'
 import { AvatarWithBadge } from '@/components/shared/AvatarWithBadge'
 import { useMessageActions } from '@/hooks/messages/useMessageActions'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
@@ -63,6 +63,7 @@ export const ChatMessage = memo(
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
 						<ChatMessageBubble
+							reactions={message.reactions}
 							messageId={message.id}
 							wasSeen={wasSeen}
 							content={message.content!}

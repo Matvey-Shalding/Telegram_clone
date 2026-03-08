@@ -1,4 +1,4 @@
-import { PusherMessage } from '@/@types/ChatMessage'
+import { PusherMessage } from '@/@types/Message'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Conversation, Message } from '@/generated/prisma/client'
 import { getMessageSonnerPayload } from '@/lib/getMessageSonnerPayload'

@@ -1,8 +1,7 @@
-import { Message, User } from '@/generated/prisma/client'
-
+import { Message, MessageReaction, User } from '@/generated/prisma/client'
 
 // message which is passed to ui
-export interface ChatMessage extends Message {
+export interface ChatMessage extends DTOMessage {
 	isSameSender: boolean
 	showDateBadge: boolean
 	optimistic?: boolean
@@ -24,5 +23,10 @@ export interface PusherMessage extends Message {
 // message which is passed to virtuoso(either real data or skeletons)
 export type VirtuosoMessage = ChatMessage | ChatMessageSkeleton
 
+// message received from server
+type DTOMessage = Message & {
+	reactions: MessageReaction[]
+}
+
 // message which is stored in react query
-export type ServerMessage = Message | (Message & { clientId?: string; optimistic?: boolean })
+export type ServerMessage = DTOMessage | (DTOMessage & { clientId?: string; optimistic?: boolean })

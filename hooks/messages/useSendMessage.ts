@@ -1,6 +1,6 @@
 'use client'
 
-import { ServerMessage } from '@/@types/ChatMessage'
+import { ServerMessage } from '@/@types/Message'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Message } from '@/generated/prisma/client'
 import { generateId } from '@/lib/generateId'

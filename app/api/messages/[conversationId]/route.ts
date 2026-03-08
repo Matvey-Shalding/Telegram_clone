@@ -15,7 +15,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 	const session = await auth.api.getSession({ headers: await headers() })
 	const userId = session?.user.id
 
-	// User not foundk
+	// User not found
 
 	if (!userId) {
 		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -23,6 +23,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 
 	const messages = await prisma.message.findMany({
 		where: { conversationId },
+		include: { reactions: true },
 		orderBy: { createdAt: 'asc' }
 	})
 

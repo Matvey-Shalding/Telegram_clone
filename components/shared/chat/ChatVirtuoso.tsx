@@ -3,7 +3,7 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 
-import { ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/ChatMessage'
+import { ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/Message'
 
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage } from './message/ChatMessage'
