@@ -19,9 +19,9 @@ export function getConversationTitle(
 }
 
 /**
- * Get conversation details (subtitle)
+ * Get conversation status(online/offline or member count)
  */
-export function getConversationDetails(
+export function getConversationStatus(
 	conversation: ConversationType | null,
 	members: ConversationMember[] | null,
 	activeUsers: string[],
@@ -80,7 +80,7 @@ export function formatConversationDate(date: Date | string | null | undefined): 
 /**
  * Get last message description (for preview)
  */
-export function getConversationDescription(conversation: ConversationType | null, currentUserId?: string): string {
+export function getConversationLastMessage(conversation: ConversationType | null, currentUserId?: string): string {
 	if (!conversation) return ''
 
 	const { lastMessagePreview, lastMessageAuthorId, lastMessageAuthorName, isGroup } = conversation

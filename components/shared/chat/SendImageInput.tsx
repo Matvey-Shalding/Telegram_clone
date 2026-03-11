@@ -1,4 +1,4 @@
-import { cn } from '@/lib'
+import { cn } from '@/lib/utils'
 import { Send, X } from 'lucide-react'
 import React from 'react'
 interface Props {

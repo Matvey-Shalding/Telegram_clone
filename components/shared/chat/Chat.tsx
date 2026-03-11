@@ -1,7 +1,7 @@
 'use client'
 
-import { Chat as Conversation } from '@/@types/Chat'
-import { useChatController } from '@/hooks/useChatController'
+import { ConversationWithMembers as Conversation } from '@/@types/Conversation'
+import { useChatController } from '@/hooks/chat/useChatController'
 import { activeUsers } from '@/store/activeUsersAtom'
 import { useAtom } from 'jotai'
 import { ChatContent } from './ChatContent'
@@ -16,7 +16,6 @@ export const Chat: React.FC<Props> = ({ conversation }) => {
 	const { mode, setMode, searchValue, setSearchValue, editedValue, setEditedValue, title, details } = useChatController(conversation)
 
 	const [activeMembers] = useAtom(activeUsers)
-
 
 	return (
 		<div className="h-screen w-full flex flex-col">

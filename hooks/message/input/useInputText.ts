@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { SendMessagePayload } from './useSendMessage'
+import { SendMessagePayload } from '../actions/useSendMessage'
 
-export const useChatInputMessage = (isPending: boolean, sendMessage: (payload: SendMessagePayload) => void) => {
+export const useInputText = (isPending: boolean, sendMessage: (payload: SendMessagePayload) => void) => {
 	const [messageInput, setMessageInput] = useState('')
 
 	const handleSendMessage = async () => {
@@ -11,7 +11,7 @@ export const useChatInputMessage = (isPending: boolean, sendMessage: (payload: S
 		try {
 			const content = messageInput
 			setMessageInput('')
-			await sendMessage({ content })
+			await sendMessage({ content, imageUrl: null })
 		} catch (e) {
 			toast.error('Something went wrong')
 			console.error(e)

@@ -1,8 +1,8 @@
 'use client'
 
 import { authClient } from '@/auth-client'
-import { useSendMessage } from '@/hooks/messages/useSendMessage'
-import { useChatInput } from '@/hooks/useChatInputController'
+import { useChatInput } from '@/hooks/chat/useChatInputController'
+import { useSendMessage } from '@/hooks/message/actions/useSendMessage'
 import { SendImageInput } from './SendImageInput'
 import { SendMessageInput } from './SendMessageInput'
 

@@ -2,7 +2,7 @@
 
 import { ChatMessage, ServerMessage } from '@/@types/Message'
 import { Message } from '@/generated/prisma/client'
-import { isSameDay } from '@/lib'
+import { isSameDay } from '@/lib/message.helpers'
 import { useEffect, useMemo, useState } from 'react'
 
 const WINDOW_SIZE = 200

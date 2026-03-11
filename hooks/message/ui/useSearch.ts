@@ -2,7 +2,7 @@
 
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage } from '@/@types/Message'
-import { findSearchMatches } from '@/lib/chat.helpers'
+import { findSearchMatches } from '@/lib/virtuoso.helpers'
 import { useLayoutEffect, useMemo, useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 

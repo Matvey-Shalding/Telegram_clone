@@ -6,7 +6,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/button'
-import { useChatController } from '@/hooks/useMessagesController'
+import { useMessageController } from '@/hooks/message/useMessagesController'
 import { ChatCalendar } from './ChatCalendar'
 import { ChatSearch } from './ChatSearch'
 import { ChatVirtuoso } from './ChatVirtuoso'
@@ -38,7 +38,7 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 		matchedMessageIndexes,
 		currentMatchCursor,
 		scrollToMatch
-	} = useChatController(mode, searchValue)
+	} = useMessageController(mode, searchValue)
 
 	if (isError) {
 		return (

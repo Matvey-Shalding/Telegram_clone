@@ -1,8 +1,8 @@
 'use client'
 
-import { useChatInputImage } from './messages/useChatInputImage'
-import { useChatInputMessage } from './messages/useChatInputMessage'
-import { SendMessagePayload } from './messages/useSendMessage'
+import { SendMessagePayload } from '../message/actions/useSendMessage'
+import { useInputImage } from '../message/input/useInputImage'
+import { useInputText } from '../message/input/useInputText'
 
 type UseChatInputArgs = {
 	isPending: boolean
@@ -10,8 +10,8 @@ type UseChatInputArgs = {
 }
 
 export const useChatInput = ({ isPending, sendMessage }: UseChatInputArgs) => {
-	const message = useChatInputMessage(isPending, sendMessage)
-	const image = useChatInputImage(isPending, sendMessage)
+	const message = useInputText(isPending, sendMessage)
+	const image = useInputImage(isPending, sendMessage)
 
 	const isBusy = isPending || image.isUploading
 

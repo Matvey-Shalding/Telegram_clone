@@ -3,7 +3,7 @@
 import { auth } from '@/auth'
 import { PUSHER_KEYS } from '@/config/pusherKeys'
 import { prisma } from '@/db/prisma'
-import { pusherServer } from '@/lib/pusher'
+import { pusherServer } from '@/lib/pusher/pusher'
 import { headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -23,11 +23,8 @@ export async function POST(req: NextRequest) {
 		// 2️⃣ Parse body safely
 		const body = await req.json().catch(() => null)
 
-		console.log('body', body)
-
 		const content = body?.content
 		const messageId = body?.messageId
-
 		const conversationId = body?.conversationId
 
 		if (!content || typeof content !== 'string') {
@@ -39,7 +36,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		if (!conversationId || typeof conversationId !== 'string') {
-			return NextResponse.json({ error: 'Invalid conversationId ' }, { status: 400 })
+			return NextResponse.json({ error: 'Invalid conversationId' }, { status: 400 })
 		}
 
 		// 3️⃣ Ensure message exists
@@ -52,7 +49,7 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: 'Message not found' }, { status: 404 })
 		}
 
-		// 4️⃣ Find existing reaction
+		// 4️⃣ Find existing reaction from this user
 		const existingReaction = await prisma.messageReaction.findFirst({
 			where: {
 				messageId,
@@ -60,27 +57,33 @@ export async function POST(req: NextRequest) {
 			}
 		})
 
-		// 5️⃣ Reaction logic
+		let reaction
+		let action: 'created' | 'updated' | 'deleted'
+
+		// 5️⃣ Reaction toggle logic
 		if (!existingReaction) {
-			await prisma.messageReaction.create({
+			reaction = await prisma.messageReaction.create({
 				data: {
 					reaction: content,
 					messageId,
 					userId
 				}
 			})
+			action = 'created'
 		} else if (existingReaction.reaction === content) {
-			await prisma.messageReaction.delete({
+			reaction = await prisma.messageReaction.delete({
 				where: { id: existingReaction.id }
 			})
+			action = 'deleted'
 		} else {
-			await prisma.messageReaction.update({
+			reaction = await prisma.messageReaction.update({
 				where: { id: existingReaction.id },
 				data: { reaction: content }
 			})
+			action = 'updated'
 		}
 
-		// 6️⃣ Fetch updated message (used later for Pusher)
+		// 6️⃣ Fetch updated message for Pusher
 		const newMessage = await prisma.message.findUnique({
 			where: { id: messageId },
 			include: {
@@ -89,15 +92,9 @@ export async function POST(req: NextRequest) {
 		})
 
 		const conversation = await prisma.conversation.findFirst({
-			where: {
-				id: conversationId
-			},
+			where: { id: conversationId },
 			include: {
-				members: {
-					include: {
-						user: true
-					}
-				}
+				members: true
 			}
 		})
 
@@ -105,16 +102,18 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
 		}
 
+		// 7️⃣ Send realtime update
 		for (const member of conversation.members) {
-			pusherServer.trigger(`user-${member.userId}`, PUSHER_KEYS.NEW_REACTION, {
-				conversationId: conversationId,
+			await pusherServer.trigger(`user-${member.userId}`, PUSHER_KEYS.NEW_REACTION, {
+				conversationId,
 				message: newMessage
 			})
 		}
 
+		// 8️⃣ Return reaction for optimistic update replacement
 		return NextResponse.json(
 			{
-				newMessage
+				reaction
 			},
 			{ status: 200 }
 		)

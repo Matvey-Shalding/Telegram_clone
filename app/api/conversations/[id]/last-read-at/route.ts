@@ -3,7 +3,7 @@
 import { auth } from '@/auth'
 import { PUSHER_KEYS } from '@/config/pusherKeys'
 import { prisma } from '@/db/prisma'
-import { pusherServer } from '@/lib/pusher'
+import { pusherServer } from '@/lib/pusher/pusher'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 

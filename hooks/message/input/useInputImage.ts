@@ -1,9 +1,9 @@
 import { uploadToCloudinary } from '@/lib/server/uploadToCloudinary'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { SendMessagePayload } from './useSendMessage'
+import { SendMessagePayload } from '../actions/useSendMessage'
 
-export const useChatInputImage = (isPending: boolean, sendMessage: (payload: SendMessagePayload) => void) => {
+export const useInputImage = (isPending: boolean, sendMessage: (payload: SendMessagePayload) => void) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [selectedFile, setSelectedFile] = useState<File | null>(null)
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -38,7 +38,7 @@ export const useChatInputImage = (isPending: boolean, sendMessage: (payload: Sen
 
 		try {
 			const imageUrl = await uploadToCloudinary(selectedFile)
-			await sendMessage({ image: imageUrl })
+			await sendMessage({ imageUrl: imageUrl, content: '' })
 			handleRemoveFile()
 		} catch (e) {
 			toast.error('Failed to upload image')

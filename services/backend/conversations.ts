@@ -1,12 +1,12 @@
-import { Chat } from '@/@types/Chat'
 import { API_ROUTES } from '@/config/routes'
 import { axiosInstance } from './instance'
+import { ConversationWithMembers } from '@/@types/Conversation'
 
-export const getAll = async (): Promise<Chat[]> => {
+export const getAll = async (): Promise<ConversationWithMembers[]> => {
 	return (await axiosInstance.get(API_ROUTES.CONVERSATIONS)).data
 }
 
-export const get = async (id: string): Promise<Chat> => {
+export const get = async (id: string): Promise<ConversationWithMembers> => {
 	return (await axiosInstance.get(`${API_ROUTES.CONVERSATIONS}/${id}`)).data
 }
 

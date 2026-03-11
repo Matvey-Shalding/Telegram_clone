@@ -1,1 +1,1 @@
-when user is 
+when a new message arrives via pusher, i check the current conversation; if current conversation equals to message conversation, i mark the message as seen

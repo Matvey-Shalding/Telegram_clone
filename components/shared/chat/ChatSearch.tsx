@@ -1,7 +1,7 @@
 'use client'
 
 import { ChatMode } from '@/@types/ChatMode'
-import { cn } from '@/lib'
+import { cn } from '@/lib/utils'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import React from 'react'
 interface Props {

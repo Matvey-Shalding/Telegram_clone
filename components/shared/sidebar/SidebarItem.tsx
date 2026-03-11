@@ -1,22 +1,22 @@
 'use client'
 
-import { Chat } from '@/@types/Chat'
+import { ConversationWithMembers } from '@/@types/Conversation'
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
-import { formatConversationDate, getConversationDescription, getConversationTitle } from '@/lib/conversation.helpers'
+import { formatConversationDate, getConversationLastMessage, getConversationTitle } from '@/lib/conversation.helpers'
 import { activeUsers } from '@/store/activeUsersAtom'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import { AvatarWithBadge } from '..'
-export const SidebarItem: React.FC<Chat> = conversation => {
+export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 	const unreadCount = 0 // temporary static value
 
 	const currentUserId = useCurrentSession()?.user.id
 
 	const formattedTitle = getConversationTitle(conversation, conversation.members, currentUserId)
 
-	const description = getConversationDescription(conversation, currentUserId)
+	const description = getConversationLastMessage(conversation, currentUserId)
 
 	const router = useRouter()
 

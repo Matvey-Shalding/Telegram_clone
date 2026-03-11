@@ -1,13 +1,13 @@
 'use client'
 
 import { authClient } from '@/auth-client'
-import { Api } from '@/services/clientApi'
+import { useActiveChannel } from '@/hooks/useActiveChannel'
+import { Api } from '@/services/backend/clientApi'
 import { currentConversationId, currentSession } from '@/store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
-import { ActiveStatus } from './ActiveStatus'
 import { PusherProvider } from './PusherProvider'
 
 interface Props {
@@ -34,11 +34,13 @@ export const Providers: React.FC<Props> = ({ children }) => {
 		updateLastSeen()
 	}, [conversationId])
 
+	useActiveChannel()
+
 	return (
 		<QueryClientProvider client={queryClient}>
+			{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 			<PusherProvider />
 			<Toaster />
-			<ActiveStatus />
 			{children}
 		</QueryClientProvider>
 	)

@@ -1,11 +1,12 @@
 import { PusherMessage } from '@/@types/Message'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Conversation, Message } from '@/generated/prisma/client'
-import { getMessageSonnerPayload } from '@/lib/getMessageSonnerPayload'
 import { showMessageToast } from '@/lib/showMessageSonner'
+import { Api } from '@/services/backend/clientApi'
 import { QueryClient } from '@tanstack/react-query'
+import { getSonnerData } from '../server/getSonnerData'
 
-export const onNewMessage = (queryClient: QueryClient) => async (payload: { message: PusherMessage }) => {
+export const onNewMessage = (queryClient: QueryClient, currentConversationId?: string) => async (payload: { message: PusherMessage }) => {
 	const message = payload.message
 	if (!message) return
 
@@ -17,6 +18,13 @@ export const onNewMessage = (queryClient: QueryClient) => async (payload: { mess
 		if (old?.some(m => m.id === message.id)) return old
 		return [...(old ?? []), message]
 	})
+
+	// mark new message as seen if user is in conversation
+
+	if (currentConversationId && currentConversationId === conversationId) {
+		console.log(conversationId, currentConversationId)
+		await Api.conversation.updateLastReadAt(conversationId)
+	}
 
 	// 2️⃣ Update conversations (chats) cache
 	queryClient.setQueryData<Conversation[] | undefined>([REACT_QUERY_KEYS.CHATS], old => {
@@ -36,7 +44,7 @@ export const onNewMessage = (queryClient: QueryClient) => async (payload: { mess
 
 	// 3️⃣ Show toast notification
 	try {
-		const toastData = await getMessageSonnerPayload(message)
+		const toastData = await getSonnerData(message)
 		if (toastData) showMessageToast(toastData)
 	} catch (e) {
 		console.error('Toast error', e)

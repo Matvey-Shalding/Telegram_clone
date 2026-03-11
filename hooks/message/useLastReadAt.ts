@@ -1,5 +1,5 @@
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
-import { Api } from '@/services/clientApi'
+import { Api } from '@/services/backend/clientApi'
 import { currentConversationId } from '@/store'
 import { useQuery } from '@tanstack/react-query'
 import { useAtom } from 'jotai'

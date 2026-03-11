@@ -1,4 +1,4 @@
-import { pusherClient } from '@/lib/pusher'
+import { pusherClient } from '@/lib/pusher/pusher'
 import { activeUsers } from '@/store/activeUsersAtom'
 import { useAtom } from 'jotai'
 import { Channel, Members } from 'pusher-js'
@@ -46,7 +46,7 @@ export const useActiveChannel = () => {
 		// clean up on unmount
 
 		return () => {
-			if(activeChannel) {
+			if (activeChannel) {
 				pusherClient.unsubscribe('presence-messenger')
 				setActiveChannel(null)
 			}

@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/auth'
-import { pusherServer } from '@/lib/pusher'
+import { pusherServer } from '@/lib/pusher/pusher'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {

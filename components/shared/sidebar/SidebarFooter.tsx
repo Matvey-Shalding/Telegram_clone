@@ -12,14 +12,12 @@ import {
 import { SidebarFooter as Footer, useSidebar } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
-import { cn } from '@/lib'
-import { activeUsers } from '@/store/activeUsersAtom'
-import { useAtom } from 'jotai'
 import { ChevronsUpDown, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import React, { useMemo } from 'react'
+import React from 'react'
 import toast from 'react-hot-toast'
-import { AvatarWithBadge } from '../AvatarWithBadge'
+import { AvatarWithBadge } from '../Avatar'
+import { cn } from '@/lib/utils'
 
 export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) => {
 	const { isMobile } = useSidebar()

@@ -2,15 +2,15 @@
 
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage as Message } from '@/@types/Message'
-import { AvatarWithBadge } from '@/components/shared/AvatarWithBadge'
-import { useMessageActions } from '@/hooks/messages/useMessageActions'
+import { AvatarWithBadge } from '@/components/shared/Avatar'
+import { useMessageActions } from '@/hooks/message/actions/useMessageActions'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
-import { formatMessageTime } from '@/lib/formatMessageTime'
 import { cn } from '@/lib/utils'
 import { Dispatch, memo, SetStateAction } from 'react'
 import { DateBadge } from '../DateBadge'
 import { ChatImageMessage } from './ChatImageMessage'
 import { ChatMessageBubble } from './ChatMessageBubble'
+import { formatTime } from '@/lib/message.helpers'
 
 interface Props {
 	message: Message
@@ -38,7 +38,7 @@ export const ChatMessage = memo(
 		// Guard: must be text OR image
 		if (!isTextMessage && !isImageMessage) return null
 
-		const time = formatMessageTime(message.createdAt)
+		const time = formatTime(message.createdAt)
 		const actions = useMessageActions(message, setEditedValue, setMode)
 
 		return (

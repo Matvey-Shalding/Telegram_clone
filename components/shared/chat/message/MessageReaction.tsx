@@ -1,8 +1,8 @@
 'use client'
 
-import { AvatarWithBadge } from '@/components/shared/AvatarWithBadge'
+import { AvatarWithBadge } from '@/components/shared/Avatar'
 import { MessageReaction } from '@/generated/prisma/client'
-import { groupReactions, type ReactionGroup } from '@/lib/groupReactions'
+import { groupReactions, ReactionGroup } from '@/lib/message.helpers'
 import { motion } from 'framer-motion'
 
 interface Props {
@@ -68,9 +68,7 @@ function ReactionPill({ group }: { group: ReactionGroup }) {
 				) : (
 					// </div>
 					// show count for multiple reactors
-					<span className="rounded-full bg-[#262626] size-5 grid place-content-center text-[12px] font-semibold text-white">
-						{count}
-					</span>
+					<span className="rounded-full bg-[#262626] size-5 grid place-content-center text-[12px] font-semibold text-white">{count}</span>
 				)}
 			</motion.div>
 		</div>

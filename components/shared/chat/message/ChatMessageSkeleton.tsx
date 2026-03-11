@@ -1,6 +1,6 @@
 'use client'
 
-import { AvatarWithBadge } from '@/components/shared/AvatarWithBadge'
+import { AvatarWithBadge } from '@/components/shared/Avatar'
 import { Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
 

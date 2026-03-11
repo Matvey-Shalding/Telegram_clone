@@ -1,7 +1,7 @@
 'use client'
 
 import { ChatMessage } from '@/@types/Message'
-import { findClosestIndexByDate } from '@/lib/chat.helpers'
+import { findClosestIndexByDate } from '@/lib/virtuoso.helpers'
 import { useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 

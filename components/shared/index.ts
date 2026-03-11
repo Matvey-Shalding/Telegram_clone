@@ -1,4 +1,4 @@
-export { AvatarWithBadge } from './AvatarWithBadge'
+export { AvatarWithBadge } from './Avatar'
 
 export * from './sidebar'
 

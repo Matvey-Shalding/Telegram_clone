@@ -7,16 +7,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-
+import { EmojiPicker, EmojiPickerContent } from '@/components/ui/emoji-picker'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-
+import { useAddReaction } from '@/hooks/message/actions/useAddReaction'
 import { ChevronDown, Copy, Edit, Trash } from 'lucide-react'
 import React from 'react'
-
-import { EmojiPicker, EmojiPickerContent } from '@/components/ui/emoji-picker'
-import { Api } from '@/services/clientApi'
-import { currentConversationId } from '@/store'
-import { useAtom } from 'jotai'
 import toast from 'react-hot-toast'
 
 interface Props {
@@ -26,7 +21,6 @@ interface Props {
 	handleEdit?: (e: React.MouseEvent) => void
 	handleDelete: (e: React.MouseEvent) => void
 	handleCopy?: (e: React.MouseEvent) => void
-	onEmojiSelect?: (emoji: string) => void
 	onlyDelete?: boolean
 	messageId?: string
 }
@@ -38,19 +32,18 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 	handleCopy,
 	handleDelete,
 	handleEdit,
-	onEmojiSelect,
 	onlyDelete = false,
 	messageId
 }) => {
-	const previewEmojis = ['👍', '❤️', '😮', '👏', '🔥', '🎉']
+	const PREVIEW_EMOJIS = ['👍', '❤️', '😮', '👏', '🔥', '🎉']
 
-	const [conversationId] = useAtom(currentConversationId)
+	const addReaction = useAddReaction(messageId)
 
 	const handleSelect = async (emoji: string) => {
 		setIsOpen(false)
+
 		try {
-			// emoji can only be selected on default message
-			await Api.reactions.add(emoji, messageId!, conversationId)
+			await addReaction(emoji)
 		} catch {
 			toast.error('Something went wrong')
 		}
@@ -71,50 +64,52 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 				sideOffset={10}
 				className="w-50 rounded-lg p-1"
 			>
+				{/* REACTIONS */}
 				{!isMine && (
-					<div className="flex items-center gap-1 px-1">
-						{previewEmojis.map(e => (
-							<button
-								onClick={() => handleSelect(e)}
-								key={e}
-								className="size-6 flex items-center justify-center rounded hover:bg-muted text-base"
-							>
-								{e}
-							</button>
-						))}
-
-						<Popover>
-							<PopoverTrigger
-								onClick={e => e.stopPropagation()}
-								data-emoji-popover
-								asChild
-							>
-								<button className="size-6 rounded-full bg-muted flex items-center justify-center hover:bg-accent">
-									<ChevronDown className="size-4" />
-								</button>
-							</PopoverTrigger>
-
-							<PopoverContent
-								sideOffset={8}
-								alignOffset={-16}
-								side="top"
-								align="end"
-								className="p-0 w-fit border rounded-lg"
-							>
-								<EmojiPicker
-									sticky={false}
-									columns={7}
-									className="h-70"
-									onEmojiSelect={({ emoji }) => handleSelect(emoji)}
+					<>
+						<div className="flex items-center gap-1 px-1">
+							{PREVIEW_EMOJIS.map(e => (
+								<button
+									key={e}
+									onClick={() => handleSelect(e)}
+									className="size-6 flex items-center justify-center rounded hover:bg-muted text-base"
 								>
-									<EmojiPickerContent />
-								</EmojiPicker>
-							</PopoverContent>
-						</Popover>
-					</div>
-				)}
+									{e}
+								</button>
+							))}
 
-				<DropdownMenuSeparator className="my-1" />
+							<Popover>
+								<PopoverTrigger
+									onClick={e => e.stopPropagation()}
+									data-emoji-popover
+									asChild
+								>
+									<button className="size-6 rounded-full bg-muted flex items-center justify-center hover:bg-accent">
+										<ChevronDown className="size-4" />
+									</button>
+								</PopoverTrigger>
+
+								<PopoverContent
+									sideOffset={8}
+									alignOffset={-16}
+									side="top"
+									align="end"
+									className="p-0 w-fit border rounded-lg"
+								>
+									<EmojiPicker
+										sticky={false}
+										columns={7}
+										className="h-70"
+										onEmojiSelect={({ emoji }) => handleSelect(emoji)}
+									>
+										<EmojiPickerContent />
+									</EmojiPicker>
+								</PopoverContent>
+							</Popover>
+						</div>
+						<DropdownMenuSeparator className="my-1" />
+					</>
+				)}
 
 				{isMine && (
 					<>
@@ -123,8 +118,7 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 								onClick={handleEdit}
 								className="px-3 py-2"
 							>
-								<Edit className="mr-0.5 size-4" />
-								Edit
+								<Edit className="mr-0.5 size-4" /> Edit
 							</DropdownMenuItem>
 						)}
 
@@ -132,19 +126,18 @@ export const ChatMessageActionsDropdown: React.FC<Props> = ({
 							onClick={handleDelete}
 							className="px-3 py-2"
 						>
-							<Trash className="mr-0.5 size-4" />
-							Delete
+							<Trash className="mr-0.5 size-4" /> Delete
 						</DropdownMenuItem>
 					</>
 				)}
 
+				{/* COPY */}
 				{!onlyDelete && handleCopy && (
 					<DropdownMenuItem
 						onClick={handleCopy}
 						className="px-3 py-2"
 					>
-						<Copy className="mr-0.5 size-4" />
-						Copy
+						<Copy className="mr-0.5 size-4" /> Copy
 					</DropdownMenuItem>
 				)}
 			</DropdownMenuContent>

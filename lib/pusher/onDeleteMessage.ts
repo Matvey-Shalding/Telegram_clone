@@ -9,7 +9,6 @@ interface DeleteMessagePayload {
 	lastMessage: (Message & { sender: User }) | null
 }
 
-//TODO: fix pusher delete
 
 export const onDeleteMessage = (queryClient: QueryClient) => async (payload: DeleteMessagePayload) => {
 	const { messageId, conversationId, lastMessage } = payload

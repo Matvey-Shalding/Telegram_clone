@@ -2,19 +2,19 @@
 
 import type { ChatMode } from '@/@types/ChatMode'
 import type { ServerMessage } from '@/@types/Message'
-import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
-import { Api } from '@/services/clientApi'
 import { editedMessageId } from '@/store/editedMessageIdAtom'
-import { useQueryClient } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useDeleteMessage } from './useDeleteMessage'
 
 export function useMessageActions(message: ServerMessage, setEditedValue: (v: string) => void, setMode: (v: ChatMode) => void) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [, setEditedMessageId] = useAtom(editedMessageId)
-	const queryClient = useQueryClient()
 
+	const deleteMessage = useDeleteMessage()
+
+	// EDIT
 	const handleEdit = useCallback(
 		(e: React.MouseEvent) => {
 			e.stopPropagation()
@@ -26,27 +26,19 @@ export function useMessageActions(message: ServerMessage, setEditedValue: (v: st
 		[message, setEditedValue, setMode, setEditedMessageId]
 	)
 
-	const handleDelete = useCallback(
-		async (e: React.MouseEvent) => {
-			e.stopPropagation()
-			setIsOpen(false)
+	// DELETE
+	const handleDelete = async (e: React.MouseEvent) => {
+		e.stopPropagation()
+		setIsOpen(false)
 
-			queryClient.setQueryData<ServerMessage[]>([REACT_QUERY_KEYS.MESSAGES, message.conversationId], old =>
-				old?.filter(m => m.id !== message.id)
-			)
+		try {
+			await deleteMessage(message)
+		} catch {
+			toast.error('Failed to delete message')
+		}
+	}
 
-			try {
-				await Api.messages.remove(message.id)
-			} catch {
-				queryClient.invalidateQueries({
-					queryKey: [REACT_QUERY_KEYS.MESSAGES, message.conversationId]
-				})
-				toast.error('Failed to delete message')
-			}
-		},
-		[message, queryClient]
-	)
-
+	// COPY
 	const handleCopy = useCallback(
 		(e: React.MouseEvent) => {
 			e.stopPropagation()

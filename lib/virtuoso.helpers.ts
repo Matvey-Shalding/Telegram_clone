@@ -9,7 +9,6 @@ export function getBadgeIndexes(messages: ChatMessage[]): number[] {
 
 /**
  * Find closest badge index for a given date
- * (Telegram-style jump-to-date)
  */
 export function findClosestIndexByDate(date: Date, messages: ChatMessage[]): number {
 	if (!messages.length) return 0

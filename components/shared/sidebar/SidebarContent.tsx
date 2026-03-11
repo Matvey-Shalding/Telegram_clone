@@ -1,11 +1,11 @@
 'use client'
 
-import { Chat } from '@/@types/Chat'
+import { ConversationWithMembers } from '@/@types/Conversation'
 import { authClient } from '@/auth-client'
 import { SidebarContent as Sidebar, SidebarGroup, SidebarMenu } from '@/components/ui/sidebar'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { getConversationTitle } from '@/lib/conversation.helpers'
-import { Api } from '@/services/clientApi'
+import { Api } from '@/services/backend/clientApi'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const SidebarContent: React.FC<Props> = ({ searchValue }) => {
-	const { data = [], isLoading } = useQuery<Chat[]>({
+	const { data = [], isLoading } = useQuery<ConversationWithMembers[]>({
 		queryKey: [REACT_QUERY_KEYS.CHATS],
 		queryFn: () => Api.conversation.getAll()
 	})

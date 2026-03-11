@@ -1,4 +1,4 @@
-import { AvatarWithBadge } from '@/components/shared/AvatarWithBadge'
+import { AvatarWithBadge } from '@/components/shared/Avatar'
 import { X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
