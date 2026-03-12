@@ -1,7 +1,7 @@
 import { PusherMessage } from '@/@types/Message'
+import { MessageSonner } from '@/components/shared/chat/message/MessageSonner'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Conversation, Message } from '@/generated/prisma/client'
-import { showMessageToast } from '@/lib/showMessageSonner'
 import { Api } from '@/services/backend/clientApi'
 import { QueryClient } from '@tanstack/react-query'
 import { getSonnerData } from '../server/getSonnerData'
@@ -45,7 +45,7 @@ export const onNewMessage = (queryClient: QueryClient, currentConversationId?: s
 	// 3️⃣ Show toast notification
 	try {
 		const toastData = await getSonnerData(message)
-		if (toastData) showMessageToast(toastData)
+		if (toastData) MessageSonner(toastData)
 	} catch (e) {
 		console.error('Toast error', e)
 	}

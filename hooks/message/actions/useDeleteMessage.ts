@@ -8,8 +8,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 export function useDeleteMessage() {
 	const queryClient = useQueryClient()
 
-	const {mutateAsync: deleteMessage} =  useMutation({
-		mutationFn: Api.messages.remove,
+	const { mutateAsync: deleteMessage } = useMutation({
+		mutationFn: async (message: ServerMessage) => {
+			await Api.messages.remove(message.id)
+		},
 
 		onMutate: async (message: ServerMessage) => {
 			const previousMessages = MessageCacheService.getMessages(queryClient, message.conversationId)

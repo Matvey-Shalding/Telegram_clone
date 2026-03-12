@@ -1,3 +1,3 @@
 export * from './message'
-export { useMessages } from './message/useMessages'
+export { useActiveChannel } from './useActiveChannel'
 export { useCurrentSession } from './useCurrentSession'

@@ -22,6 +22,8 @@ export async function getSonnerData(message: Message): Promise<SonnerData | null
 		return null
 	}
 
+	if (message.senderId === userId) return null
+
 	const conversation = await prisma.conversation.findFirst({
 		where: { id: message.conversationId },
 		include: {

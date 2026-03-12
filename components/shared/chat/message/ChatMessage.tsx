@@ -5,12 +5,12 @@ import { ChatMessage as Message } from '@/@types/Message'
 import { AvatarWithBadge } from '@/components/shared/Avatar'
 import { useMessageActions } from '@/hooks/message/actions/useMessageActions'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
+import { formatTime } from '@/lib/message.helpers'
 import { cn } from '@/lib/utils'
 import { Dispatch, memo, SetStateAction } from 'react'
 import { DateBadge } from '../DateBadge'
 import { ChatImageMessage } from './ChatImageMessage'
 import { ChatMessageBubble } from './ChatMessageBubble'
-import { formatTime } from '@/lib/message.helpers'
 
 interface Props {
 	message: Message

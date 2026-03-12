@@ -1,7 +1,8 @@
-import { uploadToCloudinary } from '@/lib/server/uploadToCloudinary'
+
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { SendMessagePayload } from '../actions/useSendMessage'
+import { uploadToCloudinary } from '@/lib'
 
 export const useInputImage = (isPending: boolean, sendMessage: (payload: SendMessagePayload) => void) => {
 	const [isOpen, setIsOpen] = useState(false)
