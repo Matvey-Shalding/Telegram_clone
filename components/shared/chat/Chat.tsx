@@ -1,19 +1,34 @@
 'use client'
 
-import { ConversationWithMembers as Conversation } from '@/@types/Conversation'
+import { REACT_QUERY_KEYS } from '@/config'
 import { useChatController } from '@/hooks/chat/useChatController'
+import { Api } from '@/services/backend/clientApi'
+import { currentConversationId } from '@/store'
 import { activeUsers } from '@/store/activeUsersAtom'
+import { useQuery } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
+import { useEffect } from 'react'
 import { ChatContent } from './ChatContent'
 import { ChatFooter } from './ChatFooter'
 import { ChatHeader } from './ChatHeader'
 
 interface Props {
-	conversation: Conversation | null
+	conversationId: string
 }
 
-export const Chat: React.FC<Props> = ({ conversation }) => {
-	const { mode, setMode, searchValue, setSearchValue, editedValue, setEditedValue, title, details } = useChatController(conversation)
+export const Chat: React.FC<Props> = ({ conversationId }) => {
+	const { data: conversation } = useQuery({
+		queryKey: [REACT_QUERY_KEYS.CONVERSATION, conversationId],
+		queryFn: async () => await Api.conversation.get(conversationId)
+	})
+
+	const [, setConversationId] = useAtom(currentConversationId)
+
+	useEffect(() => {
+		setConversationId(conversationId)
+	}, [conversationId])
+
+	const { mode, setMode, searchValue, setSearchValue, editedValue, setEditedValue, title, details } = useChatController(conversation!)
 
 	const [activeMembers] = useAtom(activeUsers)
 

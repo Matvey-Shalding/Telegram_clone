@@ -138,94 +138,18 @@
 	animation: spin-slow 1.2s linear infinite;
 }
 
-/* ------------------------------------------------ */
-/* Emoji Picker (emoji-picker-react) */
-/* ------------------------------------------------ */
-
-.EmojiPickerReact {
-	/* Emoji layout */
-	--epr-emoji-size: 20px !important;
-	--epr-emoji-gap: 4px !important;
-	--epr-emoji-padding: 0px !important;
-
-	/* Theme integration with your shadcn variables */
-	--epr-bg-color: transparent;
-	--epr-hover-bg-color: hsl(var(--muted));
-	--epr-text-color: hsl(var(--foreground));
-
-	/* optional */
-	--epr-category-label-bg-color: transparent;
+*::-webkit-scrollbar-track {
+	background-color: transparent;
 }
 
-/* Remove header + navigation since you only show one category */
-.epr-header,
-.epr-category-nav,
-.epr-emoji-category-label {
-	display: none !important;
-}
-
-/* Remove preview/search just in case */
-.emoji-picker-react .search,
-.emoji-picker-react .preview {
-	display: none !important;
-}
-
-/* Transparent main container */
-.epr-main {
-	background: transparent !important;
-}
-/* ------------------------------------------------ */
-/* Scrollbar styling */
-/* ------------------------------------------------ */
-
-.epr-body {
-	overflow-y: auto;
-}
-
-.epr-body::-webkit-scrollbar {
+*::-webkit-scrollbar {
 	width: 6px;
-}
-
-.epr-body::-webkit-scrollbar-track {
+	height: 6px;
 	background: transparent;
-}
-
-.epr-body::-webkit-scrollbar-thumb {
-	border-radius: 9999px;
-	background: rgb(148, 163, 184);
-}
-
-.epr-body::-webkit-scrollbar-thumb:hover {
-	background: hsl(var(--border) / 0.8);
-}
-
-[frimousse-category-header] {
-	/* display: none !important; */
-	/* height: 0px !important; */
-	/* background-color: red !important; */
-}
-
-/* Emoji picker scrollbar */
-
-.emoji-scrollbar {
-	scrollbar-width: thin;
-	scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
-}
-
-/* Chrome / Edge / Safari */
-.emoji-scrollbar::-webkit-scrollbar {
-	width: 6px;
-}
-
-.emoji-scrollbar::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.emoji-scrollbar::-webkit-scrollbar-thumb {
-	background: hsl(var(--muted-foreground) / 0.35);
 	border-radius: 999px;
 }
 
-.emoji-scrollbar::-webkit-scrollbar-thumb:hover {
-	background: hsl(var(--muted-foreground) / 0.6);
+*::-webkit-scrollbar-thumb {
+	background-color: var(--muted-foreground);
+	border-radius: 999px;
 }

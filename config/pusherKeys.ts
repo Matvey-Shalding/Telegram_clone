@@ -3,5 +3,7 @@ export const PUSHER_KEYS = {
 	DELETE_MESSAGE: 'messages:delete',
 	EDIT_MESSAGE: 'messages:edit',
 	NEW_LAST_READ_AT: 'lastReadAt:new',
-	NEW_REACTION: 'reactions:new'
+	NEW_REACTION: 'reactions:new',
+	LEAVE_CONVERSATION: 'conversation:leave',
+	DELETE_CONVERSATION: 'conversation:delete'
 } as const
