@@ -5,7 +5,7 @@ import React from 'react'
 
 type Props = React.HTMLAttributes<HTMLDivElement>
 
-export const MessagesScrollbar = React.forwardRef<HTMLDivElement, Props>(({ className, ...props }, ref) => {
+export const Scrollbar = React.forwardRef<HTMLDivElement, Props>(({ className, ...props }, ref) => {
 	return (
 		<div
 			ref={ref}
@@ -28,4 +28,4 @@ export const MessagesScrollbar = React.forwardRef<HTMLDivElement, Props>(({ clas
 	)
 })
 
-MessagesScrollbar.displayName = 'MessagesScrollbar'
+Scrollbar.displayName = 'MessagesScrollbar'

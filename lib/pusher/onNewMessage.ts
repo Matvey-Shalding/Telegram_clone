@@ -1,5 +1,5 @@
 import { PusherMessage } from '@/@types/Message'
-import { MessageSonner } from '@/components/shared/chat/message/MessageSonner'
+import { MessageSonner } from '@/components/shared/chat/ui/MessageSonner'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Conversation, Message } from '@/generated/prisma/client'
 import { Api } from '@/services/backend/clientApi'

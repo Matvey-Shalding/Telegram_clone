@@ -6,9 +6,9 @@ import { MessageReaction } from '@/generated/prisma/client'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import React from 'react'
-import { ChatMessageActionsDropdown } from './ChatMessageActionsDropdown'
 import { ChatMessageStatus } from './ChatMessageStatus'
 import { MessageReactionsRow } from './MessageReaction'
+import { ChatMessageDropdown } from './dropdown/ChatMessageDropdown'
 
 interface Props {
 	content: string
@@ -62,7 +62,7 @@ export const ChatMessageBubble = ({
 					isOptimistic && 'opacity-70 border-dashed'
 				)}
 			>
-				<ChatMessageActionsDropdown
+				<ChatMessageDropdown
 					messageId={messageId}
 					isMine={isMine}
 					isOpen={dropdown.isOpen}

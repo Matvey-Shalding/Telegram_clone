@@ -3,8 +3,8 @@
 import { Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { ChatMessageActionsDropdown } from './ChatMessageActionsDropdown'
 import { ChatMessageStatus } from './ChatMessageStatus'
+import { ChatMessageDropdown } from './dropdown/ChatMessageDropdown'
 
 interface Props {
 	image: string
@@ -49,7 +49,7 @@ export const ChatImageMessage = ({ image, isMine, isOptimistic, time, isLastMess
 					className="w-[260px] h-[180px] object-cover"
 				/>
 
-				<ChatMessageActionsDropdown
+				<ChatMessageDropdown
 					isMine={isMine}
 					isOpen={dropdown.isOpen}
 					setIsOpen={dropdown.setIsOpen}

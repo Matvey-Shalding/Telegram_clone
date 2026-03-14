@@ -2,13 +2,13 @@
 
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage as Message } from '@/@types/Message'
-import { AvatarWithBadge } from '@/components/shared/Avatar'
+import { Avatar } from '@/components/shared/Avatar'
 import { useMessageActions } from '@/hooks/message/actions/useMessageActions'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { formatTime } from '@/lib/message.helpers'
 import { cn } from '@/lib/utils'
 import { Dispatch, memo, SetStateAction } from 'react'
-import { DateBadge } from '../DateBadge'
+import { DateBadge } from '../ui/DateBadge'
 import { ChatImageMessage } from './ChatImageMessage'
 import { ChatMessageBubble } from './ChatMessageBubble'
 
@@ -54,7 +54,7 @@ export const ChatMessage = memo(
 					className={cn('w-full flex items-end gap-2 px-3', isMine ? 'justify-end' : 'justify-start', isLastMessage && 'mb-20', className)}
 				>
 					{!isMine && (
-						<AvatarWithBadge
+						<Avatar
 							noBadge
 							className="size-7 shrink-0"
 						/>
@@ -99,7 +99,7 @@ export const ChatMessage = memo(
 					)}
 
 					{isMine && (
-						<AvatarWithBadge
+						<Avatar
 							noBadge
 							className="size-7 shrink-0"
 						/>

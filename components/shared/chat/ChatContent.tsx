@@ -7,9 +7,9 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Button } from '@/components/ui/button'
 import { useMessageController } from '@/hooks/message/useMessagesController'
-import { ChatCalendar } from './ChatCalendar'
-import { ChatSearch } from './ChatSearch'
 import { ChatVirtuoso } from './ChatVirtuoso'
+import { ChatCalendar } from './ui/ChatCalendar'
+import { ChatSearch } from './ui/ChatSearch'
 
 interface Props {
 	className?: string

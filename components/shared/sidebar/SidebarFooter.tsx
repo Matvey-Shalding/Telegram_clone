@@ -17,7 +17,7 @@ import { ChevronsUpDown, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import toast from 'react-hot-toast'
-import { AvatarWithBadge } from '../Avatar'
+import { Avatar } from '../Avatar'
 
 export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) => {
 	const { isMobile } = useSidebar()
@@ -51,7 +51,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 						{isLoading ? (
 							<Skeleton className="h-8 w-8 rounded-full" />
 						) : (
-							<AvatarWithBadge
+							<Avatar
 								noBadge
 								className="size-8"
 							/>
@@ -86,7 +86,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 							{isLoading ? (
 								<Skeleton className="h-8 w-8 rounded-full" />
 							) : (
-								<AvatarWithBadge
+								<Avatar
 									noBadge
 									className="size-8"
 								/>

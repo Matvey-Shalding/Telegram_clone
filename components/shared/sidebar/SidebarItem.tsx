@@ -8,7 +8,7 @@ import { activeUsers } from '@/store/activeUsersAtom'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
-import { AvatarWithBadge } from '..'
+import { Avatar } from '..'
 export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 	const unreadCount = 0 // temporary static value
 
@@ -47,7 +47,7 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 				className="
 				flex items-center rounded-none min-h-14 min-w-full"
 			>
-				<AvatarWithBadge
+				<Avatar
 					noBadge={!isOnline}
 					className="min-w-8 min-h-8"
 				/>

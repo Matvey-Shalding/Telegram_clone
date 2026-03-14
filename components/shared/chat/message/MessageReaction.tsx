@@ -1,6 +1,6 @@
 'use client'
 
-import { AvatarWithBadge } from '@/components/shared/Avatar'
+import { Avatar } from '@/components/shared/Avatar'
 import { MessageReaction } from '@/generated/prisma/client'
 import { groupReactions, ReactionGroup } from '@/lib/message.helpers'
 import { motion } from 'framer-motion'
@@ -60,7 +60,7 @@ function ReactionPill({ group }: { group: ReactionGroup }) {
 
 				{single ? (
 					<div className="w-5 h-5">
-						<AvatarWithBadge
+						<Avatar
 							className="size-5"
 							noBadge
 						/>

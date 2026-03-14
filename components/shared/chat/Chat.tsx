@@ -4,13 +4,12 @@ import { REACT_QUERY_KEYS } from '@/config'
 import { useChatController } from '@/hooks/chat/useChatController'
 import { Api } from '@/services/backend/clientApi'
 import { currentConversationId } from '@/store'
-import { activeUsers } from '@/store/activeUsersAtom'
 import { useQuery } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import { ChatContent } from './ChatContent'
-import { ChatFooter } from './ChatFooter'
-import { ChatHeader } from './ChatHeader'
+import { ChatFooter } from './footer/ChatFooter'
+import { ChatHeader } from './header/ChatHeader'
 
 interface Props {
 	conversationId: string
@@ -29,8 +28,6 @@ export const Chat: React.FC<Props> = ({ conversationId }) => {
 	}, [conversationId])
 
 	const { mode, setMode, searchValue, setSearchValue, editedValue, setEditedValue, title, details } = useChatController(conversation!)
-
-	const [activeMembers] = useAtom(activeUsers)
 
 	return (
 		<div className="h-screen w-full flex flex-col">

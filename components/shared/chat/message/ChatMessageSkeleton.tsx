@@ -1,6 +1,6 @@
 'use client'
 
-import { AvatarWithBadge } from '@/components/shared/Avatar'
+import { Avatar } from '@/components/shared/Avatar'
 import { Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
@@ -13,7 +13,7 @@ export const ChatMessageSkeleton: React.FC<Props> = ({ isMine }) => {
 		<div className={cn('flex flex-col', 'mt-3')}>
 			<div className={cn('w-full flex items-end gap-2 px-2', isMine ? 'justify-end' : 'justify-start')}>
 				{/* Avatar */}
-				{!isMine && <AvatarWithBadge className="size-7 shrink-0 opacity-40" />}
+				{!isMine && <Avatar className="size-7 shrink-0 opacity-40" />}
 
 				<Card className={cn('relative max-w-[70%] px-3 py-2 text-sm border', 'bg-muted rounded-lg', 'animate-pulse')}>
 					<div className="flex flex-col gap-2">
@@ -26,7 +26,7 @@ export const ChatMessageSkeleton: React.FC<Props> = ({ isMine }) => {
 					</div>
 				</Card>
 
-				{isMine && <AvatarWithBadge className="size-7 shrink-0 opacity-40" />}
+				{isMine && <Avatar className="size-7 shrink-0 opacity-40" />}
 			</div>
 		</div>
 	)

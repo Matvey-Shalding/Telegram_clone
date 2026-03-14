@@ -1,6 +1,6 @@
 'use client'
 
-import { AvatarWithBadge } from '@/components/shared/Avatar'
+import { Avatar } from '@/components/shared/Avatar'
 import { X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -23,7 +23,7 @@ export const MessageSonner = (data: MessageSonnerPayload) => {
 		t => (
 			<div className="flex w-65 gap-2 rounded-md bg-popover p-3 shadow-md ring-1 ring-border">
 				{/* avatar */}
-				<AvatarWithBadge className="size-8 shrink-0" />
+				<Avatar className="size-8 shrink-0" />
 
 				{/* content */}
 				<div className="flex min-w-0 flex-1 flex-col">

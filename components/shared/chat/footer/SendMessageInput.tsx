@@ -1,7 +1,7 @@
 import { InputGroupAddon, InputGroupInput } from '@/components/ui'
 import { Mic, Paperclip, Send, Smile } from 'lucide-react'
 import React from 'react'
-import { UploadImageModal } from './UploadImageModal'
+import { UploadImageModal } from '../ui/UploadImageModal'
 interface Props {
 	className?: string
 	messageInput: string

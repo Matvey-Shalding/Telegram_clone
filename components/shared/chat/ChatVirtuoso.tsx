@@ -8,7 +8,7 @@ import { ChatMessage as ChatMessageType, VirtuosoMessage } from '@/@types/Messag
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage } from './message/ChatMessage'
 import { ChatMessageSkeleton } from './message/ChatMessageSkeleton'
-import { MessagesScrollbar } from './MessagesScrollbar'
+import { Scrollbar } from './ui/Scrollbar'
 
 interface Props {
 	isLoading: boolean
@@ -44,7 +44,7 @@ export const ChatVirtuoso: React.FC<Props> = ({
 			data={data}
 			computeItemKey={(_, item) => item.id}
 			startReached={isLoading ? undefined : loadOlderMessages}
-			components={{ Scroller: MessagesScrollbar }}
+			components={{ Scroller: Scrollbar }}
 			style={{ height: '100%', width: '100%' }}
 			itemContent={(index, item) => {
 				/**
