@@ -3,5 +3,6 @@ export const REACT_QUERY_KEYS = {
 	MESSAGES: 'messages',
 	LAST_READ_AT: 'lastReadAt',
 	CONVERSATION_MEMBERS: 'conversationMembers',
-	CONVERSATION: 'conversation'
+	CONVERSATION: 'conversation',
+	USERS: 'users'
 } as const

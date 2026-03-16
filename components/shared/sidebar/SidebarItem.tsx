@@ -40,6 +40,7 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 		return activeIds.includes(otherMember.userId)
 	}, [activeIds, currentUserId, conversation])
 
+
 	return (
 		<SidebarMenuItem onClick={handleClick}>
 			<SidebarMenuButton
@@ -61,7 +62,9 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 					</div>
 
 					<div className="flex min-w-0 items-center justify-between">
-						<span className="truncate text-xs text-muted-foreground">{description}</span>
+						<span className="truncate text-xs text-muted-foreground">
+							{description || 'No messages yet. Start the conversation by sending a message.'}
+						</span>
 
 						{unreadCount > 0 && (
 							<div className="grid size-5 shrink-0 place-content-center rounded-full bg-muted text-xs">{unreadCount}</div>

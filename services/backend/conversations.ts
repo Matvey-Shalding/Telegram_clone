@@ -1,6 +1,7 @@
 import { ConversationWithMembers } from '@/@types/Conversation'
 import { ConversationMemberWithUser } from '@/@types/ConversationMemberWithUser'
 import { API_ROUTES } from '@/config/routes'
+import { User } from '@/generated/prisma/client'
 import { axiosInstance } from './instance'
 
 export const getAll = async (): Promise<ConversationWithMembers[]> => {
@@ -29,4 +30,8 @@ export const leave = async (id: string | undefined) => {
 
 export const remove = async (id: string | undefined) => {
 	await axiosInstance.post(`${API_ROUTES.CONVERSATIONS}/${id}/delete`)
+}
+
+export const createGroup = async (name: string, members: User[]) => {
+	await axiosInstance.post(API_ROUTES.CONVERSATIONS + '/group/create', { name, users: members })
 }

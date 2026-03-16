@@ -3,5 +3,6 @@ export const API_ROUTES = {
 	MESSAGES: 'messages',
 	SEEN: 'seen',
 	LAST_READ_AT: 'last-read-at',
-	REACTIONS: 'reactions'
+	REACTIONS: 'reactions',
+	USERS: 'users'
 } as const

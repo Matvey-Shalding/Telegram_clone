@@ -138,6 +138,8 @@
 	animation: spin-slow 1.2s linear infinite;
 }
 
+/* Scrollbar */
+
 *::-webkit-scrollbar-track {
 	background-color: transparent;
 }
@@ -152,4 +154,22 @@
 *::-webkit-scrollbar-thumb {
 	background-color: var(--muted-foreground);
 	border-radius: 999px;
+}
+
+.show-scrollbar {
+	-ms-overflow-style: auto !important;
+	scrollbar-width: auto !important;
+}
+
+.show-scrollbar::-webkit-scrollbar {
+	display: block !important;
+}
+
+[data-slot='combobox-list'] {
+	-ms-overflow-style: auto;
+	scrollbar-width: auto;
+}
+
+[data-slot='combobox-list']::-webkit-scrollbar {
+	display: block;
 }

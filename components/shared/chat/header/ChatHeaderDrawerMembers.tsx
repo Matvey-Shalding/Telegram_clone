@@ -18,7 +18,7 @@ export const ChatHeaderDrawerMembers = () => {
 	})
 
 	return (
-		<div className="flex flex-col overflow-y-auto py-2 px-2">
+		<div className="flex flex-col overflow-y-auto p-2">
 			{members?.map(member => (
 				<button
 					key={member.id}

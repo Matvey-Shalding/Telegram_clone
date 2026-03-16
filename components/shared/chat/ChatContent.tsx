@@ -59,6 +59,17 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 		)
 	}
 
+	if (messages.length === 0) {
+		return (
+			<div className="h-full w-full grid place-content-center">
+				<EmptyState
+					title="No messages yet"
+					description="Start the conversation by sending a message"
+				/>
+			</div>
+		)
+	}
+
 	return (
 		<div className={cn('h-full w-full relative', className)}>
 			<ChatCalendar

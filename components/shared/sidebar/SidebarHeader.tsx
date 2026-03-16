@@ -4,7 +4,8 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui'
 import { SidebarHeader as Header, SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 import { Menu, SearchIcon, X } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
+import { SidebarMenuDrawer } from './SidebarMenu'
 interface Props {
 	className?: string
 	setSearchValue: React.Dispatch<React.SetStateAction<string>>
@@ -13,9 +14,22 @@ interface Props {
 export const SidebarHeader: React.FC<Props> = ({ className, searchValue, setSearchValue }) => {
 	const { state } = useSidebar()
 	const isCollapsed = state === 'collapsed'
+
+	const [menuOpen, setMenuOpen] = useState(false)
 	return (
 		<Header className={cn('flex items-center flex-row px-3 gap-x-3 h-15', className)}>
-			{!isCollapsed && <Menu className="text-muted-foreground size-6 shrink-0" />}
+			{!isCollapsed && (
+				<Menu
+					onClick={() => setMenuOpen(true)}
+					className="size-6 text-muted-foreground shrink-0"
+					size={18}
+				/>
+			)}
+
+			<SidebarMenuDrawer
+				open={menuOpen}
+				onOpenChange={setMenuOpen}
+			/>
 
 			<InputGroup className={cn('flex-1 overflow-hidden', isCollapsed && 'w-0 border-none')}>
 				<InputGroupInput

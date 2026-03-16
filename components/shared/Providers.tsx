@@ -39,7 +39,6 @@ export const Providers: React.FC<Props> = ({ children }) => {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<ReactQueryDevtools initialIsOpen={false} />
 			<PusherProvider />
 			<Toaster />
 			{children}
