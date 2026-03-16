@@ -8,6 +8,7 @@ import { authClient } from '@/auth-client'
 import { LogOut, Search, Settings, User } from 'lucide-react'
 import { Avatar } from '../Avatar'
 import { SidebarMenuAddConversation } from './SidebarMenuAddConversation'
+import { SidebarMenuSearchUsers } from './SidebarMenuSearchUsers'
 
 interface SidebarMenuDrawerProps {
 	open: boolean
@@ -42,10 +43,7 @@ export const SidebarMenuDrawer: React.FC<SidebarMenuDrawerProps> = ({ open, onOp
 				<div className="flex flex-col p-2">
 					<SidebarMenuAddConversation />
 
-					<MenuItem
-						icon={<Search size={18} />}
-						label="Search users"
-					/>
+					<SidebarMenuSearchUsers/>
 
 					<Separator className="my-2" />
 

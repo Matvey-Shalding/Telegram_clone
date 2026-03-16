@@ -35,3 +35,11 @@ export const remove = async (id: string | undefined) => {
 export const createGroup = async (name: string, members: User[]) => {
 	await axiosInstance.post(API_ROUTES.CONVERSATIONS + '/group/create', { name, users: members })
 }
+
+export const createDirect = async (userId: string) => {
+	return (
+		await axiosInstance.post(API_ROUTES.CONVERSATIONS + '/direct/create', {
+			userId
+		})
+	).data
+}

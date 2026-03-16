@@ -6,5 +6,6 @@ export const PUSHER_KEYS = {
 	NEW_REACTION: 'reactions:new',
 	LEAVE_CONVERSATION: 'conversation:leave',
 	DELETE_CONVERSATION: 'conversation:delete',
-	NEW_CONVERSATION: 'conversation:new'
+	NEW_CONVERSATION: 'conversation:new',
+	NEW_DIRECT_CONVERSATION: 'conversation:direct'
 } as const

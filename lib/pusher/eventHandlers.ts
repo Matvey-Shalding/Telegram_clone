@@ -8,6 +8,7 @@ import { onNewLastReadAt } from './onNewLastReadAt'
 import { onNewMessage } from './onNewMessage'
 import { onNewReaction } from './onNewReaction'
 import { onNewGroup } from './onNewGroup'
+import { onNewDirectConversation } from './onNewDirectConversation'
 
 export const createPusherHandlers = (queryClient: QueryClient, conversationId?: string) => ({
 	[PUSHER_KEYS.NEW_MESSAGE]: onNewMessage(queryClient, conversationId),
@@ -17,5 +18,6 @@ export const createPusherHandlers = (queryClient: QueryClient, conversationId?: 
 	[PUSHER_KEYS.NEW_REACTION]: onNewReaction(queryClient),
 	[PUSHER_KEYS.LEAVE_CONVERSATION]: onLeaveConversation(queryClient),
 	[PUSHER_KEYS.DELETE_CONVERSATION]: onDeleteConversation(queryClient),
-	[PUSHER_KEYS.NEW_CONVERSATION]: onNewGroup(queryClient)
+	[PUSHER_KEYS.NEW_CONVERSATION]: onNewGroup(queryClient),
+	[PUSHER_KEYS.NEW_DIRECT_CONVERSATION]: onNewDirectConversation(queryClient)
 })

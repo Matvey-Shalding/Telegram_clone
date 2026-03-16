@@ -59,7 +59,7 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 		)
 	}
 
-	if (messages.length === 0) {
+	if (messages.length === 0 && !isLoading) {
 		return (
 			<div className="h-full w-full grid place-content-center">
 				<EmptyState
