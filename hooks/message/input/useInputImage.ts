@@ -1,46 +1,28 @@
-
-import { useEffect, useState } from 'react'
+import { useImageUpload } from '@/hooks/useImageUpload'
+import { uploadToCloudinary } from '@/lib'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { SendMessagePayload } from '../actions/useSendMessage'
-import { uploadToCloudinary } from '@/lib'
 
 export const useInputImage = (isPending: boolean, sendMessage: (payload: SendMessagePayload) => void) => {
-	const [isOpen, setIsOpen] = useState(false)
-	const [selectedFile, setSelectedFile] = useState<File | null>(null)
-	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+	const image = useImageUpload()
+
 	const [isUploading, setIsUploading] = useState(false)
 
-	const handleFileSelect = (files: File[] | null) => {
-		if (!files?.[0]) return
-
-		const file = files[0]
-		setSelectedFile(file)
-		setPreviewUrl(URL.createObjectURL(file))
-		setIsOpen(false)
-	}
-
-	useEffect(() => {
-		return () => {
-			if (previewUrl) URL.revokeObjectURL(previewUrl)
-		}
-	}, [previewUrl])
-
-	const handleRemoveFile = () => {
-		if (isUploading) return
-		if (previewUrl) URL.revokeObjectURL(previewUrl)
-		setSelectedFile(null)
-		setPreviewUrl(null)
-	}
-
 	const handleUploadFile = async () => {
-		if (!selectedFile || isUploading || isPending) return
+		if (!image.file || isUploading || isPending) return
 
 		setIsUploading(true)
 
 		try {
-			const imageUrl = await uploadToCloudinary(selectedFile)
-			await sendMessage({ imageUrl: imageUrl, content: '' })
-			handleRemoveFile()
+			const imageUrl = await uploadToCloudinary(image.file)
+
+			await sendMessage({
+				imageUrl,
+				content: ''
+			})
+
+			image.removeFile()
 		} catch (e) {
 			toast.error('Failed to upload image')
 			console.error(e)
@@ -50,13 +32,20 @@ export const useInputImage = (isPending: boolean, sendMessage: (payload: SendMes
 	}
 
 	return {
-		isOpen,
-		setIsOpen,
-		selectedFile,
-		handleFileSelect,
-		previewUrl,
-		handleRemoveFile,
-		isUploading,
-		handleUploadFile
+		// modal state
+		isOpen: image.isOpen,
+		setIsOpen: image.setIsOpen,
+
+		// file state
+		selectedFile: image.file,
+		previewUrl: image.previewUrl,
+
+		// actions
+		handleFileSelect: image.handleFileSelect,
+		handleRemoveFile: image.removeFile,
+		handleUploadFile,
+
+		// status
+		isUploading
 	}
 }

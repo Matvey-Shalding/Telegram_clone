@@ -9,3 +9,7 @@ export const getAll = async (): Promise<User[]> => {
 export const search = async (query: string): Promise<User[]> => {
 	return (await axiosInstance.get(API_ROUTES.USERS + `/search?q=${encodeURIComponent(query)}`, { params: { query } })).data
 }
+
+export const edit = async (name: string, email: string, avatarUrl?: string) => {
+	return (await axiosInstance.post(API_ROUTES.USERS + '/edit', { name, email, avatar: avatarUrl })).data
+}

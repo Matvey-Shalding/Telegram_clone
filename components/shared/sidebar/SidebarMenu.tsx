@@ -5,9 +5,10 @@ import { Drawer, DrawerContent } from '@/components/ui/drawer'
 import { Separator } from '@/components/ui/separator'
 
 import { authClient } from '@/auth-client'
-import { LogOut, Search, Settings, User } from 'lucide-react'
+import { LogOut, Settings } from 'lucide-react'
 import { Avatar } from '../Avatar'
 import { SidebarMenuAddConversation } from './SidebarMenuAddConversation'
+import { SidebarMenuProfile } from './SidebarMenuProfile'
 import { SidebarMenuSearchUsers } from './SidebarMenuSearchUsers'
 
 interface SidebarMenuDrawerProps {
@@ -43,14 +44,11 @@ export const SidebarMenuDrawer: React.FC<SidebarMenuDrawerProps> = ({ open, onOp
 				<div className="flex flex-col p-2">
 					<SidebarMenuAddConversation />
 
-					<SidebarMenuSearchUsers/>
+					<SidebarMenuSearchUsers />
 
 					<Separator className="my-2" />
 
-					<MenuItem
-						icon={<User size={18} />}
-						label="Profile"
-					/>
+					<SidebarMenuProfile />
 
 					<Separator className="my-2" />
 

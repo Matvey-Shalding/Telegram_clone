@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 
@@ -9,33 +10,31 @@ type UploadImageModalProps = {
 	isOpen: boolean
 	onOpenChange: (open: boolean) => void
 	onFilesSelected: (files: File[] | null) => void
-	selectedFile: File | null
+	file: File | null
+	previewUrl?: string | null
 }
 
-export function UploadImageModal({ isOpen, onOpenChange, onFilesSelected, selectedFile }: UploadImageModalProps) {
+export function UploadImageModal({ isOpen, onOpenChange, onFilesSelected, file, previewUrl }: UploadImageModalProps) {
 	const onDrop = useCallback(
 		(files: File[]) => {
-			const file = files[0]
-			if (!file) return
-			onFilesSelected([file])
+			const selected = files[0]
+			if (!selected) return
+			onFilesSelected([selected])
 		},
 		[onFilesSelected]
 	)
 
-	const {
-		getRootProps,
-		getInputProps,
-		open: openDialog
-	} = useDropzone({
+	const { getRootProps, getInputProps, open } = useDropzone({
 		multiple: false,
 		maxFiles: 1,
 		noClick: true,
 		onDrop,
 		accept: {
 			'image/jpeg': [],
-			'image/png': []
+			'image/png': [],
+			'image/avif': [],
 		},
-		maxSize: 10 * 1024 * 1024 // 10MB
+		maxSize: 10 * 1024 * 1024
 	})
 
 	return (
@@ -48,57 +47,51 @@ export function UploadImageModal({ isOpen, onOpenChange, onFilesSelected, select
 					<DialogTitle>Upload image</DialogTitle>
 				</DialogHeader>
 
-				{/* dropzone container */}
 				<div
 					{...getRootProps()}
 					className="
-            flex flex-col items-center justify-center gap-4
-            rounded-lg border-2 border-dashed
-            p-8 text-center
-            transition hover:border-primary
-          "
+						flex flex-col items-center justify-center gap-4
+						rounded-lg border-2 border-dashed
+						p-8 text-center
+						transition hover:border-primary
+					"
 				>
-					{/* hidden input */}
 					<input {...getInputProps()} />
 
-					{/* show preview if file exists */}
-					{selectedFile ? (
+					{previewUrl ? (
 						<img
-							src={URL.createObjectURL(selectedFile)}
-							alt={selectedFile.name}
+							src={previewUrl}
 							className="h-24 w-24 rounded-md object-cover"
 						/>
 					) : (
 						<p className="text-sm text-muted-foreground">Drag & drop an image here</p>
 					)}
 
-					{/* file info */}
-					{selectedFile && (
+					{file && (
 						<div className="text-xs text-muted-foreground">
-							{selectedFile.name} — {(selectedFile.size / 1024).toFixed(1)} KB
+							{file.name} — {(file.size / 1024).toFixed(1)} KB
 						</div>
 					)}
 
-					{/* trigger buttons */}
 					<div className="flex gap-x-2">
 						<Button
 							type="button"
 							variant="secondary"
 							onClick={e => {
 								e.stopPropagation()
-								openDialog()
+								open()
 							}}
 						>
-							{selectedFile ? 'Replace image' : 'Select file from your computer'}
+							{file ? 'Replace image' : 'Select file'}
 						</Button>
 
-						{selectedFile && (
+						{file && (
 							<Button
 								type="button"
 								variant="secondary"
 								onClick={() => onFilesSelected(null)}
 							>
-								Delete the image
+								Delete
 							</Button>
 						)}
 					</div>
