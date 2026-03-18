@@ -9,15 +9,12 @@ import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import { Avatar } from '..'
+
 export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
-	const unreadCount = 0 // temporary static value
-
+	const unreadCount = 0
 	const currentUserId = useCurrentSession()?.user.id
-
 	const formattedTitle = getConversationTitle(conversation, conversation.members, currentUserId)
-
 	const description = getConversationLastMessage(conversation, currentUserId)
-
 	const router = useRouter()
 
 	const handleClick = () => {
@@ -27,18 +24,14 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 	const [activeIds] = useAtom(activeUsers)
 
 	const isOnline = useMemo(() => {
-		if (conversation.isGroup) {
-			return false
-		}
-
+		if (conversation.isGroup) return false
 		const otherMember = conversation.members.find(m => m.userId !== currentUserId)
-
-		if (!otherMember) {
-			return false
-		}
-
-		return activeIds.includes(otherMember.userId)
+		return !!otherMember && activeIds.includes(otherMember.userId)
 	}, [activeIds, currentUserId, conversation])
+
+	const groupMembers = conversation.isGroup ? conversation.members.map(m => ({ src: m.user.image, name: m.user.name })) : []
+
+	const singleAvatarSrc = !conversation.isGroup ? conversation.members.find(m => m.userId !== currentUserId)?.user.image : undefined
 
 	return (
 		<SidebarMenuItem
@@ -47,11 +40,11 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 		>
 			<SidebarMenuButton
 				tooltip={formattedTitle}
-				className="
-				flex items-center rounded-none min-h-14 min-w-full"
+				className="flex items-center rounded-none min-h-14 min-w-full"
 			>
 				<Avatar
-					src=""
+					src={singleAvatarSrc}
+					groupSrc={groupMembers}
 					noBadge={!isOnline}
 					className="min-w-8 min-h-8"
 				/>

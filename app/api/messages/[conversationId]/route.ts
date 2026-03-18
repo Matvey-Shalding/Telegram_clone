@@ -6,8 +6,6 @@ import { NextResponse } from 'next/server'
 export async function GET(req: Request, { params }: { params: Promise<{ conversationId: string }> }) {
 	const { conversationId } = await params
 
-	console.log('Fetching messages for conversationId:', conversationId)
-
 	if (!conversationId) {
 		return NextResponse.json({ error: 'conversationId is required' }, { status: 400 })
 	}
@@ -23,9 +21,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 
 	const messages = await prisma.message.findMany({
 		where: { conversationId },
-		include: { reactions: true },
+		include: { reactions: true, sender: true },
 		orderBy: { createdAt: 'asc' }
 	})
+
 
 	return NextResponse.json(messages)
 }

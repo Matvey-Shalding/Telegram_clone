@@ -52,6 +52,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 							<Skeleton className="h-8 w-8 rounded-full" />
 						) : (
 							<Avatar
+								src={session?.user.image}
 								noBadge
 								className="size-8"
 							/>
@@ -87,6 +88,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 								<Skeleton className="h-8 w-8 rounded-full" />
 							) : (
 								<Avatar
+									src={session?.user.image}
 									noBadge
 									className="size-8 text-white"
 								/>

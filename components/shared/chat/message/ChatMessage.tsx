@@ -26,7 +26,18 @@ interface Props {
 }
 
 export const ChatMessage = memo(
-	({ message, searchValue, isActiveMatch, isLastMessage, setIsCalendarOpen, setEditedValue, setMode, className, lastReadAt,mode }: Props) => {
+	({
+		message,
+		searchValue,
+		isActiveMatch,
+		isLastMessage,
+		setIsCalendarOpen,
+		setEditedValue,
+		setMode,
+		className,
+		lastReadAt,
+		mode
+	}: Props) => {
 		const session = useCurrentSession()
 		const isMine = session?.user.id === message.senderId
 		const isOptimistic = message.optimistic === true
@@ -56,6 +67,7 @@ export const ChatMessage = memo(
 				>
 					{!isMine && (
 						<Avatar
+							src={message.sender.image}
 							noBadge
 							className="size-7 shrink-0"
 						/>
@@ -102,6 +114,7 @@ export const ChatMessage = memo(
 
 					{isMine && (
 						<Avatar
+							src={message.sender.image}
 							noBadge
 							className="size-7 shrink-0"
 						/>
