@@ -20,11 +20,13 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, se
 		setMode(prev => (prev === 'default' ? 'search' : 'default'))
 	}
 
+	console.log('mode', mode)
+
 	return (
-		<div className="border-b border-border bg-[#171717] px-4 h-15.25 flex items-center justify-between">
+		<div className="border-b border-border bg-sidebar pl-4 min-h-15.25 flex items-center justify-between">
 			<div className="flex flex-col">
 				<span className="text-white font-medium">{title}</span>
-				<span className="text-xs text-sidebar-ring">{details}</span>
+				<span className="text-xs text-muted-foreground">{details}</span>
 			</div>
 
 			<div className="p-2 relative">
@@ -38,27 +40,35 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, se
 							exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
 							transition={{ duration: 0.2 }}
 						>
-							<Search
-								onClick={handleClick}
-								className="text-sidebar-ring size-4.5 cursor-pointer"
-							/>
-
+							<div className="p-2 pr-0">
+								<Search
+									onClick={handleClick}
+									className="text-muted-foreground size-5 cursor-pointer"
+								/>
+							</div>
 							<ChatHeaderDrawer
 								title={title}
 								details={details}
 							>
-								<EllipsisVertical className="text-sidebar-ring size-4.5 cursor-pointer" />
+								<div className="p-2 pl-0">
+									<EllipsisVertical className="text-muted-foreground size-5 cursor-pointer" />
+								</div>
 							</ChatHeaderDrawer>
 						</motion.div>
 					) : (
 						<motion.div
+							className="p-2"
+							onClick={() => setMode('default')}
 							key="close"
 							initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
 							animate={{ rotate: 0, opacity: 1, scale: 1 }}
 							exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
 							transition={{ duration: 0.2 }}
 						>
-							<X className="text-sidebar-ring size-5.5 cursor-pointer" />
+							<X
+								onClick={() => setMode('default')}
+								className="text-sidebar-ring size-5 cursor-pointer"
+							/>
 						</motion.div>
 					)}
 				</AnimatePresence>

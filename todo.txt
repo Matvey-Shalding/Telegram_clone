@@ -1,1 +1,2 @@
-when a new message arrives via pusher, i check the current conversation; if current conversation equals to message conversation, i mark the message as seen
+1) implement unread count
+2) implement seen by list

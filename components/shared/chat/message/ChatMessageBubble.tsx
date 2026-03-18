@@ -1,5 +1,6 @@
 'use client'
 
+import { ChatMode } from '@/@types/ChatMode'
 import { Card } from '@/components/ui'
 import { Highlight } from '@/components/ui/Highlighted'
 import { MessageReaction } from '@/generated/prisma/client'
@@ -27,6 +28,7 @@ interface Props {
 	}
 	messageId: string
 	reactions: MessageReaction[]
+	mode: ChatMode
 }
 
 export const ChatMessageBubble = ({
@@ -39,7 +41,8 @@ export const ChatMessageBubble = ({
 	dropdown,
 	wasSeen,
 	messageId,
-	reactions
+	reactions,
+	mode
 }: Props) => {
 	const hasReactions = reactions && reactions.length > 0
 
@@ -76,6 +79,7 @@ export const ChatMessageBubble = ({
 				{!hasReactions ? (
 					<div className="flex items-end gap-2">
 						<Highlight
+							disabled={mode !== 'search'}
 							text={content}
 							query={searchValue}
 							isActive={isActiveMatch}
@@ -96,6 +100,7 @@ export const ChatMessageBubble = ({
 						{/* Content row */}
 						<div className="mb-0.5">
 							<Highlight
+								disabled={mode !== 'search'}
 								text={content}
 								query={searchValue}
 								isActive={isActiveMatch}

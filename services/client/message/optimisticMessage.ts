@@ -2,9 +2,9 @@
 
 import { ServerMessage } from '@/@types/Message'
 import { MessageReaction } from '@/generated/prisma/client'
+import { generateId } from '@/lib/utils'
 import { QueryClient } from '@tanstack/react-query'
 import { MessageCacheService } from './messageCache'
-import { generateId } from '@/lib/utils'
 
 export class MessagesOptimisticService {
 	static createOptimisticMessage(conversationId: string, userId: string, content?: string | null, image?: string | null) {
@@ -50,7 +50,7 @@ export class MessagesOptimisticService {
 
 		MessageCacheService.updateMessage(queryClient, conversationId, messageId, m => ({
 			...m,
-			reactions: [...(m.reactions ?? []), reaction]
+			reactions: [...(m.reactions.filter(r => r.userId !== userId) ?? []), reaction]
 		}))
 
 		return { previousMessages, clientId }

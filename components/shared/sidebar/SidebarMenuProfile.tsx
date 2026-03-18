@@ -1,18 +1,17 @@
 'use client'
 
-import { Upload, User as UserIcon } from 'lucide-react'
-import React from 'react'
-import { Controller } from 'react-hook-form'
-
-import { Button, Input } from '@/components/ui'
+import { Input } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Spinner } from '@/components/ui/spinner'
-import { Avatar } from '../Avatar'
-import { MenuItem } from './SidebarMenu'
-
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
+import { Spinner } from '@/components/ui/spinner'
 import { UploadImageModal } from '@/components/ui/UploadImageModal'
 import { useProfile } from '@/hooks/useProfile'
+import { motion } from 'framer-motion'
+import { Upload } from 'lucide-react'
+import React from 'react'
+import { Controller } from 'react-hook-form'
+import { Avatar } from '../Avatar'
 
 interface Props {
 	defaultName?: string
@@ -36,6 +35,7 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 		removeFile,
 		onSubmit
 	} = useProfile(defaultName, defaultEmail)
+
 	return (
 		<>
 			<Dialog
@@ -43,10 +43,14 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 				onOpenChange={setIsDialogOpen}
 			>
 				<DialogTrigger>
-					<MenuItem
-						icon={<UserIcon size={18} />}
-						label="Profile"
-					/>
+					<motion.button
+						whileHover={{ scale: 1.03, x: 2 }}
+						whileTap={{ scale: 0.97 }}
+						className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-accent/10 transition-all duration-150 font-medium text-sm w-full"
+					>
+						<Upload size={18} />
+						Profile
+					</motion.button>
 				</DialogTrigger>
 
 				<DialogContent className="sm:max-w-md">
@@ -59,14 +63,12 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 						onSubmit={form.handleSubmit(onSubmit)}
 						className="flex flex-col gap-5"
 					>
-						{/* Avatar */}
 						<div className="flex flex-col items-center gap-3">
 							<Avatar
 								src={avatarSrc}
 								className="size-20"
 								noBadge
 							/>
-
 							<Button
 								type="button"
 								variant="outline"
@@ -74,13 +76,11 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 								onClick={() => setIsOpen(true)}
 								disabled={loading}
 							>
-								<Upload className="size-4 mr-2" />
-								Change avatar
+								<Upload className="size-4 mr-2" /> Change avatar
 							</Button>
 						</div>
 
 						<FieldGroup>
-							{/* Name */}
 							<Controller
 								name="name"
 								control={form.control}
@@ -90,14 +90,11 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 										<Input
 											{...field}
 											placeholder="Your name"
-											aria-invalid={fieldState.invalid}
 										/>
 										{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
 									</Field>
 								)}
 							/>
-
-							{/* Email */}
 							<Controller
 								name="email"
 								control={form.control}
@@ -108,7 +105,6 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 											{...field}
 											type="email"
 											placeholder="you@example.com"
-											aria-invalid={fieldState.invalid}
 										/>
 										{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
 									</Field>
@@ -116,7 +112,6 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 							/>
 						</FieldGroup>
 
-						{/* Actions */}
 						<div className="flex justify-end gap-2 pt-2">
 							<Button
 								type="button"
@@ -124,33 +119,25 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 								onClick={handleCancel}
 								disabled={loading}
 							>
-								{loading ? (
-									<>
-										<Spinner
-											data-icon="inline-start"
-											className="mr-2"
-										/>{' '}
-										Cancel
-									</>
-								) : (
-									'Cancel'
-								)}
+								{loading && (
+									<Spinner
+										data-icon="inline-start"
+										className="mr-2"
+									/>
+								)}{' '}
+								Cancel
 							</Button>
 							<Button
 								type="submit"
 								disabled={loading}
 							>
-								{loading ? (
-									<>
-										<Spinner
-											data-icon="inline-start"
-											className="mr-2"
-										/>{' '}
-										Saving...
-									</>
-								) : (
-									'Save changes'
-								)}
+								{loading && (
+									<Spinner
+										data-icon="inline-start"
+										className="mr-2"
+									/>
+								)}{' '}
+								Save changes
 							</Button>
 						</div>
 					</form>

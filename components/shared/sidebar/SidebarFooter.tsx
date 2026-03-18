@@ -47,7 +47,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 					className="rounded-none"
 					asChild
 				>
-					<button className="flex items-center w-full px-2 py-1 rounded-lg data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+					<button className="flex items-center w-full px-2 py-1 rounded-lg transition-all hover:bg-muted">
 						{isLoading ? (
 							<Skeleton className="h-8 w-8 rounded-full" />
 						) : (
@@ -79,7 +79,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 					side={isMobile ? 'bottom' : 'right'}
 					align="end"
 					sideOffset={4}
-					className="min-w-[224px] rounded-lg"
+					className="min-w-56 rounded-lg"
 				>
 					<DropdownMenuLabel className="p-0">
 						<div className="flex items-center gap-2 px-2 py-1.5">
@@ -88,7 +88,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 							) : (
 								<Avatar
 									noBadge
-									className="size-8"
+									className="size-8 text-white"
 								/>
 							)}
 							<div className="flex-1 flex flex-col text-left truncate">
@@ -99,7 +99,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 									</>
 								) : (
 									<>
-										<span className="font-medium text-sm truncate">{userName}</span>
+										<span className="font-medium text-sm truncate text-white">{userName}</span>
 										<span className="text-xs text-muted-foreground truncate">{userEmail}</span>
 									</>
 								)}

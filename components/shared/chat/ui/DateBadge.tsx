@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import React, { Dispatch, SetStateAction } from 'react'
 
 interface Props {
@@ -8,9 +10,8 @@ interface Props {
 	setOpen: Dispatch<SetStateAction<boolean>>
 }
 
-export const DateBadge: React.FC<Props> = ({ date, setOpen }) => {
+export const DateBadge: React.FC<Props> = ({ date, setOpen, className }) => {
 	const isValidDate = date instanceof Date && !isNaN(date.getTime())
-
 	if (!isValidDate) return null
 
 	const label = new Intl.DateTimeFormat('en-US', {
@@ -19,11 +20,22 @@ export const DateBadge: React.FC<Props> = ({ date, setOpen }) => {
 	}).format(date)
 
 	return (
-		<div
-			onClick={() => setOpen(prev => !prev)}
-			className="w-full flex justify-center my-4 cursor-pointer"
-		>
-			<div className="px-3.5 py-1.5 rounded-full text-xs bg-muted text-muted-foreground">{label}</div>
+		<div className="flex justify-center w-full my-4">
+			<Button
+				type="button"
+				variant="secondary"
+				size="sm"
+				onClick={() => setOpen(prev => !prev)}
+				className={cn(
+					'h-auto rounded-full px-3.5 py-1.5 text-xs',
+					'bg-muted text-muted-foreground',
+					'hover:bg-accent hover:text-accent-foreground',
+					'active:scale-[0.97] transition-all',
+					className
+				)}
+			>
+				{label}
+			</Button>
 		</div>
 	)
 }

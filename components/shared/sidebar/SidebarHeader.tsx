@@ -21,7 +21,7 @@ export const SidebarHeader: React.FC<Props> = ({ className, searchValue, setSear
 			{!isCollapsed && (
 				<Menu
 					onClick={() => setMenuOpen(true)}
-					className="size-6 text-muted-foreground shrink-0"
+					className="size-7 text-muted-foreground shrink-0"
 					size={18}
 				/>
 			)}
@@ -52,7 +52,7 @@ export const SidebarHeader: React.FC<Props> = ({ className, searchValue, setSear
 				</InputGroupAddon>
 			</InputGroup>
 
-			<SidebarTrigger className={cn('size-6 text-muted-foreground', { '-ml-2': isCollapsed })} />
+			<SidebarTrigger className={cn('size-7 text-muted-foreground', { '-ml-2': isCollapsed })} />
 		</Header>
 	)
 }

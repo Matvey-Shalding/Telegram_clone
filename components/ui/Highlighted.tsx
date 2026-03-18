@@ -1,48 +1,45 @@
 'use client'
 
-import React from 'react'
-
-interface HighlightProps {
+interface Props {
 	text: string
-	query: string
+	query?: string
 	isActive?: boolean
-	/** optionally invert colors for dark backgrounds */
 	invertColors?: boolean
+	disabled?: boolean
 }
 
-export const Highlight: React.FC<HighlightProps> = ({ text, query, isActive, invertColors = false }) => {
-	if (!query) return <>{text}</>
+export const Highlight: React.FC<Props> = ({ text, query, isActive, invertColors, disabled }) => {
 
-	const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+	console.log(disabled,'disabled')
+
+	if (!query?.trim() || disabled) return <span>{text}</span>
+
+	const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+	const regex = new RegExp(`(${escaped})`, 'gi')
 	const parts = text.split(regex)
 
-	// color mapping based on invert / active state
-	const getClass = (active: boolean) => {
-		if (active) {
-			// active match
-			return invertColors
-				? 'bg-yellow-500 text-black font-semibold rounded px-[2px] shadow-[0_0_2px_#ffeb3b]'
-				: 'bg-yellow-400 text-black font-semibold rounded px-[2px] shadow-[0_0_2px_#ffeb3b]'
-		} else {
-			// inactive match
-			return invertColors ? 'bg-yellow-200 text-black rounded px-[1px]' : 'bg-yellow-100 text-black rounded px-[1px]'
-		}
-	}
-
 	return (
-		<>
+		<span className="whitespace-pre-wrap break-words">
 			{parts.map((part, i) =>
-				regex.test(part) ? (
-					<span
+				part.toLowerCase() === query.toLowerCase() ? (
+					<mark
 						key={i}
-						className={getClass(Boolean(isActive))}
+						className={`rounded px-0.5 font-medium ${
+							isActive
+								? invertColors
+									? 'bg-white text-black'
+									: 'bg-orange-400/90 text-black'
+								: invertColors
+									? 'bg-white/80 text-black'
+									: 'bg-yellow-300/80 text-black'
+						}`}
 					>
 						{part}
-					</span>
+					</mark>
 				) : (
-					part
+					<span key={i}>{part}</span>
 				)
 			)}
-		</>
+		</span>
 	)
 }

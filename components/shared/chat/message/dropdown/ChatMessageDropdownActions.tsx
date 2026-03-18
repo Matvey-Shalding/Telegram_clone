@@ -1,8 +1,6 @@
 'use client'
 
-import {
-	DropdownMenuItem
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Copy, Edit, Trash } from 'lucide-react'
 
 interface Props {
@@ -13,32 +11,38 @@ interface Props {
 	onlyDelete?: boolean
 }
 
-export const ChatMessageDropdownActions: React.FC<Props> = ({
-	isMine,
-	handleEdit,
-	handleDelete,
-	handleCopy,
-	onlyDelete
-}) => {
+export const ChatMessageDropdownActions: React.FC<Props> = ({ isMine, handleEdit, handleDelete, handleCopy, onlyDelete }) => {
 	return (
 		<>
 			{isMine && (
 				<>
 					{!onlyDelete && handleEdit && (
-						<DropdownMenuItem onClick={handleEdit} className="px-3 py-2">
-							<Edit className="mr-0.5 size-4" /> Edit
+						<DropdownMenuItem
+							onClick={handleEdit}
+							className="flex items-center gap-2 px-3 py-2 text-sm transition-colors duration-150 hover:bg-muted/70 focus:bg-muted/70"
+						>
+							<Edit className="size-4 opacity-80" />
+							<span>Edit</span>
 						</DropdownMenuItem>
 					)}
 
-					<DropdownMenuItem onClick={handleDelete} className="px-3 py-2">
-						<Trash className="mr-0.5 size-4" /> Delete
+					<DropdownMenuItem
+						onClick={handleDelete}
+						className="flex items-center gap-2 px-3 py-2 text-sm text-destructive transition-colors duration-150 hover:bg-destructive/10 focus:bg-destructive/10"
+					>
+						<Trash className="size-4 opacity-80" />
+						<span>Delete</span>
 					</DropdownMenuItem>
 				</>
 			)}
 
 			{!onlyDelete && handleCopy && (
-				<DropdownMenuItem onClick={handleCopy} className="px-3 py-2">
-					<Copy className="mr-0.5 size-4" /> Copy
+				<DropdownMenuItem
+					onClick={handleCopy}
+					className="flex items-center gap-2 px-3 py-2 text-sm transition-colors duration-150 hover:bg-muted/70 focus:bg-muted/70"
+				>
+					<Copy className="size-4 opacity-80" />
+					<span>Copy</span>
 				</DropdownMenuItem>
 			)}
 		</>

@@ -45,8 +45,8 @@ export const ChatFooter: React.FC<Props> = ({ mode, searchValue, setSearchValue,
 	}, [mode, searchValue, setSearchValue, editedValue, setEditedValue, setMode, conversationId])
 
 	return (
-		<div className="border-t sticky bottom-0 left-0 shrink-0 h-12 w-full">
-			<InputGroup className={cn('w-full h-full', 'bg-[#171717]', 'p-2.5 pl-4', 'rounded-none text-lg font-medium')}>
+		<div className="border-t border-border sticky bottom-0 left-0 shrink-0 h-12 w-full">
+			<InputGroup className={cn('w-full h-full', 'bg-sidebar', 'p-2.5 pl-4', 'rounded-none text-lg font-medium border-none outline-none')}>
 				<AnimatePresence
 					mode="wait"
 					initial={false}

@@ -5,11 +5,12 @@ import { Drawer, DrawerContent } from '@/components/ui/drawer'
 import { Separator } from '@/components/ui/separator'
 
 import { authClient } from '@/auth-client'
-import { LogOut, Settings } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { Avatar } from '../Avatar'
 import { SidebarMenuAddConversation } from './SidebarMenuAddConversation'
 import { SidebarMenuProfile } from './SidebarMenuProfile'
 import { SidebarMenuSearchUsers } from './SidebarMenuSearchUsers'
+import { SidebarMenuSettings } from './SidebarMenuSettings'
 
 interface SidebarMenuDrawerProps {
 	open: boolean
@@ -52,10 +53,7 @@ export const SidebarMenuDrawer: React.FC<SidebarMenuDrawerProps> = ({ open, onOp
 
 					<Separator className="my-2" />
 
-					<MenuItem
-						icon={<Settings size={18} />}
-						label="Settings"
-					/>
+					<SidebarMenuSettings />
 
 					<Separator className="my-2" />
 

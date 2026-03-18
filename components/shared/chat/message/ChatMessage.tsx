@@ -22,10 +22,11 @@ interface Props {
 	setMode: Dispatch<SetStateAction<ChatMode>>
 	lastReadAt: Date | null | undefined
 	className?: string
+	mode: ChatMode
 }
 
 export const ChatMessage = memo(
-	({ message, searchValue, isActiveMatch, isLastMessage, setIsCalendarOpen, setEditedValue, setMode, className, lastReadAt }: Props) => {
+	({ message, searchValue, isActiveMatch, isLastMessage, setIsCalendarOpen, setEditedValue, setMode, className, lastReadAt,mode }: Props) => {
 		const session = useCurrentSession()
 		const isMine = session?.user.id === message.senderId
 		const isOptimistic = message.optimistic === true
@@ -63,6 +64,7 @@ export const ChatMessage = memo(
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
 						<ChatMessageBubble
+							mode={mode}
 							reactions={message.reactions}
 							messageId={message.id}
 							wasSeen={wasSeen}

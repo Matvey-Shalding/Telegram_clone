@@ -1,7 +1,7 @@
 'use client'
 
 import { ConversationWithMembers } from '@/@types/Conversation'
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui'
+import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { formatConversationDate, getConversationLastMessage, getConversationTitle } from '@/lib/conversation.helpers'
 import { activeUsers } from '@/store/activeUsersAtom'
@@ -20,10 +20,7 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 
 	const router = useRouter()
 
-	const { toggleSidebar } = useSidebar()
-
 	const handleClick = () => {
-		toggleSidebar()
 		router.push(`/chat/${conversation.id}`)
 	}
 
@@ -44,13 +41,17 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 	}, [activeIds, currentUserId, conversation])
 
 	return (
-		<SidebarMenuItem onClick={handleClick}>
+		<SidebarMenuItem
+			className="transition-all"
+			onClick={handleClick}
+		>
 			<SidebarMenuButton
 				tooltip={formattedTitle}
 				className="
 				flex items-center rounded-none min-h-14 min-w-full"
 			>
 				<Avatar
+					src=""
 					noBadge={!isOnline}
 					className="min-w-8 min-h-8"
 				/>

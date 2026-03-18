@@ -3,13 +3,14 @@
 import { ChatMode } from '@/@types/ChatMode'
 import { ServerMessage } from '@/@types/Message'
 import { InputGroupAddon, InputGroupInput } from '@/components/ui'
+import { Button } from '@/components/ui/button'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Api } from '@/services/backend/clientApi'
 import { currentConversationId } from '@/store'
 import { editedMessageId } from '@/store/editedMessageIdAtom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
-import { Check } from 'lucide-react'
+import { Check, X } from 'lucide-react'
 import React from 'react'
 import toast from 'react-hot-toast'
 
@@ -21,16 +22,17 @@ interface Props {
 
 export const ChatFooterEdit: React.FC<Props> = ({ editedValue, setEditedValue, setMode }) => {
 	const [messageId] = useAtom(editedMessageId)
-
 	const [conversationId] = useAtom(currentConversationId)
-
 	const queryClient = useQueryClient()
+
+	const cancelEdit = () => {
+		setEditedValue('')
+		setMode('default')
+	}
 
 	const { mutateAsync: editMessage } = useMutation({
 		mutationFn: async () => {
-			if (!messageId) {
-				throw new Error('No messageId provided')
-			}
+			if (!messageId) throw new Error('No messageId provided')
 			await Api.messages.edit(messageId, editedValue ?? '')
 		},
 		onMutate: async () => {
@@ -42,7 +44,6 @@ export const ChatFooterEdit: React.FC<Props> = ({ editedValue, setEditedValue, s
 
 			queryClient.setQueryData<ServerMessage[]>([REACT_QUERY_KEYS.MESSAGES, conversationId], old => {
 				const exists = old?.some(m => m.id === messageId)
-
 				if (!exists) return old
 
 				return old?.map(m =>
@@ -57,11 +58,9 @@ export const ChatFooterEdit: React.FC<Props> = ({ editedValue, setEditedValue, s
 
 			return { previousMessages, conversationId }
 		},
-
 		onError: (_err, _payload, ctx) => {
 			toast.error('Failed to edit message')
 			if (!ctx) return
-
 			queryClient.setQueryData([REACT_QUERY_KEYS.MESSAGES, ctx.conversationId], ctx.previousMessages)
 		}
 	})
@@ -72,8 +71,20 @@ export const ChatFooterEdit: React.FC<Props> = ({ editedValue, setEditedValue, s
 
 		try {
 			await editMessage()
-		} catch (_error) {
+		} catch {
 			toast.error('Failed to edit message')
+		}
+	}
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault()
+			onSubmit()
+		}
+
+		if (e.key === 'Escape') {
+			e.preventDefault()
+			cancelEdit()
 		}
 	}
 
@@ -82,19 +93,33 @@ export const ChatFooterEdit: React.FC<Props> = ({ editedValue, setEditedValue, s
 			<InputGroupInput
 				value={editedValue}
 				onChange={e => setEditedValue(e.target.value)}
-				placeholder="Edit..."
+				onKeyDown={handleKeyDown}
+				placeholder="Edit message..."
 				className="outline-none!"
+				autoFocus
 			/>
 
-			<InputGroupAddon align="inline-end">
-				<div
-					onClick={() => {
-						onSubmit()
-					}}
-					className="size-7 cursor-pointer rounded-full grid place-content-center bg-[#212121]"
+			<InputGroupAddon
+				align="inline-end"
+				className="flex items-center gap-1"
+			>
+				<Button
+					size="icon"
+					variant="ghost"
+					className="size-7"
+					onClick={cancelEdit}
 				>
-					<Check className="text-muted-foreground size-5" />
-				</div>
+					<X className="size-4" />
+				</Button>
+
+				<Button
+					size="icon"
+					className="size-7"
+					onClick={onSubmit}
+					disabled={!editedValue.trim()}
+				>
+					<Check className="size-4" />
+				</Button>
 			</InputGroupAddon>
 		</>
 	)

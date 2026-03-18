@@ -29,9 +29,21 @@ export const ChatMessageReactions: React.FC<Props> = ({ messageId, closeDropdown
 				<button
 					key={e}
 					onClick={() => handleSelect(e)}
-					className="size-6 flex items-center justify-center rounded hover:bg-muted text-base"
+					className="
+						size-7
+						flex items-center justify-center
+						rounded-md
+						text-base
+						transition-all duration-150
+						hover:bg-muted/70
+						hover:scale-110
+						active:scale-95
+						focus-visible:outline-none
+						focus-visible:ring-2
+						focus-visible:ring-primary/40
+					"
 				>
-					{e}
+					<span className="select-none">{e}</span>
 				</button>
 			))}
 

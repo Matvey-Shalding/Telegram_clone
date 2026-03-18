@@ -22,6 +22,7 @@ interface Props {
 	setEditedValue: React.Dispatch<React.SetStateAction<string>>
 	setMode: Dispatch<SetStateAction<ChatMode>>
 	lastReadAt: Date | null | undefined
+	mode: ChatMode
 }
 
 export const ChatVirtuoso: React.FC<Props> = ({
@@ -35,7 +36,8 @@ export const ChatVirtuoso: React.FC<Props> = ({
 	setIsCalendarOpen,
 	setEditedValue,
 	setMode,
-	lastReadAt
+	lastReadAt,
+	mode
 }) => {
 	return (
 		<Virtuoso<VirtuosoMessage>
@@ -62,6 +64,7 @@ export const ChatVirtuoso: React.FC<Props> = ({
 
 				return (
 					<ChatMessage
+						mode={mode}
 						lastReadAt={lastReadAt}
 						setMode={setMode}
 						setEditedValue={setEditedValue}

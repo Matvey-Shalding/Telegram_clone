@@ -87,6 +87,7 @@ export const ChatContent: React.FC<Props> = ({ className, mode, searchValue, set
 			/>
 
 			<ChatVirtuoso
+				mode={mode}
 				lastReadAt={lastReadAt}
 				setMode={setMode}
 				setEditedValue={setEditedValue}

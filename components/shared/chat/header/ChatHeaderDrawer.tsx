@@ -18,7 +18,7 @@ export const ChatHeaderDrawer: React.FC<ChatHeaderDrawerProps> = ({ title, detai
 			<DrawerTrigger asChild>{children}</DrawerTrigger>
 
 			<DrawerContent>
-				<DrawerHeader className="flex items-center flex-row justify-between border-b border-border">
+				<DrawerHeader className="flex items-center flex-row justify-between border-b border-border pb-2">
 					<div className="flex flex-col">
 						<DrawerTitle>{title}</DrawerTitle>
 						<DrawerDescription>{details}</DrawerDescription>
