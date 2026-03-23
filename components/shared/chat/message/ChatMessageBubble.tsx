@@ -66,6 +66,7 @@ export const ChatMessageBubble = ({
 				)}
 			>
 				<ChatMessageDropdown
+				reactions={reactions}
 					messageId={messageId}
 					isMine={isMine}
 					isOpen={dropdown.isOpen}

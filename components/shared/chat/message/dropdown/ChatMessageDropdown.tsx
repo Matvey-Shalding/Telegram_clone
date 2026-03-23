@@ -1,9 +1,11 @@
 'use client'
 
+import { ReactionWithUser } from '@/@types/ReactionWithUser'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import React from 'react'
 import { ChatMessageDropdownActions } from './ChatMessageDropdownActions'
-import { ChatMessageReactions } from './ChatMessageDropdownReactions'
+import { ChatMessageDropdownReactionsList } from './ChatMessageDropdownReactionsList'
+import { ChatMessageReactionsMenu } from './ChatMessageDropdownReactionsMenu'
 
 interface Props {
 	isMine: boolean
@@ -14,6 +16,7 @@ interface Props {
 	handleCopy?: (e: React.MouseEvent) => void
 	onlyDelete?: boolean
 	messageId?: string
+	reactions: ReactionWithUser[]
 }
 
 export const ChatMessageDropdown: React.FC<Props> = ({
@@ -24,7 +27,8 @@ export const ChatMessageDropdown: React.FC<Props> = ({
 	handleDelete,
 	handleEdit,
 	onlyDelete = false,
-	messageId
+	messageId,
+	reactions
 }) => {
 	return (
 		<DropdownMenu
@@ -43,13 +47,17 @@ export const ChatMessageDropdown: React.FC<Props> = ({
 			>
 				{!isMine && (
 					<>
-						<ChatMessageReactions
+						<ChatMessageReactionsMenu
 							messageId={messageId}
 							closeDropdown={() => setIsOpen(false)}
 						/>
 						<DropdownMenuSeparator className="my-1" />
 					</>
 				)}
+
+				<ChatMessageDropdownReactionsList reactions={reactions} />
+
+				<DropdownMenuSeparator className="my-1" />
 
 				<ChatMessageDropdownActions
 					isMine={isMine}

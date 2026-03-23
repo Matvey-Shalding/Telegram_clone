@@ -1,25 +1,34 @@
 'use client'
 
 import { ServerMessage } from '@/@types/Message'
-import { MessageReaction } from '@/generated/prisma/client'
+import { ReactionWithUser } from '@/@types/ReactionWithUser'
 import { generateId } from '@/lib/utils'
 import { QueryClient } from '@tanstack/react-query'
+import { User } from 'better-auth'
 import { MessageCacheService } from './messageCache'
 
 export class MessagesOptimisticService {
-	static createOptimisticMessage(conversationId: string, userId: string, content?: string | null, image?: string | null) {
+	static createOptimisticMessage(conversationId: string, user?: User, content?: string | null, image?: string | null) {
 		const clientId = generateId()
+
+		if (!user) throw new Error('No user')
+
+		const userSafe = {
+			...user,
+			image: user?.image ?? null
+		}
 
 		const optimistic: ServerMessage & { clientId: string } = {
 			id: `temp:${clientId}`,
 			clientId,
 			conversationId,
-			senderId: userId,
+			senderId: user.id,
 			content: content ?? null,
 			image: image ?? null,
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			reactions: []
+			reactions: [],
+			sender: userSafe
 		}
 
 		return { optimistic, clientId }
@@ -35,22 +44,30 @@ export class MessagesOptimisticService {
 		MessageCacheService.setMessages(queryClient, conversationId, updated)
 	}
 
-	static addReactionOptimistic(queryClient: QueryClient, conversationId: string, messageId: string, userId: string, emoji: string) {
+	static addReactionOptimistic(queryClient: QueryClient, conversationId: string, messageId: string, emoji: string, user?: User) {
 		const previousMessages = MessageCacheService.getMessages(queryClient, conversationId)
 
 		const clientId = generateId()
 
-		const reaction: MessageReaction = {
+		if (!user) throw new Error('No user')
+
+		const userSafe = {
+			...user,
+			image: user?.image ?? null
+		}
+
+		const reaction: ReactionWithUser = {
 			id: clientId,
 			messageId,
-			userId,
 			reaction: emoji,
-			createdAt: new Date()
+			createdAt: new Date(),
+			user: userSafe,
+			userId: userSafe.id
 		}
 
 		MessageCacheService.updateMessage(queryClient, conversationId, messageId, m => ({
 			...m,
-			reactions: [...(m.reactions.filter(r => r.userId !== userId) ?? []), reaction]
+			reactions: [...(m.reactions.filter(r => r.userId !== user.id) ?? []), reaction]
 		}))
 
 		return { previousMessages, clientId }

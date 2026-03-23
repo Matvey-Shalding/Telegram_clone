@@ -12,6 +12,8 @@ export function useMessageController(mode: ChatMode, searchValue: string) {
 	// 1️⃣ fetch messages
 	const { data, isLoading, isError } = useFetchMessages()
 
+	console.log('data', data)
+
 	// fetch last message status
 
 	const lastReadAt = useLastReadAt()

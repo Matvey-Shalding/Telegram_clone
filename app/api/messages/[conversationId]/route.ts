@@ -21,10 +21,14 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 
 	const messages = await prisma.message.findMany({
 		where: { conversationId },
-		include: { reactions: true, sender: true },
+		include: {
+			reactions: {
+				include: { user: true }
+			},
+			sender: true
+		},
 		orderBy: { createdAt: 'asc' }
 	})
-
 
 	return NextResponse.json(messages)
 }

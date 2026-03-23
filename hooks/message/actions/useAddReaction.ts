@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 export function useAddReaction(messageId?: string) {
 	const [conversationId] = useAtom(currentConversationId)
 	const queryClient = useQueryClient()
-	const userId = authClient.useSession().data?.user.id
+	const user = authClient.useSession().data?.user
 
 	const { mutateAsync: addReaction } = useMutation({
 		mutationFn: async (emoji: string): Promise<MessageReaction> => {
@@ -21,8 +21,8 @@ export function useAddReaction(messageId?: string) {
 		},
 
 		onMutate: emoji => {
-			if (!messageId || !conversationId || !userId) throw new Error('Missing data for optimistic update')
-			return MessagesOptimisticService.addReactionOptimistic(queryClient, conversationId, messageId, userId, emoji)
+			if (!messageId || !conversationId || !user?.id) throw new Error('Missing data for optimistic update')
+			return MessagesOptimisticService.addReactionOptimistic(queryClient, conversationId, messageId, emoji, user)
 		},
 
 		onError: (_err, _emoji, ctx) => {

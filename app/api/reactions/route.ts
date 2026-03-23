@@ -67,18 +67,27 @@ export async function POST(req: NextRequest) {
 					reaction: content,
 					messageId,
 					userId
+				},
+				include: {
+					user: true
 				}
 			})
 			action = 'created'
 		} else if (existingReaction.reaction === content) {
 			reaction = await prisma.messageReaction.delete({
-				where: { id: existingReaction.id }
+				where: { id: existingReaction.id },
+				include: {
+					user: true
+				}
 			})
 			action = 'deleted'
 		} else {
 			reaction = await prisma.messageReaction.update({
 				where: { id: existingReaction.id },
-				data: { reaction: content }
+				data: { reaction: content },
+				include: {
+					user: true
+				}
 			})
 			action = 'updated'
 		}
@@ -87,9 +96,15 @@ export async function POST(req: NextRequest) {
 		const newMessage = await prisma.message.findUnique({
 			where: { id: messageId },
 			include: {
-				reactions: true
+				reactions: {
+					include: {
+						user: true
+					}
+				}
 			}
 		})
+
+		console.log(newMessage, 'newMessage')
 
 		const conversation = await prisma.conversation.findFirst({
 			where: { id: conversationId },

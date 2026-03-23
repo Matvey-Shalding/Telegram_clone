@@ -1,5 +1,6 @@
 'use client'
 
+import { authClient } from '@/auth-client'
 import { Api } from '@/services/backend/clientApi'
 import { SendMessageRequest } from '@/services/backend/messages'
 import { MessageCacheService } from '@/services/client/message/messageCache'
@@ -10,6 +11,8 @@ export type SendMessagePayload = Omit<SendMessageRequest, 'conversationId'>
 
 export function useSendMessage(conversationId: string | null, userId?: string) {
 	const queryClient = useQueryClient()
+
+	const user = authClient.useSession().data?.user
 
 	const mutation = useMutation({
 		mutationFn: async (payload: SendMessagePayload) => {
@@ -31,7 +34,7 @@ export function useSendMessage(conversationId: string | null, userId?: string) {
 
 			const { optimistic, clientId } = MessagesOptimisticService.createOptimisticMessage(
 				conversationId,
-				userId,
+				user,
 				payload.content,
 				payload.imageUrl
 			)

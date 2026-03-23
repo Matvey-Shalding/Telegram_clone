@@ -9,7 +9,7 @@ interface Props {
 	closeDropdown: () => void
 }
 
-export const ChatMessageReactions: React.FC<Props> = ({ messageId, closeDropdown }) => {
+export const ChatMessageReactionsMenu: React.FC<Props> = ({ messageId, closeDropdown }) => {
 	const PREVIEW_EMOJIS = ['👍', '❤️', '😮', '👏', '🔥', '🎉']
 	const addReaction = useAddReaction(messageId)
 
@@ -18,7 +18,8 @@ export const ChatMessageReactions: React.FC<Props> = ({ messageId, closeDropdown
 
 		try {
 			await addReaction(emoji)
-		} catch {
+		} catch (e) {
+			console.log(e)
 			toast.error('Something went wrong')
 		}
 	}

@@ -1,7 +1,8 @@
-import { Message, MessageReaction, User } from '@/generated/prisma/client'
+import { Message, User } from '@/generated/prisma/client'
+import { ReactionWithUser } from './ReactionWithUser'
 
 // Server / API
-export type MessageDTO = Message & { reactions: MessageReaction[]; sender: User }
+export type MessageDTO = Message & { reactions: ReactionWithUser[]; sender: User }
 
 // Client / UI
 export interface ChatMessage extends MessageDTO {

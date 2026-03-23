@@ -101,7 +101,7 @@ export const SidebarMenuSearchUsers: React.FC<Props> = ({ className }) => {
 					</InputGroup>
 				</Field>
 
-				<div className="flex flex-col overflow-y-auto max-h-[300px] mt-2">
+				<div className="flex flex-col overflow-y-auto overflow-x-hidden max-h-75 mt-2">
 					{debouncedValue.length < 2 && <p className="text-sm text-muted-foreground text-center py-6">Start typing to search users</p>}
 					{isFetching && Array.from({ length: 5 }).map((_, i) => <UserSearchSkeleton key={i} />)}
 					{!isFetching && users?.length === 0 && debouncedValue.length >= 2 && (
