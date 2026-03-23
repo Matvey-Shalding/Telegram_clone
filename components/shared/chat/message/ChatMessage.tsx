@@ -2,7 +2,6 @@
 
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage as Message } from '@/@types/Message'
-import { Avatar } from '@/components/shared/Avatar'
 import { useMessageActions } from '@/hooks/message/actions/useMessageActions'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { formatTime } from '@/lib/message.helpers'
@@ -11,6 +10,7 @@ import { Dispatch, memo, SetStateAction } from 'react'
 import { DateBadge } from '../ui/DateBadge'
 import { ChatImageMessage } from './ChatImageMessage'
 import { ChatMessageBubble } from './ChatMessageBubble'
+import { UserProfileDialog } from './UserProfileDialog'
 
 interface Props {
 	message: Message
@@ -65,13 +65,7 @@ export const ChatMessage = memo(
 				<div
 					className={cn('w-full flex items-end gap-2 px-3', isMine ? 'justify-end' : 'justify-start', isLastMessage && 'mb-20', className)}
 				>
-					{!isMine && (
-						<Avatar
-							src={message.sender.image}
-							noBadge
-							className="size-7 shrink-0"
-						/>
-					)}
+					{!isMine && <UserProfileDialog user={message.sender} />}
 
 					{/* TEXT MESSAGE */}
 					{isTextMessage && (
@@ -112,13 +106,7 @@ export const ChatMessage = memo(
 						/>
 					)}
 
-					{isMine && (
-						<Avatar
-							src={message?.sender?.image}
-							noBadge
-							className="size-7 shrink-0"
-						/>
-					)}
+					{isMine && <UserProfileDialog user={message.sender} />}
 				</div>
 			</div>
 		)

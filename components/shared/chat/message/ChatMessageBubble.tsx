@@ -1,9 +1,9 @@
 'use client'
 
 import { ChatMode } from '@/@types/ChatMode'
+import { ReactionWithUser } from '@/@types/ReactionWithUser'
 import { Card } from '@/components/ui'
 import { Highlight } from '@/components/ui/Highlighted'
-import { MessageReaction } from '@/generated/prisma/client'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import React from 'react'
@@ -27,7 +27,7 @@ interface Props {
 		onCopy: (e: React.MouseEvent) => void
 	}
 	messageId: string
-	reactions: MessageReaction[]
+	reactions: ReactionWithUser[]
 	mode: ChatMode
 }
 
@@ -66,7 +66,7 @@ export const ChatMessageBubble = ({
 				)}
 			>
 				<ChatMessageDropdown
-				reactions={reactions}
+					reactions={reactions}
 					messageId={messageId}
 					isMine={isMine}
 					isOpen={dropdown.isOpen}

@@ -9,19 +9,26 @@ interface AvatarProps {
 	noBadge?: boolean
 	src?: string | null
 	groupSrc?: { src?: string | null; name?: string }[]
+	size?: number | string
 }
 
-export function Avatar({ className, noBadge, src, groupSrc }: AvatarProps) {
+export function Avatar({ className, noBadge, src, groupSrc, size = 32 }: AvatarProps) {
+	const sizeValue = typeof size === 'number' ? `${size}px` : size
+
 	if (groupSrc && groupSrc.length > 0) {
 		const maxVisible = 3
 		const visibleMembers = groupSrc.slice(0, maxVisible)
 		const extraCount = groupSrc.length - maxVisible
 
 		return (
-			<Wrapper className={cn('relative flex items-center justify-center', className)}>
+			<Wrapper
+				className={cn('relative flex items-center justify-center', className)}
+				style={{ width: sizeValue, height: sizeValue }}
+			>
 				<div className="w-full h-full relative rounded-full overflow-hidden flex items-center justify-center">
 					{visibleMembers.map((member, idx) => {
-						const sizeClass = `w-1/2 h-1/2`
+						const sizeClass = 'w-1/2 h-1/2'
+
 						const positionClass = ['absolute', idx === 0 && 'top-0 left-0', idx === 1 && 'top-0 right-0', idx === 2 && 'bottom-0 left-1/4']
 							.filter(Boolean)
 							.join(' ')
@@ -52,22 +59,27 @@ export function Avatar({ className, noBadge, src, groupSrc }: AvatarProps) {
 						</div>
 					)}
 				</div>
+
 				{!noBadge && <AvatarBadge className="bg-green-600" />}
 			</Wrapper>
 		)
 	}
 
 	return (
-		<Wrapper className={className}>
+		<Wrapper
+			className={className}
+			style={{ width: sizeValue, height: sizeValue }}
+		>
 			{src ? (
 				<img
 					src={src}
 					alt="Avatar"
-					className={cn('w-full h-full object-cover rounded-full', className)}
+					className="w-full h-full object-cover rounded-full"
 				/>
 			) : (
-				<CircleUserRound className={cn('size-8', className)} />
+				<CircleUserRound className="w-full h-full" />
 			)}
+
 			{!noBadge && <AvatarBadge className="bg-green-600" />}
 		</Wrapper>
 	)
