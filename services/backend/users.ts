@@ -1,5 +1,5 @@
 import { API_ROUTES } from '@/config'
-import { User } from '@/generated/prisma/client'
+import { ConversationMember, User } from '@/generated/prisma/client'
 import { axiosInstance } from './instance'
 
 export const getAll = async (): Promise<User[]> => {
@@ -12,4 +12,8 @@ export const search = async (query: string): Promise<User[]> => {
 
 export const edit = async (name: string, email: string, avatarUrl?: string) => {
 	return (await axiosInstance.post(API_ROUTES.USERS + '/edit', { name, email, avatar: avatarUrl })).data
+}
+
+export const getMember = async (conversationId: string): Promise<ConversationMember> => {
+	return (await axiosInstance.get(`${API_ROUTES.USERS}/${conversationId}/members`)).data
 }

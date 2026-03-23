@@ -13,6 +13,11 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 				include: {
 					user: true
 				}
+			},
+			messages: {
+				orderBy: {
+					createdAt: 'desc'
+				}
 			}
 		}
 	})

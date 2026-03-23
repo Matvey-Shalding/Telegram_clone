@@ -3,6 +3,7 @@ import { MessageSonner } from '@/components/shared/chat/ui/MessageSonner'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { Conversation, Message } from '@/generated/prisma/client'
 import { Api } from '@/services/backend/clientApi'
+import { UnreadCountResponse } from '@/services/backend/conversations'
 import { QueryClient } from '@tanstack/react-query'
 import { getSonnerData } from '../server/getSonnerData'
 
@@ -18,6 +19,14 @@ export const onNewMessage = (queryClient: QueryClient, currentConversationId?: s
 		if (old?.some(m => m.id === message.id)) return old
 		return [...(old ?? []), message]
 	})
+
+	// update unreadCount
+
+	const { count } = await Api.conversation.getUnreadCount(conversationId)
+
+	if (count) {
+		queryClient.setQueryData<UnreadCountResponse>([REACT_QUERY_KEYS.UNREAD_COUNT, conversationId], { count })
+	}
 
 	// mark new message as seen if user is in conversation
 

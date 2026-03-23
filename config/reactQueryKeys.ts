@@ -5,5 +5,8 @@ export const REACT_QUERY_KEYS = {
 	CONVERSATION_MEMBERS: 'conversationMembers',
 	CONVERSATION: 'conversation',
 	USERS: 'users',
-	SEARCH_USERS: 'searchUsers'
+	SEARCH_USERS: 'searchUsers',
+	CONVERSATION_MEMBER: 'conversationMember',
+	'UNREAD_COUNT': 'unreadCount'
 } as const
+

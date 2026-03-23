@@ -114,7 +114,7 @@ export const ChatMessage = memo(
 
 					{isMine && (
 						<Avatar
-							src={message.sender.image}
+							src={message?.sender?.image}
 							noBadge
 							className="size-7 shrink-0"
 						/>

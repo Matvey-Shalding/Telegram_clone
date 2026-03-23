@@ -2,6 +2,7 @@ import { Conversation, ConversationMember, Message, User } from '@/generated/pri
 
 export interface ConversationWithMembers extends Conversation {
 	members: (ConversationMember & { user: User })[]
+	messages: Message[]
 }
 
 export interface ConversationWithMessages extends Conversation {

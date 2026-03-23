@@ -32,6 +32,7 @@ export const Providers: React.FC<Props> = ({ children }) => {
 			if (!conversationId) return
 			await Api.conversation.updateLastReadAt(conversationId)
 		}
+
 		updateLastSeen()
 	}, [conversationId])
 

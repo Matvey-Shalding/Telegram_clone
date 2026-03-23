@@ -2,7 +2,8 @@
 
 import { ChatMode } from '@/@types/ChatMode'
 import { AnimatePresence, motion } from 'framer-motion'
-import { EllipsisVertical, Search, X } from 'lucide-react'
+import { ArrowLeft, EllipsisVertical, Search, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction } from 'react'
 import { ChatHeaderDrawer } from './ChatHeaderDrawer'
 
@@ -20,13 +21,18 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, se
 		setMode(prev => (prev === 'default' ? 'search' : 'default'))
 	}
 
-	console.log('mode', mode)
-
+	const router = useRouter()
 	return (
-		<div className="border-b border-border bg-sidebar pl-4 min-h-15.25 flex items-center justify-between">
-			<div className="flex flex-col">
-				<span className="text-white font-medium">{title}</span>
-				<span className="text-xs text-muted-foreground">{details}</span>
+		<div className="border-b border-border bg-sidebar pl-2 min-h-15.25 flex items-center justify-between">
+			<div className="flex items-center gap-2.5">
+				<ArrowLeft
+					onClick={() => router.push('/')}
+					className="text-muted-foreground size-5 cursor-pointer"
+				/>
+				<div className="flex flex-col">
+					<span className="text-white font-medium">{title}</span>
+					<span className="text-xs text-muted-foreground">{details}</span>
+				</div>
 			</div>
 
 			<div className="p-2 relative">

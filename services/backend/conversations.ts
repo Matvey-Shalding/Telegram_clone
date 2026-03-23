@@ -43,3 +43,11 @@ export const createDirect = async (userId: string) => {
 		})
 	).data
 }
+
+export interface UnreadCountResponse {
+	count: number
+}
+
+export const getUnreadCount = async (id: string): Promise<UnreadCountResponse> => {
+	return (await axiosInstance.get(`${API_ROUTES.CONVERSATIONS}/${id}/unread-count`)).data
+}

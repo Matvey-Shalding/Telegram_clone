@@ -2,16 +2,18 @@
 
 import { ConversationWithMembers } from '@/@types/Conversation'
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui'
+import { REACT_QUERY_KEYS } from '@/config'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
 import { formatConversationDate, getConversationLastMessage, getConversationTitle } from '@/lib/conversation.helpers'
+import { Api } from '@/services/backend/clientApi'
 import { activeUsers } from '@/store/activeUsersAtom'
+import { useQuery } from '@tanstack/react-query'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 import { Avatar } from '..'
 
 export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
-	const unreadCount = 0
 	const currentUserId = useCurrentSession()?.user.id
 	const formattedTitle = getConversationTitle(conversation, conversation.members, currentUserId)
 	const description = getConversationLastMessage(conversation, currentUserId)
@@ -20,6 +22,13 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 	const handleClick = () => {
 		router.push(`/chat/${conversation.id}`)
 	}
+
+	const { data, isLoading } = useQuery({
+		queryKey: [REACT_QUERY_KEYS.UNREAD_COUNT, conversation.id],
+		queryFn: () => Api.conversation.getUnreadCount(conversation.id)
+	})
+
+	const unreadCount = data?.count
 
 	const [activeIds] = useAtom(activeUsers)
 
@@ -62,7 +71,7 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 							{description || 'No messages yet. Start the conversation by sending a message.'}
 						</span>
 
-						{unreadCount > 0 && (
+						{Number(unreadCount) > 0 && (
 							<div className="grid size-5 shrink-0 place-content-center rounded-full bg-muted text-xs">{unreadCount}</div>
 						)}
 					</div>
