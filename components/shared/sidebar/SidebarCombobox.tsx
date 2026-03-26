@@ -39,7 +39,7 @@ export function SidebarCombobox({
 			<ComboboxGroup>
 				<FieldLabel className="mb-2">Members</FieldLabel>
 
-				<ComboboxChips className="w-full py-0!">
+				<ComboboxChips className="w-full p-1.5!">
 					<ComboboxValue>
 						{values => (
 							<>
@@ -51,7 +51,7 @@ export function SidebarCombobox({
 						)}
 					</ComboboxValue>
 				</ComboboxChips>
-				<ComboboxContent className="max-h-50! min-w-65! w-65! pointer-events-auto! overflow-y-auto overscroll-contain">
+				<ComboboxContent className="max-h-50! min-w-65! w-65! pointer-events-auto! overscroll-contain">
 					<ComboboxEmpty>No items found.</ComboboxEmpty>
 
 					<ComboboxList className="p-0!">

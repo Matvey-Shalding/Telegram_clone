@@ -2,7 +2,6 @@
 
 import { ReactionWithUser } from '@/@types/ReactionWithUser'
 import { Avatar } from '@/components/shared/Avatar'
-import { AvatarFallback, AvatarImage, Avatar as ShadAvatar } from '@/components/ui/avatar'
 import { DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu'
 import { Hand } from 'lucide-react'
 import React from 'react'
@@ -23,27 +22,25 @@ const formatReactionDate = (date: Date) =>
 export const ChatMessageDropdownReactionsList: React.FC<Props> = ({ reactions }) => {
 	if (reactions.length === 0) return null
 
-
 	return (
 		<DropdownMenuSub>
 			<DropdownMenuSubTrigger
 				onClick={e => e.stopPropagation()}
-				className="flex items-center justify-between px-3 py-1 text-sm"
+				className="flex items-center justify-between px-3 py-2 text-sm"
 			>
 				<div className="flex items-center gap-2">
 					<Hand className="size-4 opacity-80" />
 					<span>{reactions.length} Reacted</span>
 				</div>
 
-				<div className="flex -space-x-2">
+				<div className="">
 					{reactions.slice(0, 3).map(r => (
-						<ShadAvatar
+						<Avatar
 							key={r.id}
-							className="size-6 ring-2 ring-background"
-						>
-							<AvatarImage src={r?.user?.image ?? undefined} />
-							<AvatarFallback>{r?.user?.name?.[0]}</AvatarFallback>
-						</ShadAvatar>
+							noBadge
+							size={22}
+							src={r?.user?.image}
+						></Avatar>
 					))}
 
 					{reactions.length > 3 && (

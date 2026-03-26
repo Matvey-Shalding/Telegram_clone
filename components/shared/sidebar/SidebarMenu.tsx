@@ -5,7 +5,7 @@ import { Drawer, DrawerContent } from '@/components/ui/drawer'
 import { Separator } from '@/components/ui/separator'
 
 import { authClient } from '@/auth-client'
-import { LogOut } from 'lucide-react'
+import { LogOut, X } from 'lucide-react'
 import { Avatar } from '../Avatar'
 import { SidebarMenuAddConversation } from './SidebarMenuAddConversation'
 import { SidebarMenuProfile } from './SidebarMenuProfile'
@@ -26,36 +26,42 @@ export const SidebarMenuDrawer: React.FC<SidebarMenuDrawerProps> = ({ open, onOp
 			open={open}
 			onOpenChange={onOpenChange}
 		>
-			<DrawerContent className="py-3 flex flex-col max-w-60">
+			<DrawerContent className="py-3 flex flex-col max-mobile:min-w-full!">
 				<button
 					key={user?.id}
-					className="flex items-center w-full px-3 py-1 border-b border-border pb-2.5 rounded-none"
+					className="w-full flex justify-between items-center px-3 py-1 border-b border-border pb-2.5 rounded-none"
 				>
-					<Avatar
-						noBadge
-						className="size-8"
-					/>
+					<div className="flex items-center">
+						<Avatar
+							noBadge
+							className="size-8"
+						/>
 
-					<div className="ml-2 flex-1 flex flex-col text-left truncate">
-						<span className="font-medium text-sm truncate">{user?.name}</span>
-						<span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+						<div className="ml-2 flex-1 flex flex-col text-left truncate">
+							<span className="font-medium text-sm truncate">{user?.name}</span>
+							<span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+						</div>
 					</div>
+					<X
+						onClick={() => onOpenChange(false)}
+						className="size-5 text-muted-foreground"
+					></X>
 				</button>
 
-				<div className="flex flex-col p-2">
+				<div className="flex flex-col p-0">
 					<SidebarMenuAddConversation />
 
 					<SidebarMenuSearchUsers />
 
-					<Separator className="my-2" />
+					<Separator className="my-1" />
 
 					<SidebarMenuProfile />
 
-					<Separator className="my-2" />
+					<Separator className="my-1" />
 
 					<SidebarMenuSettings />
 
-					<Separator className="my-2" />
+					<Separator className="my-1" />
 
 					<MenuItem
 						icon={<LogOut size={18} />}

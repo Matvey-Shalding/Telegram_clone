@@ -15,7 +15,7 @@ interface EmptyStateProps {
 export const EmptyState: React.FC<EmptyStateProps> = ({ title, description, icon, action, className }) => {
 	return (
 		<div className={cn('grid place-content-center', className)}>
-			<Card className="w-full min-w-80 text-center">
+			<Card className="w-full min-w-70 text-center">
 				<CardHeader className="flex flex-col items-center gap-2">
 					{icon && <div className="text-muted-foreground">{icon}</div>}
 					<CardTitle>{title}</CardTitle>

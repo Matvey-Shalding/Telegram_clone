@@ -13,6 +13,7 @@ export type SonnerData = {
 	content: string | null
 	image: string | null
 	createdAt: Date
+	senderAvatar: string | null
 }
 
 export async function getSonnerData(message: Message): Promise<SonnerData | null> {
@@ -47,6 +48,7 @@ export async function getSonnerData(message: Message): Promise<SonnerData | null
 		senderName: sender.name,
 		content: message.content,
 		image: message.image,
-		createdAt: message.createdAt
+		createdAt: message.createdAt,
+		senderAvatar: sender.image
 	}
 }

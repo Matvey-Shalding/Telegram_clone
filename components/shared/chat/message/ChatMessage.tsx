@@ -47,14 +47,13 @@ export const ChatMessage = memo(
 		const isTextMessage = !!message.content
 		const isImageMessage = !!message.image
 
-		// Guard: must be text OR image
-		if (!isTextMessage && !isImageMessage) return null
-
 		const time = formatTime(message.createdAt)
 		const actions = useMessageActions(message, setEditedValue, setMode)
 
+		if (!isTextMessage && !isImageMessage) return null
+
 		return (
-			<div className={cn('flex flex-col', message.isSameSender ? 'mt-1' : 'mt-3')}>
+			<div className={cn('flex flex-col', 'mt-3')}>
 				{message.showDateBadge && (
 					<DateBadge
 						setOpen={setIsCalendarOpen}

@@ -17,7 +17,7 @@ export const ChatHeaderDrawer: React.FC<ChatHeaderDrawerProps> = ({ title, detai
 		<Drawer direction="right">
 			<DrawerTrigger asChild>{children}</DrawerTrigger>
 
-			<DrawerContent>
+			<DrawerContent className="max-mobile:min-w-full!">
 				<DrawerHeader className="flex items-center flex-row justify-between border-b border-border pb-2">
 					<div className="flex flex-col">
 						<DrawerTitle>{title}</DrawerTitle>

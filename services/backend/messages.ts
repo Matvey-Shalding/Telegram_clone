@@ -7,7 +7,7 @@ export interface SendMessageRequest {
 	imageUrl: string | null
 }
 
-export const send = async ({ content, conversationId ,imageUrl}: SendMessageRequest) => {
+export const send = async ({ content, conversationId, imageUrl }: SendMessageRequest) => {
 	return (
 		await axiosInstance.post(API_ROUTES.MESSAGES + '/send', {
 			content,

@@ -6,14 +6,35 @@ import { Switch } from '@/components/ui/switch'
 import { motion } from 'framer-motion'
 import { Settings } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import React from 'react'
+import React, { useState } from 'react'
+import toast from 'react-hot-toast'
+
+type Theme = 'light' | 'dark'
 
 export const SidebarMenuSettings: React.FC = () => {
 	const { theme, setTheme } = useTheme()
-	const handleThemeSwitch = () => setTheme(theme === 'light' ? 'dark' : 'light')
+
+	const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>((theme as Theme) ?? 'light')
+
+	const [open, setOpen] = useState(false)
+
+	const handleReset = () => {
+		setOpen(false)
+		setCurrentTheme('light')
+		setTheme('light')
+	}
+
+	const handleThemeSwitch = () => {
+		setOpen(false)
+		setTheme(currentTheme)
+		toast.success('Theme updated successfully')
+	}
 
 	return (
-		<Dialog>
+		<Dialog
+			open={open}
+			onOpenChange={setOpen}
+		>
 			<DialogTrigger>
 				<motion.button
 					whileHover={{ scale: 1.03, x: 2 }}
@@ -40,14 +61,19 @@ export const SidebarMenuSettings: React.FC = () => {
 					<div className="flex items-center justify-between">
 						<span>Dark Mode</span>
 						<Switch
-							checked={theme === 'dark'}
-							onCheckedChange={handleThemeSwitch}
+							checked={currentTheme === 'dark'}
+							onCheckedChange={checked => setCurrentTheme(checked ? 'dark' : 'light')}
 						/>
 					</div>
 
 					<div className="flex justify-end gap-2 pt-4">
-						<Button variant="outline">Reset</Button>
-						<Button onClick={() => alert('Settings saved')}>Save</Button>
+						<Button
+							onClick={handleReset}
+							variant="outline"
+						>
+							Reset
+						</Button>
+						<Button onClick={handleThemeSwitch}>Save</Button>
 					</div>
 				</motion.div>
 			</DialogContent>

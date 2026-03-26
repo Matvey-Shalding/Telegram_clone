@@ -19,8 +19,8 @@ interface Props {
 	className?: string
 }
 
-export const SidebarMenuAddConversation: React.FC<Props> = ({ className }) => {
-	const { data: users } = useQuery({
+export const SidebarMenuAddConversation: React.FC<Props> = () => {
+	const { data: users } = useQuery<User[]>({
 		queryKey: [REACT_QUERY_KEYS.USERS],
 		queryFn: () => Api.users.getAll()
 	})
@@ -58,12 +58,25 @@ export const SidebarMenuAddConversation: React.FC<Props> = ({ className }) => {
 			await Api.conversation.createGroup(groupName, selectedUsers)
 			handleCancel()
 			toast.success('Group created!')
-		} catch (err: any) {
-			if (err.response?.status === 409) {
-				toast.error(err.response.data.message || 'This group already exists')
-				return
+		} catch (err: unknown) {
+			// Safe narrowing for completely unknown error
+			if (err && typeof err === 'object' && 'response' in err && typeof err.response === 'object') {
+				const response = (
+					err as {
+						response?: { status?: number; data?: { message?: string } }
+					}
+				).response
+
+				if (response?.status === 409) {
+					toast.error(response.data?.message || 'This group already exists')
+				} else {
+					toast.error('Failed to create group')
+				}
+			} else if (err instanceof Error) {
+				toast.error(err.message)
+			} else {
+				toast.error('An unknown error occurred')
 			}
-			toast.error('Failed to create group')
 		} finally {
 			setIsLoading(false)
 		}
@@ -84,7 +97,8 @@ export const SidebarMenuAddConversation: React.FC<Props> = ({ className }) => {
 					New conversation
 				</motion.button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md">
+
+			<DialogContent className="sm:max-w-md flex flex-col gap-y-4">
 				<DialogHeader className="pb-2 border-b border-border">
 					<DialogTitle>Create a group chat</DialogTitle>
 					<DialogDescription>Create a chat with more than 2 people</DialogDescription>
@@ -110,15 +124,16 @@ export const SidebarMenuAddConversation: React.FC<Props> = ({ className }) => {
 					<FieldError>{comboboxError}</FieldError>
 				</div>
 
-				<Separator className="my-3" />
+				<Separator className="my-0" />
 
 				<motion.div
 					initial={{ opacity: 0, y: 5 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.2 }}
-					className="flex justify-end gap-2"
+					className="flex mobile:justify-end gap-2"
 				>
 					<Button
+						className="max-mobile:basis-1/2"
 						variant="outline"
 						size="lg"
 						onClick={handleCancel}
@@ -133,6 +148,7 @@ export const SidebarMenuAddConversation: React.FC<Props> = ({ className }) => {
 						Cancel
 					</Button>
 					<Button
+						className="max-mobile:basis-1/2"
 						size="lg"
 						onClick={handleSubmit}
 						disabled={isLoading}

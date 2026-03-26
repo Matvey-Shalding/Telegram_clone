@@ -5,6 +5,7 @@ import { SidebarHeader as Header, SidebarTrigger, useSidebar } from '@/component
 import { cn } from '@/lib/utils'
 import { Menu, SearchIcon, X } from 'lucide-react'
 import React, { useState } from 'react'
+import { useMedia } from 'react-use'
 import { SidebarMenuDrawer } from './SidebarMenu'
 interface Props {
 	className?: string
@@ -16,6 +17,9 @@ export const SidebarHeader: React.FC<Props> = ({ className, searchValue, setSear
 	const isCollapsed = state === 'collapsed'
 
 	const [menuOpen, setMenuOpen] = useState(false)
+
+	const showTrigger = useMedia('(min-width: 768px)')
+
 	return (
 		<Header className={cn('flex items-center flex-row px-3 gap-x-3 h-15', className)}>
 			{!isCollapsed && (
@@ -52,7 +56,7 @@ export const SidebarHeader: React.FC<Props> = ({ className, searchValue, setSear
 				</InputGroupAddon>
 			</InputGroup>
 
-			<SidebarTrigger className={cn('size-7 text-muted-foreground', { '-ml-2': isCollapsed })} />
+			{showTrigger && <SidebarTrigger className={cn('size-7 text-muted-foreground', { '-ml-2': isCollapsed })} />}
 		</Header>
 	)
 }

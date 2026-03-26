@@ -22,8 +22,6 @@ export const SidebarContent: React.FC<Props> = ({ searchValue }) => {
 		queryFn: () => Api.conversation.getAll()
 	})
 
-	
-
 	const userId = authClient.useSession().data?.user.id
 
 	const chats = useMemo(() => {

@@ -16,7 +16,8 @@ interface Props {
 	handleCopy?: (e: React.MouseEvent) => void
 	onlyDelete?: boolean
 	messageId?: string
-	reactions: ReactionWithUser[]
+	reactions?: ReactionWithUser[]
+	isImage?: boolean
 }
 
 export const ChatMessageDropdown: React.FC<Props> = ({
@@ -28,8 +29,13 @@ export const ChatMessageDropdown: React.FC<Props> = ({
 	handleEdit,
 	onlyDelete = false,
 	messageId,
-	reactions
+	reactions,
+	isImage
 }) => {
+	if (!isMine && isImage) {
+		return null
+	}
+
 	return (
 		<DropdownMenu
 			open={isOpen}
@@ -55,9 +61,9 @@ export const ChatMessageDropdown: React.FC<Props> = ({
 					</>
 				)}
 
-				<ChatMessageDropdownReactionsList reactions={reactions} />
+				{reactions && !isImage && <ChatMessageDropdownReactionsList reactions={reactions} />}
 
-				<DropdownMenuSeparator className="my-1" />
+				{!isMine && <DropdownMenuSeparator className="my-1" />}
 
 				<ChatMessageDropdownActions
 					isMine={isMine}

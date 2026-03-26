@@ -32,7 +32,7 @@ export function UploadImageModal({ isOpen, onOpenChange, onFilesSelected, file, 
 		accept: {
 			'image/jpeg': [],
 			'image/png': [],
-			'image/avif': [],
+			'image/avif': []
 		},
 		maxSize: 10 * 1024 * 1024
 	})

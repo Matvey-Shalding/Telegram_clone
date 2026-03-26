@@ -35,7 +35,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 	for (const member of newMembers) {
 		pusherServer.trigger(`user-${member.userId}`, PUSHER_KEYS.LEAVE_CONVERSATION, {
 			newMembers,
-			conversationId,
+			conversationId
 		})
 	}
 

@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
-import { ProfileSchema, ProfileSchemaType } from '@/config/ProfileSchema'
 import { authClient } from '@/auth-client'
+import { ProfileSchema, ProfileSchemaType } from '@/config/ProfileSchema'
 import { useImageUpload } from '@/hooks/useImageUpload'
 import { uploadToCloudinary } from '@/lib'
 import { Api } from '@/services/backend/clientApi'
@@ -46,7 +46,7 @@ export function useProfile(defaultName?: string, defaultEmail?: string) {
 			if (file) {
 				try {
 					avatarUrl = await uploadToCloudinary(file)
-				} catch (err) {
+				} catch (err: unknown) {
 					console.error('Upload failed', err)
 					toast.error('Failed to upload avatar')
 					return
@@ -54,6 +54,7 @@ export function useProfile(defaultName?: string, defaultEmail?: string) {
 			}
 
 			await Api.users.edit(data.name, data.email, avatarUrl)
+
 			form.reset({
 				name: data.name,
 				email: data.email
@@ -61,16 +62,29 @@ export function useProfile(defaultName?: string, defaultEmail?: string) {
 			removeFile()
 			toast.success('Profile updated')
 			setIsDialogOpen(false)
-		} catch (err: any) {
-			const status = err?.response?.status
-			const message = err?.response?.data?.error ?? err?.message
+		} catch (err: unknown) {
+			// Safe narrowing for unknown error
+			if (err && typeof err === 'object' && 'response' in err && typeof (err as any).response === 'object') {
+				const response = (
+					err as {
+						response?: { status?: number; data?: { error?: string } }
+					}
+				).response
 
-			if (status === 409) {
-				form.setError('email', { type: 'manual', message: message ?? 'Email already in use' })
-				toast.error(message ?? 'Email already in use')
+				const status = response?.status
+				const message = response?.data?.error ?? 'Failed to update profile'
+
+				if (status === 409) {
+					form.setError('email', { type: 'manual', message })
+					toast.error(message)
+				} else {
+					console.error(err)
+					toast.error(message)
+				}
+			} else if (err instanceof Error) {
+				toast.error(err.message)
 			} else {
-				console.error(err)
-				toast.error('Failed to update profile')
+				toast.error('An unknown error occurred')
 			}
 		} finally {
 			setLoading(false)

@@ -28,7 +28,7 @@ const UserSearchSkeleton = () => (
 	</div>
 )
 
-export const SidebarMenuSearchUsers: React.FC<Props> = ({ className }) => {
+export const SidebarMenuSearchUsers: React.FC<Props> = () => {
 	const router = useRouter()
 	const [isOpen, setIsOpen] = React.useState(false)
 	const [searchValue, setSearchValue] = React.useState('')
@@ -118,6 +118,7 @@ export const SidebarMenuSearchUsers: React.FC<Props> = ({ className }) => {
 								className="flex items-center w-full px-3 py-2 rounded-lg hover:bg-accent/10 transition-colors disabled:opacity-60"
 							>
 								<Avatar
+									src={user.image}
 									noBadge
 									className="size-8 shrink-0"
 								/>

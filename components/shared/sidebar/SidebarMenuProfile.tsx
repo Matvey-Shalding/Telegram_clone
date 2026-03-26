@@ -19,7 +19,7 @@ interface Props {
 	defaultAvatar?: string
 }
 
-export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail, defaultAvatar }) => {
+export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail}) => {
 	const {
 		form,
 		loading,
@@ -32,7 +32,6 @@ export const SidebarMenuProfile: React.FC<Props> = ({ defaultName, defaultEmail,
 		previewUrl,
 		handleFileSelect,
 		handleCancel,
-		removeFile,
 		onSubmit
 	} = useProfile(defaultName, defaultEmail)
 

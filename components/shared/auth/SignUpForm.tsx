@@ -46,15 +46,15 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 
 	return (
 		<div
-			className={cn('flex flex-col gap-6', className)}
+			className={cn('flex flex-col overflow-y-scroll mobile:gap-3 sm:gap-4 md:gap-6', className)}
 			{...props}
 		>
-			<Card className="overflow-hidden p-0">
+			<Card className="overflow-y-auto p-0 max-sm:rounded-none">
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="p-6 md:p-8"
+					className="p-6 md:p-8 overflow-y-auto"
 				>
-					<FieldGroup>
+					<FieldGroup className="md:gap-7 sm:gap-6 mobile:gap-5 gap-4">
 						<div className="flex flex-col items-center gap-2 text-center">
 							<h1 className="text-2xl font-bold">Create your account</h1>
 							<p className="text-muted-foreground text-sm text-balance">Enter your email below to create your account</p>
@@ -87,7 +87,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 
 						{/* Password + Confirm Password */}
 						<Field>
-							<Field className="grid grid-cols-2 gap-4">
+							<Field className="grid md:grid-cols-2 mobile:gap-3 gap-2 md:gap-4">
 								<Field>
 									<FieldLabel htmlFor="password">Password</FieldLabel>
 									<Input
@@ -174,10 +174,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 					</FieldGroup>
 				</form>
 			</Card>
-
-			<FieldDescription className="px-6 text-center">
-				By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-			</FieldDescription>
 		</div>
 	)
 }

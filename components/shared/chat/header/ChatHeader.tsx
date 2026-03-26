@@ -6,6 +6,7 @@ import { ArrowLeft, EllipsisVertical, Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction } from 'react'
 import { ChatHeaderDrawer } from './ChatHeaderDrawer'
+import { cn } from '@/lib'
 
 interface ChatHeaderProps {
 	title: string
@@ -13,9 +14,10 @@ interface ChatHeaderProps {
 	mode: ChatMode
 	setMode: Dispatch<SetStateAction<ChatMode>>
 	setSearchValue: Dispatch<SetStateAction<string>>
+	isGroup?: boolean
 }
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, setMode, setSearchValue }) => {
+export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, setMode, setSearchValue, isGroup }) => {
 	const handleClick = () => {
 		if (mode === 'search') setSearchValue('')
 		setMode(prev => (prev === 'default' ? 'search' : 'default'))
@@ -30,7 +32,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, se
 					className="text-muted-foreground size-5 cursor-pointer"
 				/>
 				<div className="flex flex-col">
-					<span className="text-white font-medium">{title}</span>
+					<span className="font-medium">{title}</span>
 					<span className="text-xs text-muted-foreground">{details}</span>
 				</div>
 			</div>
@@ -46,20 +48,22 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ title, details, mode, se
 							exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
 							transition={{ duration: 0.2 }}
 						>
-							<div className="p-2 pr-0">
+							<div className={cn('p-2 pr-0', !isGroup && 'pr-2')}>
 								<Search
 									onClick={handleClick}
 									className="text-muted-foreground size-5 cursor-pointer"
 								/>
 							</div>
-							<ChatHeaderDrawer
-								title={title}
-								details={details}
-							>
-								<div className="p-2 pl-0">
-									<EllipsisVertical className="text-muted-foreground size-5 cursor-pointer" />
-								</div>
-							</ChatHeaderDrawer>
+							{isGroup && (
+								<ChatHeaderDrawer
+									title={title}
+									details={details}
+								>
+									<div className="p-2 pl-0">
+										<EllipsisVertical className="text-muted-foreground size-5 cursor-pointer" />
+									</div>
+								</ChatHeaderDrawer>
+							)}
 						</motion.div>
 					) : (
 						<motion.div

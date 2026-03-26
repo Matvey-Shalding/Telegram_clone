@@ -11,6 +11,7 @@ type MessageSonnerPayload = {
 	content?: string | null
 	image?: string | null
 	createdAt: Date | string
+	senderAvatar: string | null
 }
 
 export const MessageSonner = (data: MessageSonnerPayload) => {
@@ -23,7 +24,10 @@ export const MessageSonner = (data: MessageSonnerPayload) => {
 		t => (
 			<div className="flex w-65 gap-2 rounded-md bg-popover p-3 shadow-md ring-1 ring-border">
 				{/* avatar */}
-				<Avatar className="size-8 shrink-0" />
+				<Avatar
+					src={data.senderAvatar}
+					className="size-8 shrink-0"
+				/>
 
 				{/* content */}
 				<div className="flex min-w-0 flex-1 flex-col">
@@ -46,7 +50,7 @@ export const MessageSonner = (data: MessageSonnerPayload) => {
 					<p className="truncate text-[12px] text-muted-foreground">
 						{data.isGroup && <span className="font-medium text-foreground">{data.senderName}: </span>}
 
-						{data.content ?? (data.image ? '📷 Photo' : '')}
+						{data.content ?? (data.image ? '📷 Sent a photo' : '')}
 					</p>
 				</div>
 

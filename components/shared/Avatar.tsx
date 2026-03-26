@@ -77,7 +77,10 @@ export function Avatar({ className, noBadge, src, groupSrc, size = 32 }: AvatarP
 					className="w-full h-full object-cover rounded-full"
 				/>
 			) : (
-				<CircleUserRound className="w-full h-full" />
+				<CircleUserRound
+					style={{ width: sizeValue, height: sizeValue }}
+					className="w-full h-full object-cover"
+				/>
 			)}
 
 			{!noBadge && <AvatarBadge className="bg-green-600" />}

@@ -58,7 +58,6 @@ export async function POST(req: NextRequest) {
 		})
 
 		let reaction
-		let action: 'created' | 'updated' | 'deleted'
 
 		// 5️⃣ Reaction toggle logic
 		if (!existingReaction) {
@@ -72,7 +71,6 @@ export async function POST(req: NextRequest) {
 					user: true
 				}
 			})
-			action = 'created'
 		} else if (existingReaction.reaction === content) {
 			reaction = await prisma.messageReaction.delete({
 				where: { id: existingReaction.id },
@@ -80,7 +78,6 @@ export async function POST(req: NextRequest) {
 					user: true
 				}
 			})
-			action = 'deleted'
 		} else {
 			reaction = await prisma.messageReaction.update({
 				where: { id: existingReaction.id },
@@ -89,7 +86,6 @@ export async function POST(req: NextRequest) {
 					user: true
 				}
 			})
-			action = 'updated'
 		}
 
 		// 6️⃣ Fetch updated message for Pusher

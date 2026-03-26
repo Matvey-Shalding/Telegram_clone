@@ -1,5 +1,4 @@
 import { ConversationWithMembers } from '@/@types/Conversation'
-import { authClient } from '@/auth-client'
 import { DirectConversationToast } from '@/components/shared/sidebar/DirectConversationToast'
 import { REACT_QUERY_KEYS } from '@/config/reactQueryKeys'
 import { QueryClient } from '@tanstack/react-query'
@@ -12,8 +11,6 @@ interface Payload {
 
 export const onNewDirectConversation = (queryClient: QueryClient) => async (payload: Payload) => {
 	const { conversation, isCreator, senderName } = payload
-
-	const currentUserId = (await authClient.getSession())?.data?.user.id
 
 	// update sidebar conversations
 

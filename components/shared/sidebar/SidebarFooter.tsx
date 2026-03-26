@@ -101,7 +101,7 @@ export const SidebarFooter: React.FC<{ className?: string }> = ({ className }) =
 									</>
 								) : (
 									<>
-										<span className="font-medium text-sm truncate text-white">{userName}</span>
+										<span className="font-medium text-sm truncate ">{userName}</span>
 										<span className="text-xs text-muted-foreground truncate">{userEmail}</span>
 									</>
 								)}

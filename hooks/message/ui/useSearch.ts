@@ -3,7 +3,7 @@
 import { ChatMode } from '@/@types/ChatMode'
 import { ChatMessage } from '@/@types/Message'
 import { findSearchMatches } from '@/lib/virtuoso.helpers'
-import { useLayoutEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 
 export function useSearch(
@@ -29,15 +29,14 @@ export function useSearch(
 	 * 3️⃣ Reset cursor when matches change
 	 * (side-effect, not render logic)
 	 */
-	useLayoutEffect(() => {
-		setCurrentMatchCursor(0)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => {
+		setCurrentMatchCursor(prev => (prev !== 0 ? 0 : prev))
 	}, [matchedMessageIndexes])
 
 	/**
 	 * 4️⃣ Scroll to first match when entering search mode
 	 */
-	useLayoutEffect(() => {
+	useEffect(() => {
 		if (mode !== 'search' || !virtuosoRef.current || matchedMessageIndexes.length === 0) {
 			return
 		}

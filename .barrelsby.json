@@ -1,6 +1,6 @@
 {
 	"directory": ["src"],
-	"delete": true, 
+	"delete": true,
 	"location": "top",
 	"structure": "flat"
 }

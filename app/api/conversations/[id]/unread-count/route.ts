@@ -4,7 +4,6 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-
 	const { id: conversationId } = await params
 
 	if (!conversationId) {

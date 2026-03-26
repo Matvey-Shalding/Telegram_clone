@@ -23,7 +23,7 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 		router.push(`/chat/${conversation.id}`)
 	}
 
-	const { data, isLoading } = useQuery({
+	const { data } = useQuery({
 		queryKey: [REACT_QUERY_KEYS.UNREAD_COUNT, conversation.id],
 		queryFn: () => Api.conversation.getUnreadCount(conversation.id)
 	})

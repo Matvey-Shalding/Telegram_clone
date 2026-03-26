@@ -11,9 +11,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	return (
 		<html
 			lang="en"
-			className={cn(inter.variable, 'dark')}
+			className={cn(inter.variable, `overflow-hidden!`)}
 		>
-			<body className="antialiased min-h-full">
+			<body className="antialiased overflow-hidden!">
 				<Providers>{children}</Providers>
 			</body>
 		</html>

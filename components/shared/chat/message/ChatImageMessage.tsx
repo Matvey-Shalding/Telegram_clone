@@ -46,10 +46,11 @@ export const ChatImageMessage = ({ image, isMine, isOptimistic, time, isLastMess
 				<img
 					src={image}
 					alt="Sent image"
-					className="w-[260px] h-[180px] object-cover"
+					className="w-65 h-45 object-cover"
 				/>
 
 				<ChatMessageDropdown
+					isImage
 					isMine={isMine}
 					isOpen={dropdown.isOpen}
 					setIsOpen={dropdown.setIsOpen}

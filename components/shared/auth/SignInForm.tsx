@@ -14,8 +14,8 @@ import { signInUser } from '@/lib/server/signInUser'
 import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 
 type LogInSchema = z.infer<typeof logInSchema>
 
@@ -52,7 +52,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 			className={cn('flex flex-col gap-6', className)}
 			{...props}
 		>
-			<Card className="overflow-hidden p-0">
+			<Card className="overflow-hidden p-0 max-sm:rounded-none">
 				<form
 					onSubmit={handleSubmit(onSubmit)}
 					className="p-6 md:p-8"
@@ -149,10 +149,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 					</FieldGroup>
 				</form>
 			</Card>
-
-			<FieldDescription className="px-6 text-center">
-				By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-			</FieldDescription>
 		</div>
 	)
 }

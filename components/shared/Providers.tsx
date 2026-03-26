@@ -5,8 +5,8 @@ import { useActiveChannel } from '@/hooks/useActiveChannel'
 import { Api } from '@/services/backend/clientApi'
 import { currentConversationId, currentSession } from '@/store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useAtom } from 'jotai'
+import { ThemeProvider } from 'next-themes'
 import React, { useEffect, useState } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { PusherProvider } from './PusherProvider'
@@ -40,10 +40,19 @@ export const Providers: React.FC<Props> = ({ children }) => {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<ReactQueryDevtools />
 			<PusherProvider />
-			<Toaster />
-			{children}
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="system"
+				enableSystem
+			>
+				<Toaster
+					toastOptions={{
+						className: 'bg-card! text-card-foreground! border! border-border! shadow-lg! rounded-lg! px-4! py-3!'
+					}}
+				/>
+				{children}
+			</ThemeProvider>
 		</QueryClientProvider>
 	)
 }

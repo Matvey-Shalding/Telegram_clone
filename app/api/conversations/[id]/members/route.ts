@@ -3,8 +3,10 @@ import { prisma } from '@/db/prisma'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-export async function GET(req: Request, { params }: { params: Promise<{ conversationId: string }> }) {
-	const { conversationId } = await params
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+	console.log('params', await params)
+
+	const { id: conversationId } = await params
 
 	if (!conversationId) {
 		return NextResponse.json({ error: 'conversationId is required' }, { status: 400 })
@@ -16,12 +18,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ conversa
 		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 	}
 
-	const member = await prisma.conversationMember.findFirst({
+	const members = await prisma.conversationMember.findMany({
 		where: {
 			conversationId,
-			userId
+			NOT: { userId }
+		},
+		include: {
+			user: true
 		}
 	})
 
-	return NextResponse.json(member)
+	return NextResponse.json(members)
 }

@@ -25,13 +25,14 @@ export const Chat: React.FC<Props> = ({ conversationId }) => {
 
 	useEffect(() => {
 		setConversationId(conversationId)
-	}, [conversationId])
+	}, [conversationId, setConversationId])
 
 	const { mode, setMode, searchValue, setSearchValue, editedValue, setEditedValue, title, details } = useChatController(conversation!)
 
 	return (
 		<div className="h-screen w-full flex flex-col">
 			<ChatHeader
+				isGroup={conversation?.isGroup}
 				setSearchValue={setSearchValue}
 				setMode={setMode}
 				mode={mode}

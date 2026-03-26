@@ -21,7 +21,7 @@ export function useMessages(data: ServerMessage[] = []) {
 	 * 1️⃣ Normalize + stable sort
 	 */
 	const normalized = useMemo(() => {
-		return data.map(normalize).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+		return data.map(normalize).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
 	}, [data])
 
 	/**
@@ -32,11 +32,14 @@ export function useMessages(data: ServerMessage[] = []) {
 
 	/**
 	 * 3️⃣ Expand window automatically when new messages arrive
+	 * ✅ Safe functional update inside useEffect
 	 */
 	useEffect(() => {
-		if (normalized.length <= visibleCount) return
-		setVisibleCount(Math.min(normalized.length, visibleCount + 1))
-	}, [normalized, visibleCount])
+		setVisibleCount(prev => {
+			const next = Math.max(prev, normalized.length)
+			return prev === next ? prev : next
+		})
+	}, [normalized])
 
 	/**
 	 * 4️⃣ Visible slice
@@ -52,7 +55,6 @@ export function useMessages(data: ServerMessage[] = []) {
 		return visible.map((msg, i) => {
 			const prev = visible[i - 1]
 
-			// Narrow msg to include optional fields
 			const maybeClientMsg = msg as Message & { clientId?: string; optimistic?: boolean }
 
 			return {

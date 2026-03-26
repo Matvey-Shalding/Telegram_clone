@@ -61,7 +61,7 @@ function ReactionPill({ group }: { group: ReactionGroup }) {
 				{single ? (
 					<div className="w-5 h-5">
 						<Avatar
-							className="size-5"
+							size={20}
 							noBadge
 						/>
 					</div>

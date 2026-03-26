@@ -9,11 +9,11 @@ interface Props {
 	handleRemoveFile: () => void
 	handleSendFile: () => void
 }
-export const SendImageInput: React.FC<Props> = ({ className, previewUrl, selectedFile, isUploading, handleRemoveFile, handleSendFile }) => {
+export const SendImageInput: React.FC<Props> = ({ previewUrl, selectedFile, isUploading, handleRemoveFile, handleSendFile }) => {
 	return (
 		<div className="relative flex items-center w-full px-2 py-1">
 			{/* image preview */}
-			<div className="relative flex-shrink-0">
+			<div className="relative shrink-0">
 				<img
 					src={previewUrl}
 					alt={selectedFile.name}

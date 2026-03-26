@@ -12,11 +12,15 @@ import { useAtom } from 'jotai'
 export const ChatHeaderDrawerMembers = () => {
 	const [conversationId] = useAtom(currentConversationId)
 
+	console.log(conversationId, 'CONVERSATION ID')
+
 	const { data: members, isLoading } = useQuery<ConversationMemberWithUser[]>({
 		queryKey: [REACT_QUERY_KEYS.CONVERSATION_MEMBERS, conversationId],
 		queryFn: () => Api.conversation.getMembers(conversationId),
 		enabled: !!conversationId
 	})
+
+	console.log(members, 'members')
 
 	if (isLoading)
 		return (

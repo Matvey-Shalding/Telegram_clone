@@ -10,9 +10,7 @@ import { useLastReadAt } from './useLastReadAt'
 
 export function useMessageController(mode: ChatMode, searchValue: string) {
 	// 1️⃣ fetch messages
-	const { data, isLoading, isError } = useFetchMessages()
-
-	console.log('data', data)
+	const { data, isLoading, isFetched, isError } = useFetchMessages()
 
 	// fetch last message status
 
@@ -46,8 +44,9 @@ export function useMessageController(mode: ChatMode, searchValue: string) {
 
 	return {
 		// state
-		isLoading,
+		isLoading: isLoading,
 		isError,
+		isFetched,
 
 		// messages
 		messages,

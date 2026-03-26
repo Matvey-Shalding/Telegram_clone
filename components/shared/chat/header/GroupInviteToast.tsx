@@ -14,7 +14,7 @@ export const GroupInviteToast = (data: GroupInvitePayload) => {
 				<div className="flex min-w-0 flex-1 flex-col">
 					{/* header */}
 					<div className="flex items-center justify-between gap-2">
-						<span className="truncate text-[13px] font-semibold">You've been invited!</span>
+						<span className="truncate text-[13px] font-semibold">You&apos;ve been invited!</span>
 
 						<button
 							onClick={() => toast.dismiss(t.id)}
