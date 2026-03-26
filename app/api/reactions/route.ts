@@ -1,5 +1,5 @@
 'use server'
-export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 import { auth } from '@/auth'
 import { PUSHER_KEYS } from '@/config/pusherKeys'

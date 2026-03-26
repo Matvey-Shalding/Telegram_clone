@@ -1,6 +1,6 @@
 'use server'
 
-export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 import { auth } from '@/auth'
 import { prisma } from '@/db/prisma'
