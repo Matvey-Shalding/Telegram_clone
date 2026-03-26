@@ -5,7 +5,7 @@ import { Conversation, Message } from '@/generated/prisma/client'
 import { Api } from '@/services/backend/clientApi'
 import { UnreadCountResponse } from '@/services/backend/conversations'
 import { QueryClient } from '@tanstack/react-query'
-import { getSonnerData } from '../server/getSonnerData'
+import { getSonnerData } from '../server'
 
 export const onNewMessage = (queryClient: QueryClient, currentConversationId?: string) => async (payload: { message: PusherMessage }) => {
 	const message = payload.message
