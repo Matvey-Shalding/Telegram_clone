@@ -43,7 +43,7 @@ export const SendMessageInput: React.FC<Props> = ({
 				/>
 
 				<UploadImageModal
-					selectedFile={selectedFile}
+					file={selectedFile}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
 					onFilesSelected={handleFileSelect}
