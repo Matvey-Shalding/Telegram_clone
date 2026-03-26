@@ -1,11 +1,13 @@
+export const dynamic = 'force-dynamic'
+
 import { auth } from '@/auth'
 import { PUSHER_KEYS } from '@/config'
 import { prisma } from '@/db/prisma'
 import { pusherServer } from '@/lib/pusher/pusher'
 import { headers } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	const { id: conversationId } = await params
 
 	if (!conversationId) {
