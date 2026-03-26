@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { auth } from '@/auth'
 import { PUSHER_KEYS } from '@/config'
 import { prisma } from '@/db/prisma'

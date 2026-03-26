@@ -1,5 +1,7 @@
 'use server'
 
+export const dynamic = 'force-dynamic'
+
 import { auth } from '@/auth'
 import { PUSHER_KEYS } from '@/config/pusherKeys'
 import { prisma } from '@/db/prisma'

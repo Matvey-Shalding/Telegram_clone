@@ -1,5 +1,7 @@
 'use server'
 
+export const dynamic = 'force-dynamic'
+
 import { auth } from '@/auth'
 import { prisma } from '@/db/prisma'
 import { Message } from '@/generated/prisma/client'
