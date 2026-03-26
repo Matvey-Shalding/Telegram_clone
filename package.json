@@ -11,7 +11,8 @@
 		"db:push": "bunx prisma push",
 		"db:studio": "bunx prisma studio",
 		"db:seed": "bun run db/seed.ts",
-		"generate-barrels": "barrelsby --delete"
+		"generate-barrels": "barrelsby --delete",
+		"postinstall": "prisma generate"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.1.0",
