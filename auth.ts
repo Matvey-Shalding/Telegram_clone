@@ -1,4 +1,3 @@
-'use server'
 
 import { prisma } from '@/db/prisma'
 import { betterAuth } from 'better-auth'
