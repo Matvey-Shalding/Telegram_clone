@@ -1,6 +1,7 @@
 'use client'
 
 import { ConversationWithMembers } from '@/@types/Conversation'
+import { authClient } from '@/auth-client'
 import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui'
 import { REACT_QUERY_KEYS } from '@/config'
 import { useCurrentSession } from '@/hooks/useCurrentSession'
@@ -19,12 +20,14 @@ export const SidebarItem: React.FC<ConversationWithMembers> = conversation => {
 	const description = getConversationLastMessage(conversation, currentUserId)
 	const router = useRouter()
 
+	const session = authClient.useSession()
+
 	const handleClick = () => {
 		router.push(`/chat/${conversation.id}`)
 	}
 
 	const { data } = useQuery({
-		queryKey: [REACT_QUERY_KEYS.UNREAD_COUNT, conversation.id],
+		queryKey: [REACT_QUERY_KEYS.UNREAD_COUNT, conversation.id, session],
 		queryFn: () => Api.conversation.getUnreadCount(conversation.id)
 	})
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { authClient } from '@/auth-client'
 import { Field, FieldLabel, InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -37,8 +38,10 @@ export const SidebarMenuSearchUsers: React.FC<Props> = () => {
 
 	useDebounce(() => setDebouncedValue(searchValue), 250, [searchValue])
 
+	const session = authClient.useSession()
+
 	const { data: users, isFetching } = useQuery({
-		queryKey: [REACT_QUERY_KEYS.SEARCH_USERS, debouncedValue],
+		queryKey: [REACT_QUERY_KEYS.SEARCH_USERS, debouncedValue, session],
 		queryFn: () => Api.users.search(debouncedValue),
 		enabled: debouncedValue.length >= 2
 	})

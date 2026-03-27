@@ -9,7 +9,6 @@ interface Props {
 }
 
 export const Highlight: React.FC<Props> = ({ text, query, isActive, invertColors, disabled }) => {
-	console.log(disabled, 'disabled')
 
 	if (!query?.trim() || disabled) return <span>{text}</span>
 

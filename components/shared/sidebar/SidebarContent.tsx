@@ -17,12 +17,14 @@ interface Props {
 }
 
 export const SidebarContent: React.FC<Props> = ({ searchValue }) => {
+	const session = authClient.useSession()
+
 	const { data = [], isLoading } = useQuery<ConversationWithMembers[]>({
-		queryKey: [REACT_QUERY_KEYS.CHATS],
+		queryKey: [REACT_QUERY_KEYS.CHATS, session],
 		queryFn: () => Api.conversation.getAll()
 	})
 
-	const userId = authClient.useSession().data?.user.id
+	const userId = session.data?.user.id
 
 	const chats = useMemo(() => {
 		const q = searchValue.toLowerCase()

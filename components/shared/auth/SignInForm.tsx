@@ -30,7 +30,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 		mode: 'onSubmit'
 	})
 
-	const router = useRouter()
 
 	const onSubmit = async (data: LogInSchema) => {
 		try {
@@ -38,7 +37,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
 
 			toast.success('Logged in successfully')
 
-			router.push('/')
+			window.location.reload()
 
 			reset()
 		} catch (error) {

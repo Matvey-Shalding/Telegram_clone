@@ -1,6 +1,7 @@
 'use client'
 
 import { ConversationMemberWithUser } from '@/@types/ConversationMemberWithUser'
+import { authClient } from '@/auth-client'
 import { UserItem } from '@/components/ui/UserItem'
 import { Skeleton } from '@/components/ui/skeleton'
 import { REACT_QUERY_KEYS } from '@/config'
@@ -12,10 +13,10 @@ import { useAtom } from 'jotai'
 export const ChatHeaderDrawerMembers = () => {
 	const [conversationId] = useAtom(currentConversationId)
 
-	console.log(conversationId, 'CONVERSATION ID')
+	const session = authClient.useSession()
 
 	const { data: members, isLoading } = useQuery<ConversationMemberWithUser[]>({
-		queryKey: [REACT_QUERY_KEYS.CONVERSATION_MEMBERS, conversationId],
+		queryKey: [REACT_QUERY_KEYS.CONVERSATION_MEMBERS, conversationId,session],
 		queryFn: () => Api.conversation.getMembers(conversationId),
 		enabled: !!conversationId
 	})

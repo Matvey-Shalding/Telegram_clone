@@ -6,6 +6,8 @@ import { Separator } from '@/components/ui/separator'
 
 import { authClient } from '@/auth-client'
 import { LogOut, X } from 'lucide-react'
+import router from 'next/router'
+import toast from 'react-hot-toast'
 import { Avatar } from '../Avatar'
 import { SidebarMenuAddConversation } from './SidebarMenuAddConversation'
 import { SidebarMenuProfile } from './SidebarMenuProfile'
@@ -19,6 +21,16 @@ interface SidebarMenuDrawerProps {
 
 export const SidebarMenuDrawer: React.FC<SidebarMenuDrawerProps> = ({ open, onOpenChange }) => {
 	const user = authClient.useSession().data?.user
+
+	const handleLogout = async () => {
+		try {
+			await authClient.signOut()
+			router.push('auth/sign-up')
+		} catch (error) {
+			console.error(error)
+			toast.error('Something went wrong')
+		}
+	}
 
 	return (
 		<Drawer
@@ -63,11 +75,14 @@ export const SidebarMenuDrawer: React.FC<SidebarMenuDrawerProps> = ({ open, onOp
 
 					<Separator className="my-1" />
 
-					<MenuItem
-						icon={<LogOut size={18} />}
-						label="Log out"
-						danger
-					/>
+					<div onClick={handleLogout}>
+						{' '}
+						<MenuItem
+							icon={<LogOut size={18} />}
+							label="Log out"
+							danger
+						/>
+					</div>
 				</div>
 			</DrawerContent>
 		</Drawer>

@@ -1,5 +1,6 @@
 'use client'
 
+import { authClient } from '@/auth-client'
 import { Field, FieldError, FieldLabel, Input } from '@/components/ui'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -20,8 +21,10 @@ interface Props {
 }
 
 export const SidebarMenuAddConversation: React.FC<Props> = () => {
+	const session = authClient.useSession()
+
 	const { data: users } = useQuery<User[]>({
-		queryKey: [REACT_QUERY_KEYS.USERS],
+		queryKey: [REACT_QUERY_KEYS.USERS, session],
 		queryFn: () => Api.users.getAll()
 	})
 

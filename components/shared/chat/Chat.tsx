@@ -1,5 +1,6 @@
 'use client'
 
+import { authClient } from '@/auth-client'
 import { REACT_QUERY_KEYS } from '@/config'
 import { useChatController } from '@/hooks/chat/useChatController'
 import { Api } from '@/services/backend/clientApi'
@@ -16,8 +17,10 @@ interface Props {
 }
 
 export const Chat: React.FC<Props> = ({ conversationId }) => {
+	const session = authClient.useSession()
+
 	const { data: conversation } = useQuery({
-		queryKey: [REACT_QUERY_KEYS.CONVERSATION, conversationId],
+		queryKey: [REACT_QUERY_KEYS.CONVERSATION, conversationId, session],
 		queryFn: async () => await Api.conversation.get(conversationId)
 	})
 

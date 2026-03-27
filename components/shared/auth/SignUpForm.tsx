@@ -35,6 +35,8 @@ export function SignupForm({ className, ...props }: React.ComponentProps<'div'>)
 
 			toast.success('User created successfully')
 			reset()
+
+			window.location.reload()
 		} catch (error: unknown) {
 			if (error instanceof Error && error.message.includes('email')) {
 				toast.error('Such email is already registered')
