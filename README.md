@@ -242,12 +242,6 @@ This project is currently private.
 
 ---
 
-## Screenshots
-
-Add screenshots here once the UI is ready for presentation or deployment.
-
----
-
 ## Acknowledgements
 
 Built as a full-featured messaging platform focused on real-time UX, clean architecture, and scalable foundations.
