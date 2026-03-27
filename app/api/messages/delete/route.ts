@@ -3,6 +3,8 @@
 // import { pusherServer } from '@/lib/pusher/pusher'
 // import { NextRequest, NextResponse } from 'next/server'
 
+import { NextResponse } from 'next/server'
+
 // export async function POST(req: NextRequest) {
 // 	try {
 // 		const body = await req.json()
@@ -88,3 +90,7 @@
 // 		return NextResponse.json({ error: 'Failed to delete message' }, { status: 500 })
 // 	}
 // }
+
+export async function POST() {
+	return NextResponse.json({ error: 'Not implemented' }, { status: 501 })
+}
